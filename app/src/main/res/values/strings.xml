@@ -509,4 +509,57 @@
     </plurals>
     <string name="settings_weekly_goal">Weekly goal</string>
     <string name="settings_weekly_goal_none">No goal</string>
+
+    <!-- AI provider profiles (B-01) -->
+    <string name="settings_section_ai">AI COACH</string>
+    <string name="settings_ai_profile">Provider profile</string>
+    <string name="settings_ai_profile_none">No profile – AI features are off</string>
+    <string name="settings_ai_hint">Without a provider profile all AI features are hidden. The API key is stored encrypted in the Android Keystore.</string>
+    <string name="ai_profiles_title">AI providers</string>
+    <string name="ai_profiles_empty">No profile yet. Add one to use AI features. Without a profile everything stays offline.</string>
+    <string name="ai_profiles_add">Add profile</string>
+    <string name="ai_profiles_hint">The selected circle picks the active profile. Only aggregated training data is sent, and only when you use an AI feature.</string>
+    <string name="ai_profile_summary" translatable="false">%1$s · %2$s</string>
+    <string name="ai_kind_openai">OpenAI-compatible</string>
+    <string name="ai_kind_anthropic" translatable="false">Anthropic</string>
+    <string name="ai_profile_new_title">New profile</string>
+    <string name="ai_profile_edit_title">Edit profile</string>
+    <string name="ai_profile_delete">Delete</string>
+    <string name="ai_profile_delete_title">Delete profile?</string>
+    <string name="ai_profile_delete_body">The profile and its stored API key will be removed.</string>
+    <string name="ai_profile_name">Name</string>
+    <string name="ai_profile_name_placeholder">e.g. Ollama at home</string>
+    <string name="ai_profile_kind">Kind</string>
+    <string name="ai_profile_url">Base URL</string>
+    <string name="ai_profile_url_placeholder_openai" translatable="false">http://192.168.1.10:11434/v1</string>
+    <string name="ai_profile_url_placeholder_anthropic" translatable="false">https://api.anthropic.com</string>
+    <string name="ai_profile_model">Model</string>
+    <string name="ai_profile_model_placeholder_openai">e.g. llama3.2, mistral-small-latest</string>
+    <string name="ai_profile_model_placeholder_anthropic">e.g. %1$s</string>
+    <string name="ai_profile_key">API key</string>
+    <string name="ai_profile_key_placeholder">Paste key</string>
+    <string name="ai_profile_key_optional">Optional, e.g. not needed for Ollama</string>
+    <string name="ai_profile_key_stored">Stored – leave empty to keep</string>
+    <string name="ai_profile_key_remove">Remove stored key</string>
+    <string name="ai_profile_key_keep">Keep key after all</string>
+    <string name="ai_profile_cleartext">Unencrypted connection (http). Only use within your own network or over a VPN like Tailscale.</string>
+    <string name="ai_profile_test">Test connection</string>
+    <string name="ai_profile_save">Save</string>
+    <string name="ai_profile_hint">For OpenAI-compatible services the base URL includes the version path, e.g. https://api.mistral.ai/v1 or https://openrouter.ai/api/v1. The test only sends a short “OK?”, no training data.</string>
+    <string name="ai_profile_error_name">Please enter a name.</string>
+    <string name="ai_profile_error_url">Please enter a URL starting with http:// or https://.</string>
+    <string name="ai_profile_error_model">Please enter a model.</string>
+    <string name="ai_profile_error_key">Anthropic needs an API key.</string>
+    <string name="ai_test_running">Testing …</string>
+    <string name="ai_test_success">Connection OK.</string>
+    <string name="ai_error_with_status" translatable="false">%1$s (HTTP %2$d)</string>
+    <string name="ai_error_unauthorized">API key missing, wrong or without permission.</string>
+    <string name="ai_error_not_found">Not found. Check base URL and model.</string>
+    <string name="ai_error_rate_limited">Too many requests or quota used up.</string>
+    <string name="ai_error_rejected">The provider rejected the request.</string>
+    <string name="ai_error_server">Error at the provider. Try again later.</string>
+    <string name="ai_error_timeout">No answer in the expected time.</string>
+    <string name="ai_error_network">No connection. Check network, address and port.</string>
+    <string name="ai_error_invalid_response">Unexpected answer. Is the kind (OpenAI-compatible/Anthropic) right?</string>
+    <string name="ai_error_refused">The model refused to answer.</string>
 </resources>

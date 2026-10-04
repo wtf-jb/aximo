@@ -1,6 +1,16 @@
 package io.github.wtfjb.aximo.di
 
 import io.github.wtfjb.aximo.MainViewModel
+import io.github.wtfjb.aximo.ai.AiHttp
+import io.github.wtfjb.aximo.ai.KtorAiProviderFactory
+import io.github.wtfjb.aximo.data.ai.KeystoreAiKeyStore
+import io.github.wtfjb.aximo.data.repository.RoomAiProfileRepository
+import io.github.wtfjb.aximo.domain.ai.AiConnectionTester
+import io.github.wtfjb.aximo.domain.ai.AiProfileRepository
+import io.github.wtfjb.aximo.domain.ai.AiProviderFactory
+import io.github.wtfjb.aximo.ui.ai.AiProfileEditViewModel
+import io.github.wtfjb.aximo.ui.ai.AiProfilesViewModel
+import io.ktor.client.engine.okhttp.OkHttp
 import io.github.wtfjb.aximo.data.backup.RoomBackupRepository
 import io.github.wtfjb.aximo.data.db.AximoDatabase
 import io.github.wtfjb.aximo.data.repository.RoomCardioRepository
@@ -56,6 +66,11 @@ val appModule = module {
     single { TimeSource.System }
     single<BackupRepository> { RoomBackupRepository(get(), get(), get()) }
     single<DocumentStore> { ContentResolverDocumentStore(androidContext()) }
+    // AI (B-01): one HTTP client for all providers; keys encrypted via the Android Keystore.
+    single<AiProfileRepository> { RoomAiProfileRepository(get<AximoDatabase>().aiProfileDao(), KeystoreAiKeyStore(androidContext())) }
+    single { AiHttp.client(OkHttp.create()) }
+    single<AiProviderFactory> { KtorAiProviderFactory(get()) }
+    single { AiConnectionTester(get()) }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
     single {
@@ -85,7 +100,9 @@ val appModule = module {
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
     viewModel { StatsViewModel(get(), get(), get(), get()) }
-    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { AiProfilesViewModel(get()) }
+    viewModel { (profileId: Long) -> AiProfileEditViewModel(get(), get(), profileId) }
 }
 
 /** Display name of a default cardio activity, stored once when the activities are created. */

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- No INTERNET permission: everything in Prio A works offline. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -9,6 +8,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- AI coach (Prio B): only used for requests to the provider the user configured.
+         Everything else works offline; without a profile nothing goes over the network. -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".AximoApplication"
@@ -21,6 +24,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Aximo"
+        android:usesCleartextTraffic="true"
         tools:targetApi="33">
         <activity
             android:name=".MainActivity"

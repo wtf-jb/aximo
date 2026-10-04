@@ -497,4 +497,52 @@
     </plurals>
     <string name="settings_weekly_goal">Wochenziel</string>
     <string name="settings_weekly_goal_none">Kein Ziel</string>
+
+    <!-- AI provider profiles (B-01) -->
+    <string name="settings_section_ai">KI-COACH</string>
+    <string name="settings_ai_profile">Provider-Profil</string>
+    <string name="settings_ai_profile_none">Kein Profil – KI-Funktionen sind aus</string>
+    <string name="settings_ai_hint">Ohne Provider-Profil sind alle KI-Funktionen ausgeblendet. Der API-Key liegt verschlüsselt im Android Keystore.</string>
+    <string name="ai_profiles_title">KI-Provider</string>
+    <string name="ai_profiles_empty">Noch kein Profil. Lege eins an, um KI-Funktionen zu nutzen. Ohne Profil bleibt alles offline.</string>
+    <string name="ai_profiles_add">Profil hinzufügen</string>
+    <string name="ai_profiles_hint">Der markierte Kreis wählt das aktive Profil. Gesendet werden nur aggregierte Trainingsdaten, und erst wenn du eine KI-Funktion nutzt.</string>
+    <string name="ai_kind_openai">OpenAI-kompatibel</string>
+    <string name="ai_profile_new_title">Neues Profil</string>
+    <string name="ai_profile_edit_title">Profil bearbeiten</string>
+    <string name="ai_profile_delete">Löschen</string>
+    <string name="ai_profile_delete_title">Profil löschen?</string>
+    <string name="ai_profile_delete_body">Profil und gespeicherter API-Key werden entfernt.</string>
+    <string name="ai_profile_name">Name</string>
+    <string name="ai_profile_name_placeholder">z. B. Ollama zu Hause</string>
+    <string name="ai_profile_kind">Art</string>
+    <string name="ai_profile_url">Base-URL</string>
+    <string name="ai_profile_model">Modell</string>
+    <string name="ai_profile_model_placeholder_openai">z. B. llama3.2, mistral-small-latest</string>
+    <string name="ai_profile_model_placeholder_anthropic">z. B. %1$s</string>
+    <string name="ai_profile_key">API-Key</string>
+    <string name="ai_profile_key_placeholder">Key einfügen</string>
+    <string name="ai_profile_key_optional">Optional, z. B. für Ollama nicht nötig</string>
+    <string name="ai_profile_key_stored">Gespeichert – leer lassen zum Behalten</string>
+    <string name="ai_profile_key_remove">Gespeicherten Key entfernen</string>
+    <string name="ai_profile_key_keep">Key doch behalten</string>
+    <string name="ai_profile_cleartext">Unverschlüsselte Verbindung (http). Nur im eigenen Netz oder über VPN wie Tailscale verwenden.</string>
+    <string name="ai_profile_test">Verbindung testen</string>
+    <string name="ai_profile_save">Speichern</string>
+    <string name="ai_profile_hint">Die Base-URL enthält bei OpenAI-kompatiblen Diensten den Versionspfad, z. B. https://api.mistral.ai/v1 oder https://openrouter.ai/api/v1. Der Test sendet nur ein kurzes „OK?“, keine Trainingsdaten.</string>
+    <string name="ai_profile_error_name">Bitte einen Namen eingeben.</string>
+    <string name="ai_profile_error_url">Bitte eine URL mit http:// oder https:// eingeben.</string>
+    <string name="ai_profile_error_model">Bitte ein Modell eingeben.</string>
+    <string name="ai_profile_error_key">Anthropic braucht einen API-Key.</string>
+    <string name="ai_test_running">Teste …</string>
+    <string name="ai_test_success">Verbindung ok.</string>
+    <string name="ai_error_unauthorized">API-Key fehlt, ist falsch oder hat keine Berechtigung.</string>
+    <string name="ai_error_not_found">Nicht gefunden. Base-URL oder Modell prüfen.</string>
+    <string name="ai_error_rate_limited">Zu viele Anfragen oder Kontingent aufgebraucht.</string>
+    <string name="ai_error_rejected">Der Provider hat die Anfrage abgelehnt.</string>
+    <string name="ai_error_server">Fehler beim Provider. Später noch mal versuchen.</string>
+    <string name="ai_error_timeout">Keine Antwort in der erwarteten Zeit.</string>
+    <string name="ai_error_network">Keine Verbindung. Netz, Adresse und Port prüfen.</string>
+    <string name="ai_error_invalid_response">Unerwartete Antwort. Passt die Art (OpenAI-kompatibel/Anthropic)?</string>
+    <string name="ai_error_refused">Das Modell hat die Antwort verweigert.</string>
 </resources>

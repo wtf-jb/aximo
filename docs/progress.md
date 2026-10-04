@@ -83,20 +83,30 @@
   - `TrainingSettings.weeklyGoal` (kein Ziel oder 1–7 Einheiten), DataStore und Backup
   - „Heute“: „3 von 4 Einheiten“; Einstellungen: Zeile „Wochenziel“
 
-## In Arbeit
-- Feinschliff 3: Drag-and-drop in Routinen, PR #15:
+- Feinschliff 3: Drag-and-drop in Routinen, PR #15 (gemergt):
   - Domain: `RoutineDraft.groups()`/`moveGroup()` (Karten verschieben, Supersatz als Block)
   - UI: Karte lange drücken und ziehen; Haptik, Schatten, Nachbarn rutschen animiert; ⋯-Menü „Nach oben/unten“ bleibt (Barrierefreiheit)
-  - Tests: Domain, ViewModel
+
+## Prio B (freigegeben 04.10., inkl. `INTERNET`-Permission)
+Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in die Navigation, sobald er Inhalt hat (B-02).
+
+## In Arbeit
+- B-01 KI-Provider-Layer:
+  - Domain `ai`: `AiProvider`, `AiRequest`/`AiMessage`, `AiException` (Gründe), `AiProviderProfile` + `AiProfiles` (URL-Prüfung, aktives Profil), `AiProfileDraft` (Formular, Key-Pflicht nur Anthropic), `ApiKeyChange`, `AiProfileRepository`, `AiConnectionTester`
+  - Modul `:ai` (reines Kotlin, Ktor): `OpenAiCompatibleProvider` (`/chat/completions`), `AnthropicProvider` (`/v1/messages`), `KtorAiProviderFactory`, `AiHttp` (Timeouts, Fehler-Mapping, Key-Schwärzung)
+  - Data: Tabelle `ai_profiles` (DB v2, Auto-Migration), `KeystoreAiKeyStore` (AES-GCM, Keystore), `RoomAiProfileRepository`
+  - App: `INTERNET`-Permission, Klartext erlaubt (Ollama im LAN), OkHttp-Engine; Einstellungen „KI-Coach“ → Profilliste → Formular mit „Verbindung testen“, Löschen mit Bestätigung
+  - Tests: Adapter gegen Ktor MockEngine (Request-Format, Statuscodes, Fehlerformen, Timeout, Netz), Domain, Room-Repository, ViewModels
 
 ## Nächster Schritt
-- Feinschliff-Liste ist damit abgearbeitet. **Warten auf Jonas:** Prio B (braucht Freigabe der `INTERNET`-Permission) oder weitere Feinschliff-Wünsche nach Test auf dem Pixel
+- B-02 Wöchentlicher KI-Review: `AiSuggestion`-Tabelle, aggregierter Kontext (Volumen, e1RM, Stagnation, Frequenz, RIR-Trend), JSON-Schema + Validierung, Review-Screen nach `Review.html`, Datenschutz-Hinweis vor dem ersten Call, Coach-Tab zurück
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
+- B-01 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
 - Setup-Skript im Environment prüfen: Plattform-Paket heißt `platforms;android-37.0` (in `docs/cloud-environment.md` korrigiert)
 - Routine im claude.ai-UI anlegen (meine per Tool angelegte Routine hat kein Repo und keinen GitHub-Zugang und ist deaktiviert), Prompt siehe `docs/routine-prompt.md`

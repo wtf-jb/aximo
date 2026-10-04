@@ -25,8 +25,12 @@ import io.github.wtfjb.aximo.ui.navigation.ExerciseEditRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseListRoute
 import io.github.wtfjb.aximo.ui.navigation.ExercisePickerRoute
 import io.github.wtfjb.aximo.ui.navigation.RoutineEditRoute
+import io.github.wtfjb.aximo.ui.navigation.AiProfileEditRoute
+import io.github.wtfjb.aximo.ui.navigation.AiProfilesRoute
 import io.github.wtfjb.aximo.ui.navigation.SettingsRoute
 import io.github.wtfjb.aximo.ui.navigation.SummaryRoute
+import io.github.wtfjb.aximo.ui.ai.AiProfileEditScreen
+import io.github.wtfjb.aximo.ui.ai.AiProfilesScreen
 import io.github.wtfjb.aximo.ui.settings.SettingsScreen
 import io.github.wtfjb.aximo.ui.summary.SummaryScreen
 import io.github.wtfjb.aximo.ui.routine.RoutineEditScreen
@@ -184,7 +188,22 @@ fun AximoAppShell(
                 )
             }
             composable<SettingsRoute> {
-                SettingsScreen(onBack = { navController.popBackStack() })
+                SettingsScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenAiProfiles = { navController.navigate(AiProfilesRoute) },
+                )
+            }
+            composable<AiProfilesRoute> {
+                AiProfilesScreen(
+                    onBack = { navController.popBackStack() },
+                    onEdit = { id -> navController.navigate(AiProfileEditRoute(id)) },
+                )
+            }
+            composable<AiProfileEditRoute> { entry ->
+                AiProfileEditScreen(
+                    profileId = entry.toRoute<AiProfileEditRoute>().profileId,
+                    onDone = { navController.popBackStack() },
+                )
             }
             composable<ThemeShowcaseRoute> {
                 ThemeShowcaseScreen(

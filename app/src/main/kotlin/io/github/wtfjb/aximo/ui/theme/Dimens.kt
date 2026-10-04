@@ -97,6 +97,9 @@ object Sizes {
 
     /** Color swatch in the theme showcase. */
     val swatch = 40.dp
+
+    /** Icon tile at the start of a settings row (KI-Coach). */
+    val iconTile = 40.dp
 }
 
 /** Elevation tokens. Surfaces stand out by color, not by shadow or tint. */
