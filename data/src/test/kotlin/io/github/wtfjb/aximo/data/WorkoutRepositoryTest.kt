@@ -55,6 +55,21 @@ class WorkoutRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun recentFinishedSkipsRunningWorkouts() = runTest {
+        val older = workouts.startWorkout(t0)
+        workouts.addExercise(older, benchId, null, listOf(PlannedSet(80.0, 8)))
+        workouts.finishWorkout(older, t0.plus(kotlin.time.Duration.parse("1h")), "")
+        val newer = workouts.startWorkout(t0.plus(kotlin.time.Duration.parse("1d")))
+        workouts.finishWorkout(newer, t0.plus(kotlin.time.Duration.parse("25h")), "")
+        workouts.startWorkout(t0.plus(kotlin.time.Duration.parse("2d")))
+
+        val recent = workouts.observeRecentFinished(5).first()
+
+        assertEquals(listOf(newer, older), recent.map { it.workout.id })
+        assertEquals("Bankdrücken", recent[1].exercises[0].exercise.name)
+    }
+
+    @Test
     fun setsCanBeCompletedEditedAndDeleted() = runTest {
         val id = workouts.startWorkout(t0)
         val weId = workouts.addExercise(id, benchId, null, listOf(PlannedSet(80.0, 8)))

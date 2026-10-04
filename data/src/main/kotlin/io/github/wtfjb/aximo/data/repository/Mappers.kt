@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.data.repository
 
+import io.github.wtfjb.aximo.data.db.entity.CardioEntryEntity
 import io.github.wtfjb.aximo.data.db.entity.ExerciseEntity
 import io.github.wtfjb.aximo.data.db.entity.ExerciseMuscleEntity
 import io.github.wtfjb.aximo.data.db.entity.ExerciseWithMuscles
@@ -10,6 +11,7 @@ import io.github.wtfjb.aximo.data.db.entity.SetEntryEntity
 import io.github.wtfjb.aximo.data.db.entity.WorkoutEntity
 import io.github.wtfjb.aximo.data.db.entity.WorkoutExerciseEntity
 import io.github.wtfjb.aximo.data.db.entity.WorkoutWithDetails
+import io.github.wtfjb.aximo.domain.model.CardioEntry
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.Routine
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
@@ -136,4 +138,32 @@ internal fun WorkoutWithDetails.toDomain() = WorkoutDetail(
             sets = row.sets.sortedBy { it.position }.map { it.toDomain() },
         )
     },
+)
+
+internal fun CardioEntryEntity.toDomain() = CardioEntry(
+    id = id,
+    workoutId = workoutId,
+    exerciseId = exerciseId,
+    startedAt = startedAt,
+    durationSec = durationSec,
+    distanceM = distanceM,
+    avgHeartRate = avgHeartRate,
+    elevationM = elevationM,
+    note = note,
+    source = source,
+    externalId = externalId,
+)
+
+internal fun CardioEntry.toEntity() = CardioEntryEntity(
+    id = id,
+    workoutId = workoutId,
+    exerciseId = exerciseId,
+    startedAt = startedAt,
+    durationSec = durationSec,
+    distanceM = distanceM,
+    avgHeartRate = avgHeartRate,
+    elevationM = elevationM,
+    note = note,
+    source = source,
+    externalId = externalId,
 )

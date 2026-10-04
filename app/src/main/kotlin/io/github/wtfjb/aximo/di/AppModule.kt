@@ -2,11 +2,14 @@ package io.github.wtfjb.aximo.di
 
 import io.github.wtfjb.aximo.MainViewModel
 import io.github.wtfjb.aximo.data.db.AximoDatabase
+import io.github.wtfjb.aximo.data.repository.RoomCardioRepository
 import io.github.wtfjb.aximo.data.repository.RoomExerciseRepository
 import io.github.wtfjb.aximo.data.repository.RoomProgressionRepository
 import io.github.wtfjb.aximo.data.repository.RoomRoutineRepository
 import io.github.wtfjb.aximo.data.repository.RoomWorkoutRepository
 import io.github.wtfjb.aximo.data.settings.DataStoreSettingsRepository
+import io.github.wtfjb.aximo.domain.cardio.DefaultActivity
+import io.github.wtfjb.aximo.domain.repository.CardioRepository
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
 import io.github.wtfjb.aximo.domain.repository.ProgressionRepository
 import io.github.wtfjb.aximo.domain.rest.RestTimerController
@@ -17,6 +20,8 @@ import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.workout.WorkoutFinisher
 import io.github.wtfjb.aximo.domain.workout.WorkoutStarter
 import io.github.wtfjb.aximo.rest.AndroidRestTimerEffects
+import io.github.wtfjb.aximo.R
+import io.github.wtfjb.aximo.ui.cardio.CardioViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
 import io.github.wtfjb.aximo.ui.plans.PlansViewModel
@@ -38,6 +43,7 @@ val appModule = module {
     single<ExerciseRepository> { RoomExerciseRepository(get<AximoDatabase>().exerciseDao()) }
     single<RoutineRepository> { RoomRoutineRepository(get<AximoDatabase>().routineDao()) }
     single<WorkoutRepository> { RoomWorkoutRepository(get<AximoDatabase>().workoutDao()) }
+    single<CardioRepository> { RoomCardioRepository(get<AximoDatabase>().cardioDao()) }
     single { TimeSource.System }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
@@ -53,9 +59,21 @@ val appModule = module {
     viewModel { MainViewModel(get()) }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), exerciseId) }
-    viewModel { TodayViewModel(get(), get(), get()) }
+    viewModel { TodayViewModel(get(), get(), get(), get(), get()) }
+    viewModel { (entryId: Long) ->
+        val context = androidContext()
+        CardioViewModel(get(), get(), get(), { activity -> context.getString(activity.nameRes()) }, entryId)
+    }
     viewModel { PlansViewModel(get(), get(), get(), get()) }
     viewModel { (routineId: Long) -> RoutineEditViewModel(get(), get(), routineId) }
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
+}
+
+/** Display name of a default cardio activity, stored once when the activities are created. */
+private fun DefaultActivity.nameRes(): Int = when (this) {
+    DefaultActivity.RUNNING -> R.string.cardio_activity_running
+    DefaultActivity.CYCLING -> R.string.cardio_activity_cycling
+    DefaultActivity.ROWING -> R.string.cardio_activity_rowing
+    DefaultActivity.OTHER -> R.string.cardio_activity_other
 }

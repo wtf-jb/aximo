@@ -247,4 +247,57 @@
     <string name="summary_mood_5">Stark</string>
     <string name="summary_save">Speichern</string>
     <string name="summary_arrow_description">wird zu</string>
+
+    <!-- Cardio (A-04) -->
+    <string name="plans_cardio">Cardio erfassen</string>
+    <string name="cardio_title">Cardio erfassen</string>
+    <string name="cardio_title_edit">Cardio bearbeiten</string>
+    <string name="cardio_activity_running">Laufen</string>
+    <string name="cardio_activity_cycling">Rad</string>
+    <string name="cardio_activity_rowing">Rudern</string>
+    <string name="cardio_activity_other">Andere</string>
+    <string name="cardio_today">Heute</string>
+    <string name="cardio_when">%1$s · %2$s</string>
+    <string name="cardio_change_start">Datum und Uhrzeit ändern</string>
+    <string name="cardio_start_time">Startzeit</string>
+    <string name="cardio_next">Weiter</string>
+    <string name="cardio_duration">Dauer</string>
+    <string name="cardio_duration_unit">h:mm:ss</string>
+    <string name="cardio_hours">h</string>
+    <string name="cardio_minutes">min</string>
+    <string name="cardio_seconds">s</string>
+    <string name="cardio_distance">Distanz</string>
+    <string name="cardio_distance_km">Distanz (km)</string>
+    <string name="cardio_km">km</string>
+    <string name="cardio_empty_value">–</string>
+    <string name="cardio_pace_calculated">PACE · BERECHNET</string>
+    <string name="cardio_speed_calculated">TEMPO · BERECHNET</string>
+    <string name="cardio_pace">Pace</string>
+    <string name="cardio_avg_speed">Ø Tempo</string>
+    <string name="cardio_pace_per_km">%1$s /km</string>
+    <string name="cardio_pace_per_500m">%1$s /500 m</string>
+    <string name="cardio_speed_kmh">%1$s km/h</string>
+    <string name="cardio_heart_rate">Ø Puls</string>
+    <string name="cardio_heart_rate_bpm">Ø Puls (bpm)</string>
+    <string name="cardio_bpm">%1$d bpm</string>
+    <string name="cardio_elevation">Höhenmeter</string>
+    <string name="cardio_elevation_m">Höhenmeter (m)</string>
+    <string name="cardio_meters">%1$s m</string>
+    <string name="cardio_note">Notiz</string>
+    <string name="cardio_optional">optional</string>
+    <string name="cardio_save">Speichern</string>
+    <string name="cardio_delete">Löschen</string>
+    <string name="cardio_delete_title">Eintrag löschen?</string>
+    <string name="cardio_delete_body">Diese Cardio-Einheit wird endgültig entfernt.</string>
+    <string name="cardio_error_activity">Wähle eine Aktivität.</string>
+    <string name="cardio_error_duration">Gib die Dauer ein.</string>
+    <string name="cardio_recent_title">%1$s · %2$s km</string>
+
+    <!-- Heute: Zuletzt -->
+    <string name="today_recent">Zuletzt</string>
+    <string name="today_recent_free">Freies Training</string>
+    <plurals name="today_recent_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d min</item>
+    </plurals>
 </resources>

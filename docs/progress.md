@@ -38,15 +38,19 @@
   - UI: Pläne-Tab (Freies Training, Übungen, Routinenliste mit „Als Nächstes“ und Start-Button), Routine bearbeiten (Name, Ziele-Dialog, Menü mit Verschieben/Supersatz lösen/Entfernen, Übung hinzufügen, Löschen), Workout zeigt Routinenname und Ziele, Heute „Push A starten“
   - Tests: Domain, Room, ViewModels
 
+- Schritt 7 Progression (A-06) und Workout-Abschluss, PR #7 (gemergt):
+  - Domain: `ProgressionRules` (Double Progression, Reduktion nach 2× unter Untergrenze, Bodyweight Wdh. → Gewicht, Rundung auf Scheibenschritte), `Records` (e1RM Epley ≤ 12 Wdh., Volumen, neue Bestwerte), `WorkoutFinisher`
+  - UI: Hinweis-Chip „Progression“ im Workout; Abschluss-Screen mit Bilanz, Bestwerten, „Fürs nächste Mal“, Bewertung, Notiz
+
 ## In Arbeit
-- Schritt 7 Progression (A-06) und Workout-Abschluss, PR #7:
-  - Domain: `ProgressionRules` (Double Progression, Reduktion nach 2× unter Untergrenze, Bodyweight Wdh. → Gewicht, Rundung auf Scheibenschritte), `Records` (e1RM Epley ≤ 12 Wdh., Volumen, neue Bestwerte), `WorkoutFinisher` (beendet und rechnet Progression), Vorschläge fließen in `initialSets`/`plannedSets`
-  - Data: `ProgressionRepository`, Workout per Id, Bewertung, Sätze vor einem Zeitpunkt
-  - UI: Hinweis-Chip „Progression: 82,5 kg (+2,5)“ im Workout; Abschluss-Screen mit Bilanz (Dauer, Volumen, Arbeitssätze, Bestwerte), „Neue Bestwerte“, „Fürs nächste Mal“, „Wie lief's?“ 1–5, Notiz
-  - Tests: Domain (Regeln, Records), Room, ViewModels
+- Schritt 8 Cardio manuell (A-04), PR #8:
+  - Domain: `CardioMath` (Pace /km und /500 m, km/h, Dauer-Format und -Eingabe), `CardioActivities` (Standard-Aktivitäten, Auswahl, Vorauswahl, Pace-Stil), `CardioDraft` (Formular, Validierung, Parser), `CardioRepository`, `RecentActivity` („Zuletzt“ aus Workouts + Cardio)
+  - Data: `RoomCardioRepository`, letzte beendete Workouts als Flow (kein Schemawechsel)
+  - UI: „Cardio erfassen“ nach `Cardio.html` (Aktivität, Datum/Uhrzeit, Dauer, Distanz, berechnete Pace/Tempo, Puls, Höhenmeter, Notiz), Bearbeiten/Löschen; Pläne-Tab mit „Cardio erfassen“; „Zuletzt“ auf Heute
+  - Tests: Domain, Room, ViewModels
 
 ## Nächster Schritt
-- 8. Cardio manuell (A-04), `Cardio.html`
+- 9. Auswertungen (A-07), Übungsdetail (`Statistik.html`, `UebungDetail.html`); dabei Workout-Detail aus „Zuletzt“ und Bilanz-Vergleich auf dem Abschluss-Screen
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk
