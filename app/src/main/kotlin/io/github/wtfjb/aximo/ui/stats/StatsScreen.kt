@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.ui.stats
 
+import io.github.wtfjb.aximo.ui.format.LocalWeightUnit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -75,7 +76,7 @@ fun StatsScreen(
     viewModel: StatsViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val unit = WeightUnit.KG
+    val unit = LocalWeightUnit.current
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),

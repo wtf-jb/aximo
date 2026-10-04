@@ -18,6 +18,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object ThemeShowcaseRoute
 
+@Serializable data object SettingsRoute
+
 @Serializable data object ExerciseListRoute
 
 @Serializable data object WorkoutRoute

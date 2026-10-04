@@ -52,10 +52,14 @@
   - Tests: Domain, Room, ViewModels
 
 ## In Arbeit
-- Schritt 10 Export/Import (A-08), Einstellungen (A-09)
+- Schritt 10a Einstellungen (A-09), PR #10:
+  - Domain: `TrainingSettings` (Einheit, Standard-Pause, `WeightSteps` Langhantel/Kurzhantel), Einheitenwechsel nimmt Standardschritte mit; `ExerciseDraft.new`/`withEquipment`; `WorkoutFinisher` rundet auf die Schritte aus den Einstellungen
+  - Data: Trainings-Einstellungen im DataStore
+  - UI: Einstellungen nach `Einstellungen.html` (Sprache ab Android 13, Gewichtseinheit, Darstellung, Standard-Pause, Gewichtsschritte), Einstieg über das Regler-Icon auf „Heute“; Einheit app-weit über `LocalWeightUnit`
+  - Tests: Domain, DataStore, ViewModels
 
 ## Nächster Schritt
-- 10. Export/Import (A-08), Einstellungen (A-09): Einheit kg/lbs, Sprache, Standard-Pause, Gewichtsschritte, Theme-Wahl aus dem Showcase
+- 10b. Export/Import (A-08): JSON-Vollexport mit `schemaVersion`, Import (Restore), CSV der Sätze; Einstieg unter „Daten & Backup“ in den Einstellungen
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

@@ -10,7 +10,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.BuildConfig
 import io.github.wtfjb.aximo.R
+import io.github.wtfjb.aximo.ui.components.CircleIconButton
 import io.github.wtfjb.aximo.ui.components.PrimaryButton
+import io.github.wtfjb.aximo.ui.icons.AppIcons
 import io.github.wtfjb.aximo.ui.components.SecondaryButton
 import io.github.wtfjb.aximo.ui.today.RecentList
 import io.github.wtfjb.aximo.ui.today.TodayViewModel
@@ -27,13 +29,18 @@ fun TodayScreen(
     onOpenThemeShowcase: () -> Unit,
     onOpenCardio: (Long) -> Unit,
     onOpenFinishedWorkout: (Long) -> Unit,
+    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val next = state.nextRoutine
 
-    TabScreen(title = stringResource(R.string.nav_today), modifier = modifier.verticalScroll(rememberScrollState())) {
+    TabScreen(
+        title = stringResource(R.string.nav_today),
+        modifier = modifier.verticalScroll(rememberScrollState()),
+        action = { CircleIconButton(AppIcons.Settings, stringResource(R.string.settings_title), onOpenSettings) },
+    ) {
         when {
             state.hasActiveWorkout -> PrimaryButton(
                 text = stringResource(R.string.today_resume_workout),

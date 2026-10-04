@@ -4,6 +4,8 @@ import io.github.wtfjb.aximo.domain.model.Equipment
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.ExerciseType
 import io.github.wtfjb.aximo.domain.model.MuscleGroup
+import io.github.wtfjb.aximo.domain.settings.TrainingSettings
+import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 
 /** A problem with one field of the exercise form. */
@@ -49,6 +51,16 @@ data class ExerciseDraft(
             copy(secondaryMuscles = secondaryMuscles + muscle, primaryMuscles = primaryMuscles - muscle)
         }
 
+    /**
+     * Changes the equipment. An increment that is still the default step of the old
+     * equipment follows to the default of the new one (2.5 kg → 2 kg for dumbbells).
+     */
+    fun withEquipment(newEquipment: Equipment, steps: WeightSteps): ExerciseDraft {
+        val oldDefault = formatNumber(unit.fromKg(steps.forEquipment(equipment)))
+        val newIncrement = if (increment.trim() == oldDefault) formatNumber(unit.fromKg(steps.forEquipment(newEquipment))) else increment
+        return copy(equipment = newEquipment, increment = newIncrement)
+    }
+
     fun validate(): Set<ExerciseFieldError> {
         val errors = mutableSetOf<ExerciseFieldError>()
         if (name.isBlank()) errors += ExerciseFieldError.NAME_MISSING
@@ -82,6 +94,12 @@ data class ExerciseDraft(
     }
 
     companion object {
+        /** An empty form with the defaults from the settings (A-09). */
+        fun new(settings: TrainingSettings): ExerciseDraft {
+            val draft = ExerciseDraft(unit = settings.unit, restSeconds = settings.restSeconds.toString())
+            return draft.copy(increment = formatNumber(settings.unit.fromKg(settings.steps.forEquipment(draft.equipment))))
+        }
+
         /** Fills the form from a stored exercise. Fields the form doesn't show are kept by the caller. */
         fun from(exercise: Exercise, unit: WeightUnit = WeightUnit.KG) = ExerciseDraft(
             id = exercise.id,

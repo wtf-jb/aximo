@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.ui.today
 
+import io.github.wtfjb.aximo.ui.format.LocalWeightUnit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +21,6 @@ import io.github.wtfjb.aximo.domain.cardio.CardioActivities
 import io.github.wtfjb.aximo.domain.cardio.CardioMath
 import io.github.wtfjb.aximo.domain.cardio.PaceStyle
 import io.github.wtfjb.aximo.domain.recent.RecentItem
-import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.ui.cardio.formatKm
 import io.github.wtfjb.aximo.ui.cardio.formatSpeed
 import io.github.wtfjb.aximo.ui.exercises.label
@@ -55,6 +55,7 @@ fun RecentList(items: List<RecentItem>, onOpenCardio: (Long) -> Unit, onOpenWork
 @Composable
 private fun WorkoutRow(item: RecentItem.WorkoutItem, onClick: () -> Unit) {
     val minutes = (item.durationSec / 60).toInt()
+    val unit = LocalWeightUnit.current
     Surface(onClick = onClick, color = MaterialTheme.colorScheme.surface) {
         RecentRow(
             title = item.routineName ?: stringResource(R.string.today_recent_free),
@@ -63,7 +64,7 @@ private fun WorkoutRow(item: RecentItem.WorkoutItem, onClick: () -> Unit) {
                 formatShortDate(item.startedAt),
                 pluralStringResource(R.plurals.today_recent_minutes, minutes, minutes),
             ),
-            value = "${formatInteger(item.volumeKg)} ${stringResource(WeightUnit.KG.label())}",
+            value = "${formatInteger(unit.fromKg(item.volumeKg))} ${stringResource(unit.label())}",
         )
     }
 }

@@ -27,6 +27,7 @@ import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
 import io.github.wtfjb.aximo.ui.plans.PlansViewModel
 import io.github.wtfjb.aximo.ui.routine.RoutineEditViewModel
+import io.github.wtfjb.aximo.ui.settings.SettingsViewModel
 import io.github.wtfjb.aximo.ui.stats.StatsViewModel
 import io.github.wtfjb.aximo.ui.summary.SummaryViewModel
 import io.github.wtfjb.aximo.ui.today.TodayViewModel
@@ -49,7 +50,7 @@ val appModule = module {
     single { TimeSource.System }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
-    single { WorkoutFinisher(get(), get(), get(), get()) }
+    single { WorkoutFinisher(get(), get(), get(), get(), get()) }
     // One rest timer for the whole app; its scope lives as long as the app.
     single {
         RestTimerController(
@@ -60,7 +61,7 @@ val appModule = module {
     }
     viewModel { MainViewModel(get()) }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
-    viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), exerciseId) }
+    viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), get(), exerciseId) }
     viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), exerciseId) }
     viewModel { TodayViewModel(get(), get(), get(), get(), get()) }
     viewModel { (entryId: Long) ->
@@ -69,9 +70,10 @@ val appModule = module {
     }
     viewModel { PlansViewModel(get(), get(), get(), get()) }
     viewModel { (routineId: Long) -> RoutineEditViewModel(get(), get(), routineId) }
-    viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
     viewModel { StatsViewModel(get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get()) }
 }
 
 /** Display name of a default cardio activity, stored once when the activities are created. */

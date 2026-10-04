@@ -79,7 +79,12 @@ fun ExerciseEditScreen(
         }
 
         if (!state.loading) {
-            ExerciseForm(draft = state.draft, errors = state.errors, onChange = viewModel::onDraftChange)
+            ExerciseForm(
+                draft = state.draft,
+                errors = state.errors,
+                onChange = viewModel::onDraftChange,
+                onEquipmentChange = viewModel::onEquipmentChange,
+            )
             PrimaryButton(
                 text = stringResource(R.string.exercise_save),
                 onClick = viewModel::save,
@@ -95,6 +100,7 @@ private fun ExerciseForm(
     draft: ExerciseDraft,
     errors: Set<ExerciseFieldError>,
     onChange: ((ExerciseDraft) -> ExerciseDraft) -> Unit,
+    onEquipmentChange: (Equipment) -> Unit,
 ) {
     val sunken = MaterialTheme.colorScheme.surfaceContainerLow
 
@@ -122,7 +128,7 @@ private fun ExerciseForm(
                 ChoiceChip(
                     text = stringResource(equipment.label()),
                     selected = draft.equipment == equipment,
-                    onClick = { onChange { it.copy(equipment = equipment) } },
+                    onClick = { onEquipmentChange(equipment) },
                     unselectedColor = sunken,
                 )
             }

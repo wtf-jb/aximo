@@ -4,11 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
 import io.github.wtfjb.aximo.domain.exercise.ExerciseFieldError
+import io.github.wtfjb.aximo.domain.model.Equipment
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
+import io.github.wtfjb.aximo.domain.settings.SettingsRepository
+import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,25 +32,37 @@ data class ExerciseEditUiState(
 /** Create (exerciseId = 0) or edit an exercise. */
 class ExerciseEditViewModel(
     private val repository: ExerciseRepository,
+    private val settings: SettingsRepository,
     exerciseId: Long,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ExerciseEditUiState(isNew = exerciseId == 0L, loading = exerciseId != 0L))
+    private val _uiState = MutableStateFlow(ExerciseEditUiState(isNew = exerciseId == 0L, loading = true))
     val uiState: StateFlow<ExerciseEditUiState> = _uiState.asStateFlow()
 
     /** The stored version, to keep fields the form doesn't show (rounding step, catalog id). */
     private var original: Exercise? = null
 
+    /** Default steps from the settings, for the increment when the equipment changes. */
+    private var steps = TrainingSettings().steps
+
     init {
-        if (exerciseId != 0L) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            val training = settings.training.first()
+            steps = training.steps
+            if (exerciseId == 0L) {
+                _uiState.update { it.copy(draft = ExerciseDraft.new(training), loading = false) }
+            } else {
                 val stored = repository.getExercise(exerciseId)
                 original = stored
                 _uiState.update { state ->
-                    state.copy(draft = stored?.let { ExerciseDraft.from(it) } ?: state.draft, loading = false)
+                    state.copy(draft = stored?.let { ExerciseDraft.from(it, training.unit) } ?: state.draft, loading = false)
                 }
             }
         }
+    }
+
+    fun onEquipmentChange(equipment: Equipment) {
+        onDraftChange { it.withEquipment(equipment, steps) }
     }
 
     /** Applies a change from the form, e.g. `onDraftChange { it.copy(name = text) }`. */

@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.ui.workout
 
+import io.github.wtfjb.aximo.ui.settings.FakeSettingsRepository
 import io.github.wtfjb.aximo.domain.model.Equipment
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.ExerciseType
@@ -54,9 +55,10 @@ class WorkoutViewModelTest {
 
     // Lazy: viewModelScope must be created after MainDispatcherRule has replaced Dispatchers.Main.
     private val progression = FakeProgressionRepository()
-    private val finisher by lazy { io.github.wtfjb.aximo.domain.workout.WorkoutFinisher(workouts, routines, progression, time) }
+    private val settings = FakeSettingsRepository()
+    private val finisher by lazy { io.github.wtfjb.aximo.domain.workout.WorkoutFinisher(workouts, routines, progression, time, settings) }
     private val vm by lazy {
-        WorkoutViewModel(workouts, FakeExerciseRepository(listOf(bench, row)), routines, progression, finisher, time, restTimer)
+        WorkoutViewModel(workouts, FakeExerciseRepository(listOf(bench, row)), routines, progression, finisher, time, restTimer, settings)
     }
 
     private fun TestScope.started() {
