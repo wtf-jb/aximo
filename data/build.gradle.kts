@@ -38,7 +38,7 @@ dependencies {
     api(project(":domain"))
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.room.runtime)
+    api(libs.room.runtime) // api: :app builds the database (AximoDatabase extends RoomDatabase)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
