@@ -38,6 +38,10 @@ import io.github.wtfjb.aximo.ui.navigation.WorkoutRoute
 import io.github.wtfjb.aximo.ui.workout.PickedExercises
 import io.github.wtfjb.aximo.ui.workout.WorkoutScreen
 import io.github.wtfjb.aximo.ui.navigation.PlansRoute
+import io.github.wtfjb.aximo.ui.navigation.CatalogRoute
+import io.github.wtfjb.aximo.ui.catalog.CatalogScreen
+import io.github.wtfjb.aximo.ui.navigation.PlanGeneratorRoute
+import io.github.wtfjb.aximo.ui.plangen.PlanGeneratorScreen
 import io.github.wtfjb.aximo.ui.navigation.StatsRoute
 import io.github.wtfjb.aximo.ui.navigation.CoachRoute
 import io.github.wtfjb.aximo.ui.coach.CoachScreen
@@ -112,6 +116,13 @@ fun AximoAppShell(
                     onLogCardio = { navController.navigate(CardioRoute()) },
                     onOpenRoutine = { id -> navController.navigate(RoutineEditRoute(id)) },
                     onNewRoutine = { navController.navigate(RoutineEditRoute()) },
+                    onGeneratePlan = { navController.navigate(PlanGeneratorRoute) },
+                )
+            }
+            composable<PlanGeneratorRoute> {
+                PlanGeneratorScreen(
+                    onBack = { navController.popBackStack() },
+                    onDone = { navController.popBackStack() },
                 )
             }
             composable<CoachRoute> {
@@ -132,7 +143,11 @@ fun AximoAppShell(
                     onBack = { navController.popBackStack() },
                     onCreate = { navController.navigate(ExerciseEditRoute()) },
                     onOpen = { id -> navController.navigate(ExerciseDetailRoute(id)) },
+                    onOpenCatalog = { navController.navigate(CatalogRoute) },
                 )
+            }
+            composable<CatalogRoute> {
+                CatalogScreen(onBack = { navController.popBackStack() })
             }
             composable<WorkoutRoute> { entry ->
                 // Result of the exercise picker, handed over via the saved state of this entry.
@@ -186,6 +201,7 @@ fun AximoAppShell(
                     onBack = { navController.popBackStack() },
                     onCreate = { navController.navigate(ExerciseEditRoute()) },
                     onOpen = {},
+                    onOpenCatalog = { navController.navigate(CatalogRoute) },
                     selectionMode = true,
                     onPicked = { ids, superset ->
                         navController.previousBackStackEntry?.savedStateHandle?.apply {

@@ -612,4 +612,47 @@
         <item quantity="one">%d offener Vorschlag</item>
         <item quantity="other">%d offene Vorschläge</item>
     </plurals>
+
+    <!-- B-03 Plan-Generierung -->
+    <string name="plans_generate">Mit KI erstellen</string>
+    <string name="plangen_title">Plan mit KI</string>
+    <string name="plangen_intro">Sag dem Coach, was du willst. Er baut aus deinen Übungen Routinen und zeigt sie als Entwurf. Gespeichert wird erst nach deiner Bestätigung.</string>
+    <string name="plangen_goal">Ziel</string>
+    <string name="plangen_goal_strength">Kraft</string>
+    <string name="plangen_goal_hypertrophy">Muskelaufbau</string>
+    <string name="plangen_goal_general">Allgemeine Fitness</string>
+    <string name="plangen_days">Trainingstage pro Woche</string>
+    <string name="plangen_minutes">Zeit pro Einheit</string>
+    <string name="plangen_minutes_value">%1$d Min.</string>
+    <string name="plangen_equipment">Equipment</string>
+    <string name="plangen_restrictions">Einschränkungen</string>
+    <string name="plangen_restrictions_placeholder">z. B. linke Schulter schmerzt, keine Langhantel-Kniebeuge</string>
+    <string name="plangen_create">Plan erstellen</string>
+    <string name="plangen_running">Coach plant …</string>
+    <string name="plangen_draft">ENTWURF</string>
+    <string name="plangen_remove_routine">Entfernen</string>
+    <plurals name="plangen_save">
+        <item quantity="one">%d Routine speichern</item>
+        <item quantity="other">%d Routinen speichern</item>
+    </plurals>
+    <string name="plangen_save_hint">Die Routinen kommen ans Ende deiner Liste. Dort kannst du sie danach bearbeiten.</string>
+    <string name="plangen_again">Wünsche ändern</string>
+    <plurals name="plangen_dropped">
+        <item quantity="one">%d Eintrag der Antwort passte nicht und wurde weggelassen.</item>
+        <item quantity="other">%d Einträge der Antwort passten nicht und wurden weggelassen.</item>
+    </plurals>
+    <string name="plangen_notice_body">Für den Plan gehen deine Wünsche (Ziel, Tage, Zeit, Equipment, Text zu Einschränkungen) und die Namen deiner Übungen an deinen KI-Provider. Kein Trainingsverlauf, keine Notizen, keine Cardio- oder Gesundheitsdaten. Die Antwort ist nur ein Entwurf; gespeichert wird erst nach deiner Bestätigung.</string>
+    <string name="plangen_error_few_exercises">Zu wenige Übungen für dieses Equipment. Wähle mehr Equipment oder lege zuerst Übungen an.</string>
+    <string name="plangen_error_nothing_usable">Die Antwort enthielt keine brauchbare Routine. Versuch es nochmal.</string>
+
+    <!-- B-06 Übungskatalog -->
+    <string name="catalog_title">Übungskatalog</string>
+    <string name="catalog_open">Aus Katalog hinzufügen</string>
+    <string name="catalog_search">Katalog durchsuchen</string>
+    <string name="catalog_english_note">Namen und Anleitungen im Katalog sind englisch. Nach dem Hinzufügen kannst du eine Übung umbenennen.</string>
+    <string name="catalog_in_list">Schon in deiner Liste</string>
+    <string name="catalog_add">Zu meinen Übungen</string>
+    <string name="catalog_close">Schließen</string>
+    <string name="catalog_instructions">Anleitung</string>
+    <string name="exercises_badge_custom">EIGENE</string>
 </resources>

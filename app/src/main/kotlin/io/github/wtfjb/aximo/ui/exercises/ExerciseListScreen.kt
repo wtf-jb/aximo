@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -21,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,6 +63,7 @@ fun ExerciseListScreen(
     onBack: () -> Unit,
     onCreate: () -> Unit,
     onOpen: (Long) -> Unit,
+    onOpenCatalog: () -> Unit,
     selectionMode: Boolean = false,
     onPicked: (ids: List<Long>, superset: Boolean) -> Unit = { _, _ -> },
     viewModel: ExerciseListViewModel = koinViewModel(key = "exercises-$selectionMode") { parametersOf(selectionMode) },
@@ -73,6 +76,7 @@ fun ExerciseListScreen(
             viewModel = viewModel,
             onBack = onBack,
             onCreate = onCreate,
+            onOpenCatalog = onOpenCatalog,
             onRowClick = { id -> if (state.selectionMode) viewModel.onToggleSelected(id) else onOpen(id) },
         )
         if (state.selectionMode && state.selectedIds.isNotEmpty()) {
@@ -94,6 +98,7 @@ private fun ExerciseListContent(
     viewModel: ExerciseListViewModel,
     onBack: () -> Unit,
     onCreate: () -> Unit,
+    onOpenCatalog: () -> Unit,
     onRowClick: (Long) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -124,6 +129,14 @@ private fun ExerciseListContent(
                     onValueChange = viewModel::onQueryChange,
                     placeholder = stringResource(R.string.exercises_search),
                 )
+            }
+            TextButton(
+                onClick = onOpenCatalog,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+            ) {
+                Icon(AppIcons.Dumbbell, contentDescription = null, modifier = Modifier.size(Sizes.iconSmall))
+                Spacer(Modifier.size(Spacing.s6))
+                Text(text = stringResource(R.string.catalog_open), style = MaterialTheme.typography.labelLarge)
             }
         }
         if (state.hasAnyExercise) {
@@ -240,7 +253,22 @@ private fun ExerciseRow(exercise: Exercise, selectionMode: Boolean, selected: Bo
                 )
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
-                Text(text = exercise.name, style = MaterialTheme.typography.bodyMedium)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.s8)) {
+                    Text(text = exercise.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f, fill = false))
+                    if (exercise.catalogId == null) {
+                        Surface(
+                            shape = Radii.full,
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.exercises_badge_custom),
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = Spacing.s8, vertical = Spacing.s4),
+                            )
+                        }
+                    }
+                }
                 Text(
                     text = exerciseMeta(exercise),
                     style = MaterialTheme.typography.bodySmall,

@@ -2,6 +2,8 @@ package io.github.wtfjb.aximo.ui.exercisedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.catalog.CatalogRepository
+import io.github.wtfjb.aximo.domain.catalog.CatalogSearch
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -42,6 +45,8 @@ data class ExerciseDetailUiState(
     val suggestion: ProgressionState? = null,
     /** Working sets of the last session: how many sets the suggestion is for. */
     val lastWorkingSets: Int = 0,
+    /** Steps from the exercise library, if the exercise has an entry there (B-06). */
+    val instructions: List<String> = emptyList(),
     val tab: DetailTab = DetailTab.HISTORY,
 )
 
@@ -51,14 +56,20 @@ class ExerciseDetailViewModel(
     workouts: WorkoutRepository,
     routines: RoutineRepository,
     private val progression: ProgressionRepository,
+    catalog: CatalogRepository,
     private val exerciseId: Long,
 ) : ViewModel() {
 
     private val tab = MutableStateFlow(DetailTab.HISTORY)
     private val suggestion = MutableStateFlow<ProgressionState?>(null)
+    private val instructions = MutableStateFlow<List<String>>(emptyList())
 
     init {
         viewModelScope.launch { suggestion.value = progression.get(exerciseId) }
+        viewModelScope.launch {
+            val catalogId = exercises.observeExercises(includeArchived = true).first().firstOrNull { it.id == exerciseId }?.catalogId
+            instructions.value = CatalogSearch.entryFor(catalog.entries(), catalogId)?.instructions.orEmpty()
+        }
     }
 
     val uiState: StateFlow<ExerciseDetailUiState> = combine(
@@ -66,8 +77,8 @@ class ExerciseDetailViewModel(
         workouts.observeFinished(),
         routines.observeRoutines(),
         tab,
-        suggestion,
-    ) { allExercises, finished, routineList, tab, suggestion ->
+        combine(suggestion, instructions) { s, steps -> s to steps },
+    ) { allExercises, finished, routineList, tab, (suggestion, steps) ->
         val exercise = allExercises.firstOrNull { it.id == exerciseId }
         val metric = exercise?.let { ExerciseStats.metricFor(it.type) } ?: ProgressMetric.E1RM
         val sessions = ExerciseStats.sessions(finished, exerciseId)
@@ -84,6 +95,7 @@ class ExerciseDetailViewModel(
             repRecords = ExerciseStats.repRecords(sessions),
             suggestion = suggestion,
             lastWorkingSets = sessions.lastOrNull()?.let { ProgressionRules.workingSets(it.sets).size } ?: 0,
+            instructions = steps,
             tab = tab,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ExerciseDetailUiState())
