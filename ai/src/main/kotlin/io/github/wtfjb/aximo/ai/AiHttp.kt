@@ -7,9 +7,11 @@ import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -58,13 +60,22 @@ internal suspend fun HttpClient.postJson(
     body: String,
     headers: Map<String, String>,
     apiKey: String?,
-): String {
+): String = send(apiKey) {
+    post(url) {
+        headers.forEach { (name, value) -> header(name, value) }
+        contentType(ContentType.Application.Json)
+        setBody(body)
+    }
+}
+
+/** GETs [url] and returns the response text, with the same error handling as [postJson]. */
+internal suspend fun HttpClient.getJson(url: String, headers: Map<String, String>, apiKey: String?): String = send(apiKey) {
+    get(url) { headers.forEach { (name, value) -> header(name, value) } }
+}
+
+private suspend fun send(apiKey: String?, call: suspend () -> HttpResponse): String {
     try {
-        val response = post(url) {
-            headers.forEach { (name, value) -> header(name, value) }
-            contentType(ContentType.Application.Json)
-            setBody(body)
-        }
+        val response = call()
         val text = response.bodyAsText()
         if (!response.status.isSuccess()) throw statusError(response.status.value, text, apiKey)
         return text

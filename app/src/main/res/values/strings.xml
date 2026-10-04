@@ -545,11 +545,20 @@
     <string name="ai_profile_cleartext">Unencrypted connection (http). Only use within your own network or over a VPN like Tailscale.</string>
     <string name="ai_profile_test">Test connection</string>
     <string name="ai_profile_save">Save</string>
-    <string name="ai_profile_hint">For OpenAI-compatible services the base URL includes the version path, e.g. https://api.mistral.ai/v1 or https://openrouter.ai/api/v1. The test only sends a short “OK?”, no training data.</string>
+    <string name="ai_profile_hint">For OpenAI-compatible services the base URL includes the version path, e.g. https://api.mistral.ai/v1 or https://openrouter.ai/api/v1. The test only sends a short “OK?” and the model list only uses the key; neither sends training data.</string>
     <string name="ai_profile_error_name">Please enter a name.</string>
     <string name="ai_profile_error_url">Please enter a URL starting with http:// or https://.</string>
     <string name="ai_profile_error_model">Please enter a model.</string>
     <string name="ai_profile_error_key">Anthropic needs an API key.</string>
+    <string name="ai_models_choose">Choose model</string>
+    <string name="ai_models_loading">Loading models …</string>
+    <string name="ai_models_none">The provider reports no models. Type the name.</string>
+    <plurals name="ai_models_found">
+        <item quantity="one">%1$d model available, choose with the arrow</item>
+        <item quantity="other">%1$d models available, choose with the arrow</item>
+    </plurals>
+    <string name="ai_models_failed">Model list not loaded: %1$s You can type the name.</string>
+    <string name="ai_models_reload">Retry</string>
     <string name="ai_test_running">Testing …</string>
     <string name="ai_test_success">Connection OK.</string>
     <string name="ai_error_with_status" translatable="false">%1$s (HTTP %2$d)</string>

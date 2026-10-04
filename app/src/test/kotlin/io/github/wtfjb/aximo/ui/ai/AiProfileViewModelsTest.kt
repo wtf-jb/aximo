@@ -2,6 +2,7 @@ package io.github.wtfjb.aximo.ui.ai
 
 import io.github.wtfjb.aximo.domain.ai.AiConnectionTester
 import io.github.wtfjb.aximo.domain.ai.AiException
+import io.github.wtfjb.aximo.domain.ai.AiModelLister
 import io.github.wtfjb.aximo.domain.ai.AiProfileFieldError
 import io.github.wtfjb.aximo.domain.ai.AiProvider
 import io.github.wtfjb.aximo.domain.ai.AiProviderKind
@@ -13,6 +14,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -39,7 +42,15 @@ class AiProfileViewModelsTest {
         }
     }
 
-    private fun editVm(id: Long = 0) = AiProfileEditViewModel(repo, tester, id)
+    /** Records model list requests and answers with [models]. */
+    private val modelRequests = mutableListOf<Triple<AiProviderKind, String, String?>>()
+    private var models: suspend () -> List<String> = { listOf("mistral-large-latest", "mistral-small-latest") }
+    private val lister = AiModelLister { kind, url, key ->
+        modelRequests += Triple(kind, url, key)
+        models()
+    }
+
+    private fun editVm(id: Long = 0, debounce: Long = 0) = AiProfileEditViewModel(repo, tester, lister, id, debounce)
 
     @Test
     fun createsProfileWithKey() = runTest(UnconfinedTestDispatcher()) {
@@ -168,5 +179,85 @@ class AiProfileViewModelsTest {
         vm.setActive(second)
         assertEquals(second, vm.uiState.value.activeId)
         assertEquals(listOf("A", "B"), vm.uiState.value.profiles.map { it.name })
+    }
+
+    @Test
+    fun modelsLoadOnceUrlIsThere() = runTest(UnconfinedTestDispatcher()) {
+        val vm = editVm()
+        vm.setModel("x")
+        assertEquals(ModelListState.Idle, vm.uiState.value.models)
+        assertTrue(modelRequests.isEmpty())
+
+        vm.setBaseUrl("https://api.mistral.ai/v1")
+
+        assertEquals(ModelListState.Loaded(listOf("mistral-large-latest", "mistral-small-latest")), vm.uiState.value.models)
+        assertEquals(Triple(AiProviderKind.OPENAI_COMPATIBLE, "https://api.mistral.ai/v1", null), modelRequests.single())
+
+        vm.setApiKey("sk")
+        assertEquals("sk", modelRequests.last().third)
+
+        vm.setBaseUrl("not a url")
+        assertEquals(ModelListState.Idle, vm.uiState.value.models)
+    }
+
+    @Test
+    fun anthropicNeedsAKeyBeforeLoading() = runTest(UnconfinedTestDispatcher()) {
+        val vm = editVm()
+        vm.setKind(AiProviderKind.ANTHROPIC)
+        assertEquals(ModelListState.Idle, vm.uiState.value.models)
+        assertTrue(modelRequests.isEmpty())
+
+        vm.setApiKey("sk-ant")
+
+        assertEquals(Triple(AiProviderKind.ANTHROPIC, "https://api.anthropic.com", "sk-ant"), modelRequests.single())
+    }
+
+    @Test
+    fun existingProfileLoadsWithStoredKey() = runTest(UnconfinedTestDispatcher()) {
+        val id = repo.saveProfile(FakeAiProfileRepository.profile("Mistral"), ApiKeyChange.Set("stored"))
+
+        val vm = editVm(id)
+
+        assertEquals("stored", modelRequests.single().third)
+        assertTrue(vm.uiState.value.models is ModelListState.Loaded)
+    }
+
+    @Test
+    fun pickingAModelOnlySetsTheField() = runTest(UnconfinedTestDispatcher()) {
+        val vm = editVm()
+        vm.setBaseUrl("https://api.mistral.ai/v1")
+
+        vm.setModel("mistral-small-latest")
+
+        assertEquals("mistral-small-latest", vm.uiState.value.draft.model)
+        assertEquals(1, modelRequests.size) // choosing a model does not reload the list
+    }
+
+    @Test
+    fun failureCanBeRetried() = runTest(UnconfinedTestDispatcher()) {
+        models = { throw AiException(AiException.Reason.UNAUTHORIZED, 401, "bad key") }
+        val vm = editVm()
+        vm.setBaseUrl("https://api.mistral.ai/v1")
+        assertEquals(ModelListState.Failed(AiException.Reason.UNAUTHORIZED, 401, "bad key"), vm.uiState.value.models)
+
+        models = { listOf("a") }
+        vm.reloadModels()
+
+        assertEquals(ModelListState.Loaded(listOf("a")), vm.uiState.value.models)
+    }
+
+    @Test
+    fun typingIsDebounced() = runTest {
+        val vm = editVm(debounce = AiProfileEditViewModel.MODEL_DEBOUNCE_MILLIS)
+
+        vm.setBaseUrl("https://api.mistral.ai/v")
+        advanceTimeBy(AiProfileEditViewModel.MODEL_DEBOUNCE_MILLIS / 2)
+        vm.setBaseUrl("https://api.mistral.ai/v1")
+        advanceTimeBy(AiProfileEditViewModel.MODEL_DEBOUNCE_MILLIS / 2)
+        assertTrue(modelRequests.isEmpty())
+
+        advanceUntilIdle()
+
+        assertEquals("https://api.mistral.ai/v1", modelRequests.single().second)
     }
 }

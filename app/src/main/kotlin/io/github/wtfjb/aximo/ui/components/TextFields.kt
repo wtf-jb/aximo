@@ -81,6 +81,8 @@ fun LabeledTextField(
     placeholder: String = "",
     /** Hides the text and turns off suggestions (API keys). */
     secret: Boolean = false,
+    /** Optional control at the end of the field, e.g. a dropdown arrow. */
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.s6)) {
         Text(
@@ -88,33 +90,36 @@ fun LabeledTextField(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = Sizes.input)
                 .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .padding(horizontal = Spacing.s14, vertical = Spacing.s12),
-            contentAlignment = Alignment.CenterStart,
+                .padding(start = Spacing.s14, end = if (trailing == null) Spacing.s14 else Spacing.s4),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            InputText(
-                value = value,
-                onValueChange = onValueChange,
-                placeholder = placeholder,
-                singleLine = singleLine,
-                visualTransformation = if (secret) PasswordVisualTransformation() else VisualTransformation.None,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = if (secret) KeyboardType.Password else keyboardType,
-                    autoCorrectEnabled = !secret,
-                    capitalization = if (keyboardType == KeyboardType.Text && !secret) {
-                        KeyboardCapitalization.Sentences
-                    } else {
-                        KeyboardCapitalization.None
-                    },
-                    imeAction = if (singleLine) ImeAction.Next else ImeAction.Default,
-                ),
-                modifier = Modifier.fillMaxWidth().semantics { contentDescription = label },
-            )
+            Box(modifier = Modifier.weight(1f).padding(vertical = Spacing.s12), contentAlignment = Alignment.CenterStart) {
+                InputText(
+                    value = value,
+                    onValueChange = onValueChange,
+                    placeholder = placeholder,
+                    singleLine = singleLine,
+                    visualTransformation = if (secret) PasswordVisualTransformation() else VisualTransformation.None,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = if (secret) KeyboardType.Password else keyboardType,
+                        autoCorrectEnabled = !secret,
+                        capitalization = if (keyboardType == KeyboardType.Text && !secret) {
+                            KeyboardCapitalization.Sentences
+                        } else {
+                            KeyboardCapitalization.None
+                        },
+                        imeAction = if (singleLine) ImeAction.Next else ImeAction.Default,
+                    ),
+                    modifier = Modifier.fillMaxWidth().semantics { contentDescription = label },
+                )
+            }
+            trailing?.invoke()
         }
         if (error != null) {
             Text(

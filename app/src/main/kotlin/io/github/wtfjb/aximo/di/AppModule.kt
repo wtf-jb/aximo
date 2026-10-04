@@ -10,6 +10,8 @@ import io.github.wtfjb.aximo.domain.chat.ChatService
 import io.github.wtfjb.aximo.ui.coach.ChatViewModel
 import io.github.wtfjb.aximo.ai.AiHttp
 import io.github.wtfjb.aximo.ai.KtorAiProviderFactory
+import io.github.wtfjb.aximo.ai.KtorModelLister
+import io.github.wtfjb.aximo.domain.ai.AiModelLister
 import io.github.wtfjb.aximo.ai.KtorLoggingGenerator
 import io.github.wtfjb.aximo.ai.KtorPlanGenerator
 import io.github.wtfjb.aximo.ai.LoggingPrompt
@@ -103,6 +105,7 @@ val appModule = module {
     single { AiHttp.client(OkHttp.create()) }
     single<AiProviderFactory> { KtorAiProviderFactory(get()) }
     single { AiConnectionTester(get()) }
+    single<AiModelLister> { KtorModelLister(get()) }
     single<AiReviewRepository> { RoomAiReviewRepository(get<AximoDatabase>().aiReviewDao()) }
     single<ReviewGenerator> { KtorReviewGenerator() }
     single<AiPreferences> { DataStoreAiPreferences(androidContext()) }
@@ -192,7 +195,7 @@ val appModule = module {
     viewModel { StatsViewModel(get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) { ReviewPrompt.prettyContext(it) } }
     viewModel { AiProfilesViewModel(get()) }
-    viewModel { (profileId: Long) -> AiProfileEditViewModel(get(), get(), profileId) }
+    viewModel { (profileId: Long) -> AiProfileEditViewModel(get(), get(), get(), profileId) }
 }
 
 /** Display name of a default cardio activity, stored once when the activities are created. */
