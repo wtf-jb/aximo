@@ -76,3 +76,7 @@ fun formatShortWeekday(date: kotlinx.datetime.LocalDate, locale: Locale = Locale
     val javaDate = java.time.LocalDate.of(date.year, date.month.ordinal + 1, date.day)
     return javaDate.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, locale).removeSuffix(".")
 }
+
+/** RPE with the locale's decimal separator: 8.5 → "8,5" in German, 8.0 → "8". */
+fun formatRpe(rpe: Double, locale: Locale = Locale.getDefault()): String =
+    localizeDecimal(ExerciseDraft.formatNumber(rpe), locale)

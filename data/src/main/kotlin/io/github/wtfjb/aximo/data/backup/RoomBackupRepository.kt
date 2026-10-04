@@ -22,6 +22,7 @@ import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.SetRating
 import kotlin.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
@@ -196,7 +197,7 @@ private fun CardioRow.toEntity() = CardioEntryEntity(
     enumValueOf(source), externalId,
 )
 
-private fun TrainingSettings.toRow() = SettingsRow(unit.name, restSeconds, steps.barbellKg, steps.dumbbellKg)
+private fun TrainingSettings.toRow() = SettingsRow(unit.name, restSeconds, steps.barbellKg, steps.dumbbellKg, rating.name)
 
 /** Invalid settings in a file are skipped; the data is what matters. */
 private fun SettingsRow.toSettings(): TrainingSettings? = runCatching {
@@ -204,5 +205,6 @@ private fun SettingsRow.toSettings(): TrainingSettings? = runCatching {
         unit = enumValueOf<WeightUnit>(weightUnit),
         restSeconds = restSeconds,
         steps = WeightSteps(stepBarbellKg, stepDumbbellKg),
+        rating = enumValueOf<SetRating>(setRating),
     )
 }.getOrNull()

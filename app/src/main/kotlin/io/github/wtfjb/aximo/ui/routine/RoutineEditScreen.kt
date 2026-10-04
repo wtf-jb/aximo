@@ -48,6 +48,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.R
+import io.github.wtfjb.aximo.domain.workout.Effort
+import io.github.wtfjb.aximo.domain.workout.SetRating
+import io.github.wtfjb.aximo.ui.format.LocalSetRating
+import io.github.wtfjb.aximo.ui.format.formatRpe
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
 import io.github.wtfjb.aximo.ui.components.CircleIconButton
@@ -336,11 +340,11 @@ private fun EntryRow(
     }
 }
 
-/** "3 × 6–8 · RIR 2 · Pause 2:30" */
+/** "3 × 6–8 · RIR 2 · Pause 2:30" (or "RPE 8" with the RPE scale) */
 @Composable
 private fun entryMeta(entry: RoutineExercise, exercise: Exercise?, showRest: Boolean): String {
     val parts = mutableListOf(stringResource(R.string.routine_target, entry.targetSets, entry.repMin, entry.repMax))
-    entry.targetRir?.let { parts += stringResource(R.string.routine_target_rir, it) }
+    entry.targetRir?.let { parts += targetEffort(it) }
     if (showRest && exercise != null && exercise.restSeconds > 0) {
         parts += stringResource(R.string.routine_rest, formatRest(exercise.restSeconds))
     }
@@ -418,3 +422,12 @@ private fun AddExerciseButton(onClick: () -> Unit) {
         }
     }
 }
+
+/** Target RIR of a routine exercise in the chosen scale: "RIR 2" or "RPE 8". Targets are stored as RIR. */
+@Composable
+fun targetEffort(rir: Int): String =
+    if (LocalSetRating.current == SetRating.RPE) {
+        stringResource(R.string.routine_target_rpe, formatRpe(Effort.rpeFromRir(rir)))
+    } else {
+        stringResource(R.string.routine_target_rir, rir)
+    }

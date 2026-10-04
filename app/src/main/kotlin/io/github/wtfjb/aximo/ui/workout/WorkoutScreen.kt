@@ -36,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.R
+import io.github.wtfjb.aximo.domain.workout.Effort
+import io.github.wtfjb.aximo.ui.format.formatRpe
 import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.workout.WorkoutExerciseDetail
@@ -198,14 +200,19 @@ fun WorkoutScreen(
             SetField.WEIGHT -> stringResource(R.string.workout_field_weight, label) to
                 localizeDecimal(ExerciseDraft.formatNumber(state.unit.fromKg(edit.set.weightKg)))
             SetField.REPS -> stringResource(R.string.workout_field_reps, label) to edit.set.reps.toString()
-            SetField.RIR -> stringResource(R.string.workout_field_rir, label) to (edit.set.rir?.toString() ?: "")
+            SetField.RIR -> stringResource(R.string.workout_field_rir, label) to (Effort.rir(edit.set)?.toString() ?: "")
+            SetField.RPE -> stringResource(R.string.workout_field_rpe, label) to (Effort.rpe(edit.set)?.let { formatRpe(it) } ?: "")
         }
         NumberEntryDialog(
             title = title,
             initial = initial,
-            step = if (edit.field == SetField.WEIGHT) state.unit.fromKg(edit.detail.exercise.incrementKg).takeIf { it > 0 } ?: 1.0 else 1.0,
-            decimal = edit.field == SetField.WEIGHT,
-            allowEmpty = edit.field == SetField.RIR,
+            step = when (edit.field) {
+                SetField.WEIGHT -> state.unit.fromKg(edit.detail.exercise.incrementKg).takeIf { it > 0 } ?: 1.0
+                SetField.RPE -> RPE_STEP
+                else -> 1.0
+            },
+            decimal = edit.field == SetField.WEIGHT || edit.field == SetField.RPE,
+            allowEmpty = edit.field == SetField.RIR || edit.field == SetField.RPE,
             onConfirm = { text ->
                 viewModel.editSet(edit.set, edit.field, text)
                 editing = null
@@ -243,3 +250,6 @@ fun WorkoutScreen(
 
 /** A set value being edited in the number dialog. */
 private data class SetEditing(val detail: WorkoutExerciseDetail, val set: SetEntry, val field: SetField)
+
+/** RPE is entered in half points. */
+private const val RPE_STEP = 0.5

@@ -3,6 +3,7 @@ package io.github.wtfjb.aximo.domain.settings
 import io.github.wtfjb.aximo.domain.model.Equipment
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.SetRating
 
 /**
  * Default weight steps (A-09), in kg. [dumbbellKg] applies to dumbbells, [barbellKg]
@@ -26,11 +27,15 @@ data class WeightSteps(val barbellKg: Double, val dumbbellKg: Double) {
     }
 }
 
-/** Training settings (A-09). Weights are stored in kg; [unit] only changes the display. */
+/**
+ * Training settings (A-09). Weights are stored in kg; [unit] only changes the display.
+ * [rating] is the scale for set effort (A-02).
+ */
 data class TrainingSettings(
     val unit: WeightUnit = WeightUnit.KG,
     val restSeconds: Int = Exercise.DEFAULT_REST_SECONDS,
     val steps: WeightSteps = WeightSteps.standard(unit),
+    val rating: SetRating = SetRating.RIR,
 ) {
     init {
         require(restSeconds >= 0) { "restSeconds must not be negative" }

@@ -4,6 +4,7 @@ import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.SetRating
 import io.github.wtfjb.aximo.domain.backup.BackupException
 import io.github.wtfjb.aximo.domain.backup.SetsCsv
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
@@ -58,7 +59,9 @@ class SettingsViewModelTest {
 
         vm.setRestSeconds(180)
         vm.setThemeMode(ThemeMode.DARK)
+        vm.setRating(SetRating.RPE)
 
+        assertEquals(SetRating.RPE, settings.training.value.rating)
         assertEquals(180, settings.training.value.restSeconds)
         assertEquals(ThemeMode.DARK, vm.uiState.value.themeMode)
     }

@@ -136,6 +136,17 @@ class WorkoutViewModelTest {
         vm.editSet(edited, SetField.RIR, "")
         edited = vm.uiState.value.workout!!.exercises.single().sets[0]
         assertNull(edited.rir)
+
+        // RPE replaces RIR and the other way round; out of range is ignored.
+        vm.editSet(edited, SetField.RPE, "8,5")
+        edited = vm.uiState.value.workout!!.exercises.single().sets[0]
+        assertEquals(8.5, edited.rpe!!, 0.0)
+        vm.editSet(edited, SetField.RPE, "11")
+        assertEquals(8.5, vm.uiState.value.workout!!.exercises.single().sets[0].rpe!!, 0.0)
+        vm.editSet(edited, SetField.RIR, "1")
+        edited = vm.uiState.value.workout!!.exercises.single().sets[0]
+        assertEquals(1, edited.rir)
+        assertNull(edited.rpe)
     }
 
     @Test

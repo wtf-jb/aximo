@@ -19,6 +19,7 @@ import io.github.wtfjb.aximo.domain.rest.RestTimerLogic
 import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.Effort
 import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
 import io.github.wtfjb.aximo.domain.workout.WorkoutExerciseDetail
 import io.github.wtfjb.aximo.domain.workout.WorkoutFinisher
@@ -85,7 +86,7 @@ private data class ExerciseHistory(
 )
 
 /** Which value of a set is being edited. */
-enum class SetField { WEIGHT, REPS, RIR }
+enum class SetField { WEIGHT, REPS, RIR, RPE }
 
 /** The running workout (A-02) with its rest timer (A-03). */
 class WorkoutViewModel(
@@ -212,15 +213,20 @@ class WorkoutViewModel(
 
     fun skipRest() = restTimer.stop()
 
-    /** Applies a typed value. Invalid input is ignored; an empty RIR clears it. */
+    /** Applies a typed value. Invalid input is ignored; an empty RIR or RPE clears it. */
     fun editSet(set: SetEntry, field: SetField, text: String) {
         val changed = when (field) {
             SetField.WEIGHT -> ExerciseDraft.parseNumber(text)?.let { set.copy(weightKg = uiState.value.unit.toKg(it)) }
             SetField.REPS -> text.trim().toIntOrNull()?.takeIf { it >= 0 }?.let { set.copy(reps = it) }
             SetField.RIR -> if (text.isBlank()) {
-                set.copy(rir = null)
+                Effort.withRir(set, null)
             } else {
-                text.trim().toIntOrNull()?.takeIf { it >= 0 }?.let { set.copy(rir = it) }
+                text.trim().toIntOrNull()?.takeIf { it >= 0 }?.let { Effort.withRir(set, it) }
+            }
+            SetField.RPE -> if (text.isBlank()) {
+                Effort.withRpe(set, null)
+            } else {
+                Effort.parseRpe(text)?.let { Effort.withRpe(set, it) }
             }
         }
         if (changed != null) update(changed)

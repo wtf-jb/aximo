@@ -46,6 +46,12 @@ class ProgressionRulesTest {
     }
 
     @Test
+    fun rpeIsReadAsRir() {
+        assertEquals(ProgressionReason.INCREASE_WEIGHT, eval(bench, listOf(s(80.0, 8).copy(rpe = 9.0), s(80.0, 8).copy(rpe = 8.0)))!!.reason)
+        assertEquals(ProgressionReason.HOLD, eval(bench, listOf(s(80.0, 8).copy(rpe = 9.5), s(80.0, 8).copy(rpe = 8.0)))!!.reason)
+    }
+
+    @Test
     fun oneSetShortHoldsWithOneMoreRepAsTarget() {
         val state = eval(bench, listOf(s(80.0, 8), s(80.0, 8), s(80.0, 6)))!!
         assertEquals(ProgressionReason.HOLD, state.reason)

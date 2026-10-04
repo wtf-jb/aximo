@@ -14,12 +14,16 @@ import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.Effort
+import io.github.wtfjb.aximo.domain.workout.SetRating
+import io.github.wtfjb.aximo.ui.format.LocalSetRating
+import io.github.wtfjb.aximo.ui.format.formatRpe
 import io.github.wtfjb.aximo.ui.format.formatSetValue
 import io.github.wtfjb.aximo.ui.theme.Radii
 import io.github.wtfjb.aximo.ui.theme.Sizes
 import io.github.wtfjb.aximo.ui.theme.Spacing
 
-/** A logged set in a history ("82,5 × 8 · R2"); warm-ups in accent-container with "W". */
+/** A logged set in a history ("82,5 × 8 · R2" or "· @8"); warm-ups in accent-container with "W". */
 @Composable
 fun SetChip(set: SetEntry, bodyweight: Boolean, unit: WeightUnit, modifier: Modifier = Modifier) {
     val warmUp = set.setType == SetType.WARM_UP
@@ -30,7 +34,11 @@ fun SetChip(set: SetEntry, bodyweight: Boolean, unit: WeightUnit, modifier: Modi
         SetType.FAILURE -> "${stringResource(R.string.workout_set_badge_failure)} $text"
         SetType.WORKING -> text
     }
-    set.rir?.let { text = stringResource(R.string.exercise_detail_set_rir, text, it) }
+    if (LocalSetRating.current == SetRating.RPE) {
+        Effort.rpe(set)?.let { text = stringResource(R.string.exercise_detail_set_rpe, text, formatRpe(it)) }
+    } else {
+        Effort.rir(set)?.let { text = stringResource(R.string.exercise_detail_set_rir, text, it) }
+    }
     Surface(
         shape = Radii.sm,
         color = if (warmUp) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow,

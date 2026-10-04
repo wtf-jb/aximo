@@ -13,6 +13,7 @@ import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.SetRating
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -58,6 +59,8 @@ class SettingsViewModel(
     fun setUnit(unit: WeightUnit) = updateTraining { it.withUnit(unit) }
 
     fun setRestSeconds(seconds: Int) = updateTraining { it.copy(restSeconds = seconds) }
+
+    fun setRating(rating: SetRating) = updateTraining { it.copy(rating = rating) }
 
     /**
      * Steps as typed in the display unit ("2,5", "2"). Returns false and changes

@@ -5,6 +5,7 @@ import io.github.wtfjb.aximo.data.settings.DataStoreSettingsRepository
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.SetRating
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -18,7 +19,7 @@ class SettingsRepositoryTest {
     @Test
     fun trainingSettingsAreStoredAndReadBack() = runTest {
         val repository = DataStoreSettingsRepository(RuntimeEnvironment.getApplication())
-        val settings = TrainingSettings(restSeconds = 150, steps = WeightSteps(1.25, 1.0)).withUnit(WeightUnit.LBS)
+        val settings = TrainingSettings(restSeconds = 150, steps = WeightSteps(1.25, 1.0), rating = SetRating.RPE).withUnit(WeightUnit.LBS)
 
         repository.setTraining(settings)
 

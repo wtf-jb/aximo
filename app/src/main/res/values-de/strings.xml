@@ -407,7 +407,7 @@
     <string name="settings_steps_value">%1$s %3$s · KH %2$s %3$s</string>
     <string name="settings_steps_barbell">Langhantel und Rest (%1$s)</string>
     <string name="settings_steps_dumbbell">Kurzhanteln (%1$s)</string>
-    <string name="settings_training_hint">Standard-Pause und Gewichtsschritte gelten für neue Übungen. Progressionsvorschläge werden auf die Gewichtsschritte gerundet.</string>
+    <string name="settings_training_hint">Standard-Pause und Gewichtsschritte gelten für neue Übungen. Progressionsvorschläge werden auf die Gewichtsschritte gerundet. Satzbewertung: RIR = Wdh. in Reserve, RPE = Anstrengung von 1 bis 10 (RPE 8 = noch 2 Wdh.).</string>
     <string name="settings_section_data">DATEN &amp; BACKUP</string>
     <string name="settings_export_json">Export JSON</string>
     <string name="settings_export_csv">Export CSV</string>
@@ -441,4 +441,10 @@
     </plurals>
     <string name="today_week_day_strength">%1$s: Kraft</string>
     <string name="today_week_day_cardio">%1$s: Cardio</string>
+    <string name="workout_col_rpe">RPE</string>
+    <string name="workout_field_rpe">RPE · Satz %1$s</string>
+    <string name="routine_target_rpe">RPE %1$s</string>
+    <string name="exercise_detail_set_rpe">%1$s · @%2$s</string>
+    <string name="detail_set_chip_rpe">%1$s × %2$d · @%3$s</string>
+    <string name="settings_rating">Satzbewertung</string>
 </resources>

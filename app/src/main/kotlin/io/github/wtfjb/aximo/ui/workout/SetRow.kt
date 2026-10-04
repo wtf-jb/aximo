@@ -30,6 +30,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import io.github.wtfjb.aximo.R
+import io.github.wtfjb.aximo.domain.workout.Effort
+import io.github.wtfjb.aximo.domain.workout.SetRating
+import io.github.wtfjb.aximo.ui.format.LocalSetRating
+import io.github.wtfjb.aximo.ui.format.formatRpe
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.ui.components.semanticsDescription
@@ -42,7 +46,7 @@ import io.github.wtfjb.aximo.ui.theme.extendedColors
 /** Visual state of a set row (design-system.md, SetRow). */
 enum class SetRowState { DONE, ACTIVE, OPEN }
 
-/** Column headers above the set rows: SATZ · KG · WDH · RIR. */
+/** Column headers above the set rows: SATZ · KG · WDH · RIR (or RPE). */
 @Composable
 fun SetHeader(weightLabel: String) {
     val style = MaterialTheme.typography.labelSmall
@@ -51,14 +55,16 @@ fun SetHeader(weightLabel: String) {
         Text(stringResource(R.string.workout_col_set), Modifier.width(Sizes.setNumberColumn), color, style = style, textAlign = TextAlign.Center)
         Text(weightLabel, Modifier.weight(1f), color, style = style, textAlign = TextAlign.Center)
         Text(stringResource(R.string.workout_col_reps), Modifier.weight(1f), color, style = style, textAlign = TextAlign.Center)
-        Text(stringResource(R.string.workout_col_rir), Modifier.width(Sizes.setRirColumn), color, style = style, textAlign = TextAlign.Center)
+        val effort = if (LocalSetRating.current == SetRating.RPE) R.string.workout_col_rpe else R.string.workout_col_rir
+        Text(stringResource(effort), Modifier.width(Sizes.setRirColumn), color, style = style, textAlign = TextAlign.Center)
         Box(Modifier.width(Sizes.touch))
     }
 }
 
 /**
- * One set: number or type badge, weight, reps, RIR, check button.
- * Values open the number entry, the number opens the set menu.
+ * One set: number or type badge, weight, reps, RIR or RPE (from the settings; the
+ * other scale is converted), check button. Values open the number entry, the
+ * number opens the set menu.
  */
 @Composable
 fun SetRow(
@@ -92,11 +98,13 @@ fun SetRow(
         SetNumberCell(set = set, label = label, state = state, onSetType = onSetType, onDelete = onDelete)
         ValueCell(weightText, state, highlight = true, onClick = { onEdit(SetField.WEIGHT) }, modifier = Modifier.weight(1f))
         ValueCell(set.reps.toString(), state, highlight = true, onClick = { onEdit(SetField.REPS) }, modifier = Modifier.weight(1f))
+        val rpeScale = LocalSetRating.current == SetRating.RPE
+        val effort = if (rpeScale) Effort.rpe(set)?.let { formatRpe(it) } else Effort.rir(set)?.toString()
         ValueCell(
-            text = set.rir?.toString() ?: "–",
+            text = effort ?: "–",
             state = state,
             highlight = false,
-            onClick = { onEdit(SetField.RIR) },
+            onClick = { onEdit(if (rpeScale) SetField.RPE else SetField.RIR) },
             modifier = Modifier.width(Sizes.setRirColumn),
         )
         Box(modifier = Modifier.width(Sizes.touch), contentAlignment = Alignment.Center) {
