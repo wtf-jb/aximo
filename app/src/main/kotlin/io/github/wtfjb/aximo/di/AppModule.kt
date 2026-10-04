@@ -3,7 +3,14 @@ package io.github.wtfjb.aximo.di
 import io.github.wtfjb.aximo.MainViewModel
 import io.github.wtfjb.aximo.ai.AiHttp
 import io.github.wtfjb.aximo.ai.KtorAiProviderFactory
+import io.github.wtfjb.aximo.ai.KtorLoggingGenerator
 import io.github.wtfjb.aximo.ai.KtorPlanGenerator
+import io.github.wtfjb.aximo.ai.LoggingPrompt
+import io.github.wtfjb.aximo.domain.logging.LoggingGenerator
+import io.github.wtfjb.aximo.domain.logging.LoggingService
+import io.github.wtfjb.aximo.domain.logging.SpeechInput
+import io.github.wtfjb.aximo.speech.AndroidSpeechInput
+import io.github.wtfjb.aximo.ui.logging.LoggingViewModel
 import io.github.wtfjb.aximo.catalog.AssetCatalogRepository
 import io.github.wtfjb.aximo.domain.catalog.CatalogRepository
 import io.github.wtfjb.aximo.ui.catalog.CatalogViewModel
@@ -96,6 +103,9 @@ val appModule = module {
     single<PlanGenerator> { KtorPlanGenerator() }
     single<CatalogRepository> { AssetCatalogRepository(androidContext()) }
     single { PlanService(get(), get(), get(), get(), get()) }
+    single<LoggingGenerator> { KtorLoggingGenerator() }
+    single<SpeechInput> { AndroidSpeechInput(androidContext()) }
+    single { LoggingService(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
     single {
@@ -144,8 +154,18 @@ val appModule = module {
             formatInput = { PlanPrompt.prettyInput(it) },
         )
     }
+    viewModel {
+        val context = androidContext()
+        LoggingViewModel(
+            service = get(),
+            preferences = get(),
+            speech = get(),
+            language = { context.resources.configuration.locales[0].toLanguageTag() },
+            formatInput = { LoggingPrompt.prettyInput(it) },
+        )
+    }
     viewModel { (routineId: Long) -> RoutineEditViewModel(get(), get(), routineId) }
-    viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
     viewModel { StatsViewModel(get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) { ReviewPrompt.prettyContext(it) } }

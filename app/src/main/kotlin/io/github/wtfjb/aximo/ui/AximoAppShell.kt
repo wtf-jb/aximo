@@ -35,6 +35,8 @@ import io.github.wtfjb.aximo.ui.settings.SettingsScreen
 import io.github.wtfjb.aximo.ui.summary.SummaryScreen
 import io.github.wtfjb.aximo.ui.routine.RoutineEditScreen
 import io.github.wtfjb.aximo.ui.navigation.WorkoutRoute
+import io.github.wtfjb.aximo.ui.navigation.LoggingRoute
+import io.github.wtfjb.aximo.ui.logging.LoggingScreen
 import io.github.wtfjb.aximo.ui.workout.PickedExercises
 import io.github.wtfjb.aximo.ui.workout.WorkoutScreen
 import io.github.wtfjb.aximo.ui.navigation.PlansRoute
@@ -161,12 +163,19 @@ fun AximoAppShell(
                         handle.remove<Boolean>(PICKED_SUPERSET)
                     },
                     onAddExercise = { navController.navigate(ExercisePickerRoute) },
+                    onLogText = { navController.navigate(LoggingRoute) },
                     onClose = { navController.popBackStack() },
                     onFinished = { workoutId ->
                         navController.navigate(SummaryRoute(workoutId)) {
                             popUpTo<WorkoutRoute> { inclusive = true }
                         }
                     },
+                )
+            }
+            composable<LoggingRoute> {
+                LoggingScreen(
+                    onBack = { navController.popBackStack() },
+                    onDone = { navController.popBackStack() },
                 )
             }
             composable<CardioRoute> { entry ->

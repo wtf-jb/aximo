@@ -13,6 +13,11 @@
          Everything else works offline; without a profile nothing goes over the network. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Logging by voice (B-04): asked at the first tap on the microphone. Recognition runs
+         on the device only; without an on-device recognizer the microphone is not offered. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
     <application
         android:name=".AximoApplication"
         android:allowBackup="true"

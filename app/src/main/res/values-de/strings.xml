@@ -655,4 +655,40 @@
     <string name="catalog_close">Schließen</string>
     <string name="catalog_instructions">Anleitung</string>
     <string name="exercises_badge_custom">EIGENE</string>
+
+    <!-- Erfassen per Text oder Sprache (B-04) -->
+    <string name="logging_title">Per Text oder Sprache erfassen</string>
+    <string name="logging_intro">Schreib oder sprich, was du gemacht hast, z. B. „Bankdrücken 3x8 80 kg RIR 2“. Die KI liest die Sätze heraus, und du siehst eine Vorschau, bevor etwas gespeichert wird.</string>
+    <string name="logging_field">Deine Sätze</string>
+    <string name="logging_placeholder">z. B. Bankdrücken 3x8 80 kg RIR 2, Kniebeuge 100 kg 5 Wdh, 105 kg 3 Wdh</string>
+    <string name="logging_mic">Diktieren</string>
+    <string name="logging_mic_stop">Aufnahme beenden</string>
+    <string name="logging_listening">Höre zu …</string>
+    <string name="logging_parse">Sätze auslesen</string>
+    <string name="logging_running">Lese deinen Text …</string>
+    <string name="logging_preview">VORSCHAU</string>
+    <string name="logging_preview_hint">Prüf die Sätze. Schalte aus, was nicht gespeichert werden soll. Gespeichert wird erst nach deiner Bestätigung.</string>
+    <string name="logging_said">Gesagt: „%1$s“</string>
+    <string name="logging_option_new">Neu: %1$s</string>
+    <string name="logging_weight_missing">Kein Gewicht genannt. Die Sätze werden mit 0 kg gespeichert; im Workout kannst du sie ändern.</string>
+    <plurals name="logging_save">
+        <item quantity="one">%d Satz speichern</item>
+        <item quantity="other">%d Sätze speichern</item>
+    </plurals>
+    <string name="logging_save_hint">Die Sätze kommen als erledigt ins laufende Workout. Neue Übungen werden angelegt.</string>
+    <string name="logging_choose_hint">Wähle bei jedem eingeschalteten Eintrag eine Übung oder schalte ihn aus.</string>
+    <string name="logging_nothing_selected">Nichts ausgewählt.</string>
+    <string name="logging_edit_text">Text ändern</string>
+    <plurals name="logging_dropped">
+        <item quantity="one">%d Eintrag der Antwort passte nicht und wurde weggelassen.</item>
+        <item quantity="other">%d Einträge der Antwort passten nicht und wurden weggelassen.</item>
+    </plurals>
+    <string name="logging_notice_body">Fürs Erfassen gehen der Text, den du getippt oder gesprochen hast, und die Namen deiner Übungen an deinen KI-Provider. Kein Trainingsverlauf, keine Gewichte aus deinen Daten, keine Notizen, keine Cardio- oder Gesundheitsdaten. Sprache wird nur auf deinem Gerät erkannt; das Audio wird nicht gesendet. Die Antwort ist nur eine Vorschau; gespeichert wird erst nach deiner Bestätigung.</string>
+    <string name="logging_error_empty">Gib zuerst etwas ein oder sprich es ein.</string>
+    <string name="logging_error_nothing_usable">Im Text sind keine brauchbaren Sätze. Nenn Übung und Wiederholungen, z. B. „Bankdrücken 3x8 80 kg“.</string>
+    <string name="logging_speech_permission">Die Mikrofon-Berechtigung fehlt. Erlaube sie in den Android-Einstellungen oder tipp den Text.</string>
+    <string name="logging_speech_nothing">Nichts verstanden. Tipp aufs Mikrofon und versuch es nochmal.</string>
+    <string name="logging_speech_language">Das Sprachpaket für diese Sprache fehlt auf dem Gerät. Lade es in den Android-Einstellungen (Spracherkennung) herunter.</string>
+    <string name="logging_speech_failed">Spracheingabe fehlgeschlagen. Tipp den Text stattdessen.</string>
+    <string name="workout_log_text">Per Text oder Sprache erfassen</string>
 </resources>

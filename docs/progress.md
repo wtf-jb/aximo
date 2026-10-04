@@ -132,8 +132,15 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: Suche/Zuordnung, Parser, ViewModels, Prüfung der echten Asset-Datei
   - Keine Bilder (Entscheidung Jonas 04.10.: weglassen)
 
+- B-04 Freitext-/Sprach-Logging (PR #21):
+  - Domain `logging`: `LoggingInput` (Text + Übungsnamen + Einheit/Skala), `ExerciseMatcher` (lokaler Fuzzy-Match: sicher / unsicher mit 2–3 Kandidaten / kein Treffer), `LoggingBuilder` (Wertebereiche, „3x8“ → drei Sätze, Einheit → kg, RIR/RPE, neue Übung mit Katalog-Vorschlag), `LoggingProposal` (Vorschau, Einträge abwählbar, Auswahl), `LoggingService` (parsen, speichern als erledigte Sätze, neue Übungen erst beim Speichern), `SpeechInput` (Interface)
+  - `:ai`: `LoggingPrompt` (`logging-v1`, Schema im Systemprompt, Antwortsprache = App-Sprache), `LoggingParser`, `KtorLoggingGenerator`; `JsonRead` um Dezimalzahlen erweitert
+  - App: `AndroidSpeechInput` (on-device `SpeechRecognizer`, Mikrofon ausgeblendet ohne on-device-Erkenner; `RECORD_AUDIO` erst beim ersten Tippen), `LoggingScreen` (Textfeld + Mikrofon → Vorschau mit Schaltern/Kandidaten-Chips → „N Sätze speichern“), Button „Per Text oder Sprache erfassen“ im Workout (nur mit KI-Profil)
+  - `PlannedSet` um `rpe` und `completedAt` ergänzt (Standard `null`)
+  - Tests: Matcher, Builder/Vorschau, Parser/Prompt, `LoggingService`, `LoggingViewModel` (inkl. Sprache mit Fake), `WorkoutViewModel` (Button nur mit Profil)
+
 ## Nächster Schritt
-- B-04 Freitext-/Sprach-Logging, danach B-05 Coach-Chat, B-07 Auto-Backup
+- B-05 Coach-Chat, B-07 Auto-Backup
 - Periodisierung (Rest von B-02: Zyklen/Blöcke mit Deload-Woche, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review): **nach B-05 einplanen**, wenn Jonas ≥ 4–6 Wochen Daten mit der App hat (Review-Fenster = 6 Wochen; Deload-Regeln brauchen echte RIR-/Stagnations-Verläufe) und die ersten Reviews auf dem Pixel getestet sind. Sinnvoller Startpunkt: Montag nach einer Deload-Woche oder direkt nach einem mit B-03 erzeugten Plan (= „Block 1“). Vorher von Jonas festlegen: Blocklänge (z. B. 4 + 1 Deload), Deload-Art (Volumen −40 % oder Gewicht −10 %)
 
 ## APK aufs Handy
@@ -143,6 +150,13 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 ## Offen für Jonas
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
 - B-06 auf dem Pixel testen (PR-APK): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung
+- B-04 auf dem Pixel testen (PR-APK, braucht KI-Profil): Workout starten → „Per Text oder Sprache erfassen“
+  - Text „Bankdrücken 3x8 80 kg RIR 2“ → Datenschutz-Hinweis beim ersten Mal, „Daten ansehen“ (nur Text + Übungsnamen), Vorschau: drei Sätze, speichern → erscheinen als erledigte Sätze im Workout
+  - „Kniebeuge 100 kg 5 Wdh, 105 kg 3 Wdh“, „Klimmzüge 4x10“, mehrere Übungen in einem Satz, „Aufwärmsatz 40 kg 10“
+  - Fuzzy-Match: „Kniebeugen“, „bankdrucken“, Tippfehler → automatisch zugeordnet; mehrdeutiger Name (z. B. „Bankdrücken“ bei mehreren Varianten) → Kandidaten-Chips, Speichern erst nach Auswahl; unbekannte Übung („Cable Pullover“) → „Neu: …“ mit Badge, Eintrag abwählen, nichts wird angelegt
+  - Einheit lbs und Skala RPE in den Einstellungen umstellen: „225 lbs 5 @8“
+  - Mikrofon: erstes Tippen fragt die Berechtigung; Diktat landet im Feld und ist korrigierbar; Berechtigung ablehnen → Hinweis; Flugmodus (on-device-Erkennung geht ohne Netz, nur die KI-Auswertung nicht); fehlt das deutsche Sprachpaket → Hinweis. Ohne on-device-Erkenner ist das Mikrofon nicht sichtbar
+  - Fehler: Netz aus, falscher Key, Text ohne Sätze („Hallo“)
 - B-03 auf dem Pixel testen (PR-APK): Pläne → „Mit KI erstellen“, Plan erzeugen, Entwurf prüfen, speichern
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
 - Setup-Skript im Environment prüfen: Plattform-Paket heißt `platforms;android-37.0` (in `docs/cloud-environment.md` korrigiert)

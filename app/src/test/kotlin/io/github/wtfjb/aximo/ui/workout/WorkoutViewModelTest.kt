@@ -56,14 +56,26 @@ class WorkoutViewModelTest {
     // Lazy: viewModelScope must be created after MainDispatcherRule has replaced Dispatchers.Main.
     private val progression = FakeProgressionRepository()
     private val settings = FakeSettingsRepository()
+    private val aiProfiles = io.github.wtfjb.aximo.ui.ai.FakeAiProfileRepository()
     private val finisher by lazy { io.github.wtfjb.aximo.domain.workout.WorkoutFinisher(workouts, routines, progression, time, settings) }
     private val vm by lazy {
-        WorkoutViewModel(workouts, FakeExerciseRepository(listOf(bench, row)), routines, progression, finisher, time, restTimer, settings)
+        WorkoutViewModel(workouts, FakeExerciseRepository(listOf(bench, row)), routines, progression, finisher, time, restTimer, settings, aiProfiles)
     }
 
     private fun TestScope.started() {
         restTimer = RestTimerController(time, backgroundScope, noEffects)
         vm.uiState.launchIn(backgroundScope)
+    }
+
+    @Test
+    fun loggingByTextIsOnlyOfferedWithAnAiProfile() = runTest(UnconfinedTestDispatcher()) {
+        started()
+        vm.aiAvailable.launchIn(backgroundScope)
+        assertEquals(false, vm.aiAvailable.value)
+
+        aiProfiles.saveProfile(io.github.wtfjb.aximo.ui.ai.FakeAiProfileRepository.profile("Ollama"), io.github.wtfjb.aximo.domain.ai.ApiKeyChange.Keep)
+
+        assertEquals(true, vm.aiAvailable.value)
     }
 
     @Test

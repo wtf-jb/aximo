@@ -14,9 +14,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 /** In-memory workout repository; knows the exercises so it can build details. */
 class FakeWorkoutRepository(
-    private val exercises: Map<Long, Exercise>,
+    private val exerciseById: (Long) -> Exercise,
     private val history: Map<Long, List<SetEntry>> = emptyMap(),
 ) : WorkoutRepository {
+    constructor(exercises: Map<Long, Exercise>, history: Map<Long, List<SetEntry>> = emptyMap()) :
+        this({ id -> exercises.getValue(id) }, history)
+
     private val active = MutableStateFlow<WorkoutDetail?>(null)
     private var nextId = 1L
 
@@ -55,7 +58,7 @@ class FakeWorkoutRepository(
         val weId = nextId++
         val detail = WorkoutExerciseDetail(
             entry = WorkoutExercise(weId, workoutId, exerciseId, active.value!!.exercises.size, supersetGroup),
-            exercise = exercises.getValue(exerciseId),
+            exercise = exerciseById(exerciseId),
             sets = sets.mapIndexed { i, p -> p.toEntry(weId, i) },
         )
         edit { it.copy(exercises = it.exercises + detail) }
@@ -115,7 +118,9 @@ class FakeWorkoutRepository(
         weightKg = weightKg,
         reps = reps,
         rir = rir,
+        rpe = rpe,
         setType = setType,
+        completedAt = completedAt,
     )
 
     private fun edit(change: (WorkoutDetail) -> WorkoutDetail) {

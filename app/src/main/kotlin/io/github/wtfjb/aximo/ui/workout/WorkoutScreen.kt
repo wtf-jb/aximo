@@ -60,12 +60,14 @@ fun WorkoutScreen(
     picked: PickedExercises?,
     onPickedConsumed: () -> Unit,
     onAddExercise: () -> Unit,
+    onLogText: () -> Unit,
     onClose: () -> Unit,
     onFinished: (workoutId: Long) -> Unit,
     viewModel: WorkoutViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val finishState by viewModel.finishState.collectAsStateWithLifecycle()
+    val aiAvailable by viewModel.aiAvailable.collectAsStateWithLifecycle()
 
     var editing by remember { mutableStateOf<SetEditing?>(null) }
     var noteFor by remember { mutableStateOf<WorkoutExerciseDetail?>(null) }
@@ -150,6 +152,13 @@ fun WorkoutScreen(
                         onClick = onAddExercise,
                         modifier = Modifier.fillMaxWidth(),
                     )
+                    if (aiAvailable) {
+                        SecondaryButton(
+                            text = stringResource(R.string.workout_log_text),
+                            onClick = onLogText,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
                 }
             } else {
                 LazyColumn(
@@ -172,6 +181,15 @@ fun WorkoutScreen(
                             onClick = onAddExercise,
                             modifier = Modifier.fillMaxWidth(),
                         )
+                    }
+                    if (aiAvailable) {
+                        item {
+                            SecondaryButton(
+                                text = stringResource(R.string.workout_log_text),
+                                onClick = onLogText,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
                     }
                     if (state.rest != null) {
                         item { Spacer(modifier = Modifier.height(with(density) { restBarHeightPx.toDp() } + Spacing.s12)) }
