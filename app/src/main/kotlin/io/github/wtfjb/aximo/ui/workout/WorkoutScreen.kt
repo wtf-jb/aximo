@@ -1,6 +1,14 @@
 package io.github.wtfjb.aximo.ui.workout
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,13 +22,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
@@ -54,6 +67,17 @@ fun WorkoutScreen(
     var noteFor by remember { mutableStateOf<WorkoutExerciseDetail?>(null) }
     var finishing by remember { mutableStateOf(false) }
 
+    // The rest timer needs notifications (Android 13+). Asking again later is up to the system.
+    val context = LocalContext.current
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     // Workout finished or discarded (or none running): leave the screen.
     LaunchedEffect(state.loading, state.workout) {
         if (!state.loading && state.workout == null) onClose()
@@ -79,56 +103,77 @@ fun WorkoutScreen(
         onRemove = { viewModel.removeExercise(it.entry) },
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.padding(start = Spacing.s16, end = Spacing.s16, top = Spacing.s14, bottom = Spacing.s10),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.s8),
-        ) {
-            CircleIconButton(AppIcons.Minimize, stringResource(R.string.workout_minimize), onClose)
-            Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = stringResource(R.string.workout_progress, stringResource(R.string.workout_free), done, total),
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(text = WorkoutLogic.formatElapsed(state.elapsedSeconds), style = MaterialTheme.typography.headlineSmall)
-            }
-            InverseButton(text = stringResource(R.string.workout_finish), onClick = { finishing = true })
-        }
+    // Height of the floating timer bar, so the list can scroll its last item above it.
+    val density = LocalDensity.current
+    var restBarHeightPx by remember { mutableIntStateOf(0) }
 
-        if (workout.exercises.isEmpty()) {
-            Column(
-                modifier = Modifier.padding(Spacing.s20),
-                verticalArrangement = Arrangement.spacedBy(Spacing.s12),
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier.padding(start = Spacing.s16, end = Spacing.s16, top = Spacing.s14, bottom = Spacing.s10),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.s8),
             ) {
-                Text(
-                    text = stringResource(R.string.workout_empty),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                PrimaryButton(
-                    text = stringResource(R.string.workout_add_exercise),
-                    onClick = onAddExercise,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(start = Spacing.s12, end = Spacing.s12, top = Spacing.s6, bottom = Spacing.s24),
-                verticalArrangement = Arrangement.spacedBy(Spacing.s12),
-            ) {
-                items(state.groups, key = { group -> group.exercises.first().entry.id }) { group ->
-                    WorkoutGroupCard(group = group, lastPerformance = state.lastPerformance, unit = state.unit, actions = actions)
+                CircleIconButton(AppIcons.Minimize, stringResource(R.string.workout_minimize), onClose)
+                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = stringResource(R.string.workout_progress, stringResource(R.string.workout_free), done, total),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(text = WorkoutLogic.formatElapsed(state.elapsedSeconds), style = MaterialTheme.typography.headlineSmall)
                 }
-                item {
-                    SecondaryButton(
+                InverseButton(text = stringResource(R.string.workout_finish), onClick = { finishing = true })
+            }
+
+            if (workout.exercises.isEmpty()) {
+                Column(
+                    modifier = Modifier.padding(Spacing.s20),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.s12),
+                ) {
+                    Text(
+                        text = stringResource(R.string.workout_empty),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    PrimaryButton(
                         text = stringResource(R.string.workout_add_exercise),
                         onClick = onAddExercise,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(start = Spacing.s12, end = Spacing.s12, top = Spacing.s6, bottom = Spacing.s24),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.s12),
+                ) {
+                    items(state.groups, key = { group -> group.exercises.first().entry.id }) { group ->
+                        WorkoutGroupCard(group = group, lastPerformance = state.lastPerformance, unit = state.unit, actions = actions)
+                    }
+                    item {
+                        SecondaryButton(
+                            text = stringResource(R.string.workout_add_exercise),
+                            onClick = onAddExercise,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                    if (state.rest != null) {
+                        item { Spacer(modifier = Modifier.height(with(density) { restBarHeightPx.toDp() } + Spacing.s12)) }
+                    }
+                }
             }
+        }
+
+        state.rest?.let { rest ->
+            RestTimerBar(
+                rest = rest,
+                onExtend = viewModel::extendRest,
+                onSkip = viewModel::skipRest,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(Spacing.s12)
+                    .onSizeChanged { restBarHeightPx = it.height },
+            )
         }
     }
 

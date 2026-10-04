@@ -86,4 +86,7 @@ object AppTextStyles {
 
     /** nav-label for the selected tab: ExtraBold. */
     val navLabelActive = bodyStyle(12, 1.33f, FontWeight.ExtraBold)
+
+    /** Rest countdown: display-m in the 34px variant, line height 1. */
+    val restCountdown = displayStyle(34, 1.0f, FontWeight.ExtraBold, -0.02f)
 }

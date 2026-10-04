@@ -23,14 +23,14 @@
   - Tests: Domain (Filter, Formular), ViewModels mit Fake-Repository
 
 ## In Arbeit
-- Schritt 4 Workout-Logging (A-02), PR #4:
-  - Domain: `WorkoutLogic` (Vorbelegung, nächster Satz, aktiver Satz inkl. Supersatz-Runden, Gruppierung, Nummerierung, letzte Leistung), `WorkoutRepository`, `TimeSource`
-  - Data: Relationen Workout → Übungen → Sätze, laufendes Workout als Flow, letzte Session pro Übung, `RoomWorkoutRepository`
-  - UI: Heute „Workout starten/fortsetzen“; Workout-Screen mit Uhr, Karten, SetRow (erledigt/aktiv/offen), Werte-Dialog mit −/+, Satztyp-Menü, Übungs-Menü (Notiz, Entfernen), Beenden/Verwerfen; Auswahlmodus der Übungsliste mit „Als Supersatz“
-  - Tests: Domain, Room (Robolectric), ViewModels; Lint in CI
+- Schritt 5 Rest-Timer (A-03), PR #5:
+  - Domain: `RestTimer` (Restzeit aufgerundet, Fortschritt, +15 s), `RestTimerLogic` (Start nach Satz, Supersatz erst nach der Runde mit längster Pause, nächster Satz), `RestTimerController` (Zustand, Ablauf, Effekte als Interface)
+  - App: `RestTimerService` (Foreground `specialUse`, Wakelock während der Pause), `RestNotifications` (laufend mit Countdown, „+15 s“, „Überspringen“; „Pause vorbei“ mit Ton + Vibration, Fallback-Vibration ohne Notification-Recht)
+  - UI: `RestTimerBar` schwebend im Workout-Screen; Notification-Berechtigung beim Öffnen des Workouts
+  - Tests: Domain (Timer, Logik, Controller mit virtueller Zeit), ViewModel
 
 ## Nächster Schritt
-- 5. Rest-Timer mit Notification (A-03)
+- 6. Routinen und Pläne (A-05)
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

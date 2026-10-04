@@ -44,6 +44,7 @@ object AppIcons {
     val Bodyweight by lazy {
         lineIcon("Bodyweight", "M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4z", "M5 9l7 2 7-2M12 11v4M9 21l3-6 3 6")
     }
+    val SkipForward by lazy { lineIcon("SkipForward", "M6 5l9 7-9 7z", "M18 5v14") }
     val Cardio by lazy { lineIcon("Cardio", "M3 12h4l3-8 4 16 3-8h4") }
 
     private fun lineIcon(name: String, vararg paths: String): ImageVector {

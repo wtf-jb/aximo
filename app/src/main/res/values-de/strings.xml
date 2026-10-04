@@ -150,4 +150,19 @@
         <item quantity="one">%d Übung hinzufügen</item>
         <item quantity="other">%d Übungen hinzufügen</item>
     </plurals>
+    <string name="rest_title">PAUSE</string>
+    <string name="rest_next_label">Als Nächstes</string>
+    <string name="rest_next_set">Satz %1$d · %2$s</string>
+    <string name="rest_next_warmup">Warm-up · %1$s</string>
+    <string name="rest_next_none">Alle Sätze erledigt</string>
+    <string name="rest_extend">+15 s</string>
+    <string name="rest_extend_description">15 Sekunden mehr</string>
+    <string name="rest_skip">Pause überspringen</string>
+    <string name="rest_notification_title">Pause</string>
+    <string name="rest_notification_next">Als Nächstes: %1$s</string>
+    <string name="rest_finished_title">Pause vorbei</string>
+    <string name="rest_channel_running">Laufende Pause</string>
+    <string name="rest_channel_running_description">Countdown während der Pause zwischen den Sätzen</string>
+    <string name="rest_channel_finished">Pause vorbei</string>
+    <string name="rest_channel_finished_description">Ton und Vibration, wenn die Pause vorbei ist</string>
 </resources>

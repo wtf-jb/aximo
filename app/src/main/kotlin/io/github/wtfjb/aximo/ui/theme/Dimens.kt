@@ -60,6 +60,9 @@ object Sizes {
     val borderActive = 2.dp
     val borderControl = 1.5.dp
 
+    /** Progress track of the rest timer bar (6, radius 3). */
+    val restProgress = 6.dp
+
     /** Color swatch in the theme showcase. */
     val swatch = 40.dp
 }
