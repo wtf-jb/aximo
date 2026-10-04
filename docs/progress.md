@@ -18,10 +18,14 @@
   - Tests: Domain (Validierung, Einheiten), Room via Robolectric (Übungen, Routinen, Workouts/Kaskaden)
 
 ## In Arbeit
-- –
+- Schritt 3 Übungsverwaltung (A-01), PR #3:
+  - Domain: `BodyRegion`, `ExerciseFilter` (Suche ohne Umlaut-/Groß-Klein-Beachtung, Region), `ExerciseDraft` (Formular + Validierung, kg/lbs)
+  - UI: Übungsliste (Suche, Region-Chips, Archiv, leerer Zustand), Formular Neu/Bearbeiten/Archivieren; Einstieg über „Pläne“ → „Übungen“
+  - Komponenten: `ChoiceChip`, `SearchField`, `LabeledTextField`, `CircleIconButton`, `PillTextButton`
+  - Tests: Domain (Filter, Formular), ViewModels mit Fake-Repository
 
 ## Nächster Schritt
-- 3. Übungsverwaltung (A-01) und Übungsauswahl-Screen (`Uebungen.html`)
+- 4. Workout-Logging inkl. SetRow, Satztypen, Supersätze (A-02), dabei Auswahlmodus der Übungsliste
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

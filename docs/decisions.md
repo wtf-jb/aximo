@@ -26,3 +26,8 @@
 | 2026-10-04 | Löschregeln | Übungen, die in Routinen oder Workouts vorkommen, lassen sich nicht löschen (`RESTRICT`), nur archivieren. Workouts und Routinen löschen ihre Kinder mit (`CASCADE`) | Historie bleibt konsistent |
 | 2026-10-04 | KI-Tabellen | `AiSuggestion` und `AiProviderProfile` noch nicht angelegt | Prio B; kommt mit einer Migration, wenn B beginnt |
 | 2026-10-04 | DB-Tests | Room-Tests laufen mit Robolectric als normale Unit-Tests (`./gradlew test`) | Kein Gerät/Emulator nötig, läuft in CI und Cloud-Session |
+| 2026-10-04 | Einstieg Übungsliste | Vorerst Button „Übungen“ auf dem Pläne-Tab | Mockups haben keinen eigenen Einstieg zur Übungsverwaltung; die Liste wird sonst nur als Auswahl aus Routine/Workout geöffnet. Der Pläne-Screen kommt in Schritt 6 |
+| 2026-10-04 | Übungsliste | Filter-Chips nach grober Körperregion (`BodyRegion`: Brust, Rücken, Beine, Schultern, Arme, Rumpf) plus „Archiv“. „Zuletzt verwendet“ und Badge „EIGENE“ aus dem Mockup fehlen noch | Region aus den primären Muskeln; „Zuletzt verwendet“ braucht Workout-Historie (Schritt 4), „EIGENE“ den Katalog (B-06) |
+| 2026-10-04 | Mehrfachauswahl | Auswahlmodus („N Übungen hinzufügen“, „Als Supersatz“) kommt mit Workout/Routine (Schritt 4/6) | Ohne Ziel wäre er toter Code |
+| 2026-10-04 | Formular | `ExerciseDraft` in `:domain` hält die Eingaben als Text und validiert sie; Fehler erscheinen erst nach dem ersten Speichern | Testbar ohne Android; keine roten Felder während des ersten Tippens |
+| 2026-10-04 | Startübungen | Keine vorbefüllten Übungen; leerer Zustand mit „Übung anlegen“ | Namen wären Nutzerdaten in einer festen Sprache. Der richtige Weg ist der Katalog (B-06) |

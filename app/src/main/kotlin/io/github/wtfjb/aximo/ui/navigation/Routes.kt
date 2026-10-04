@@ -18,6 +18,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object ThemeShowcaseRoute
 
+@Serializable data object ExerciseListRoute
+
+/** exerciseId = 0 creates a new exercise. */
+@Serializable data class ExerciseEditRoute(val exerciseId: Long = 0)
+
 /** The four tabs of the bottom navigation, in display order. */
 enum class TopLevelDestination(
     val route: Any,

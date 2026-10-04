@@ -8,6 +8,8 @@ import io.github.wtfjb.aximo.data.settings.DataStoreSettingsRepository
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.settings.SettingsRepository
+import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
+import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -19,4 +21,6 @@ val appModule = module {
     single<ExerciseRepository> { RoomExerciseRepository(get<AximoDatabase>().exerciseDao()) }
     single<RoutineRepository> { RoomRoutineRepository(get<AximoDatabase>().routineDao()) }
     viewModel { MainViewModel(get()) }
+    viewModel { ExerciseListViewModel(get()) }
+    viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), exerciseId) }
 }

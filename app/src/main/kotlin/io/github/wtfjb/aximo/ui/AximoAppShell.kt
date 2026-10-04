@@ -13,16 +13,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.ui.navigation.AppNavigationBar
+import io.github.wtfjb.aximo.ui.exercises.ExerciseEditScreen
+import io.github.wtfjb.aximo.ui.exercises.ExerciseListScreen
 import io.github.wtfjb.aximo.ui.navigation.CoachRoute
+import io.github.wtfjb.aximo.ui.navigation.ExerciseEditRoute
+import io.github.wtfjb.aximo.ui.navigation.ExerciseListRoute
 import io.github.wtfjb.aximo.ui.navigation.PlansRoute
 import io.github.wtfjb.aximo.ui.navigation.StatsRoute
 import io.github.wtfjb.aximo.ui.navigation.ThemeShowcaseRoute
 import io.github.wtfjb.aximo.ui.navigation.TodayRoute
 import io.github.wtfjb.aximo.ui.navigation.TopLevelDestination
 import io.github.wtfjb.aximo.ui.screens.PlaceholderTab
+import io.github.wtfjb.aximo.ui.screens.PlansScreen
 import io.github.wtfjb.aximo.ui.screens.ThemeShowcaseScreen
 import io.github.wtfjb.aximo.ui.screens.TodayScreen
 
@@ -66,13 +72,26 @@ fun AximoAppShell(
                 TodayScreen(onOpenThemeShowcase = { navController.navigate(ThemeShowcaseRoute) })
             }
             composable<PlansRoute> {
-                PlaceholderTab(stringResource(R.string.nav_plans), stringResource(R.string.placeholder_body))
+                PlansScreen(onOpenExercises = { navController.navigate(ExerciseListRoute) })
             }
             composable<StatsRoute> {
                 PlaceholderTab(stringResource(R.string.nav_stats), stringResource(R.string.placeholder_body))
             }
             composable<CoachRoute> {
                 PlaceholderTab(stringResource(R.string.nav_coach), stringResource(R.string.placeholder_body))
+            }
+            composable<ExerciseListRoute> {
+                ExerciseListScreen(
+                    onBack = { navController.popBackStack() },
+                    onCreate = { navController.navigate(ExerciseEditRoute()) },
+                    onOpen = { id -> navController.navigate(ExerciseEditRoute(id)) },
+                )
+            }
+            composable<ExerciseEditRoute> { entry ->
+                ExerciseEditScreen(
+                    exerciseId = entry.toRoute<ExerciseEditRoute>().exerciseId,
+                    onDone = { navController.popBackStack() },
+                )
             }
             composable<ThemeShowcaseRoute> {
                 ThemeShowcaseScreen(

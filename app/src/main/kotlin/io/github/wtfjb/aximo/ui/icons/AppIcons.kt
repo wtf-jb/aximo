@@ -31,6 +31,15 @@ object AppIcons {
     }
     val Back by lazy { lineIcon("Back", "M19 12H5M12 19l-7-7 7-7") }
     val TrendUp by lazy { lineIcon("TrendUp", "M3 17l6-6 4 4 8-8", "M15 7h6v6") }
+    val Close by lazy { lineIcon("Close", "M18 6 6 18M6 6l12 12") }
+    val Search by lazy { lineIcon("Search", "M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z", "M21 21l-4.3-4.3") }
+    val Check by lazy { lineIcon("Check", "M20 6 9 17l-5-5") }
+    val Plus by lazy { lineIcon("Plus", "M12 5v14M5 12h14") }
+    val Dumbbell by lazy { lineIcon("Dumbbell", "M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12") }
+    val Bodyweight by lazy {
+        lineIcon("Bodyweight", "M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4z", "M5 9l7 2 7-2M12 11v4M9 21l3-6 3 6")
+    }
+    val Cardio by lazy { lineIcon("Cardio", "M3 12h4l3-8 4 16 3-8h4") }
 
     private fun lineIcon(name: String, vararg paths: String): ImageVector {
         val builder = ImageVector.Builder(
