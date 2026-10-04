@@ -28,6 +28,13 @@ data class AiProfileDraft(
     val willHaveKey: Boolean get() = apiKey.isNotBlank() || (hasStoredKey && !removeKey)
 
     /**
+     * Enough to ask for the model list: a valid URL, and for Anthropic a key
+     * (typed or stored). OpenAI-compatible servers like Ollama answer without one.
+     */
+    val canListModels: Boolean
+        get() = AiProfiles.isValidBaseUrl(baseUrl) && (kind != AiProviderKind.ANTHROPIC || willHaveKey)
+
+    /**
      * Switching to Anthropic fills in its URL if the field is empty; switching
      * away clears it again if it still is Anthropic's.
      */

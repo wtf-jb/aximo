@@ -529,11 +529,20 @@
     <string name="ai_profile_cleartext">Unverschlüsselte Verbindung (http). Nur im eigenen Netz oder über VPN wie Tailscale verwenden.</string>
     <string name="ai_profile_test">Verbindung testen</string>
     <string name="ai_profile_save">Speichern</string>
-    <string name="ai_profile_hint">Die Base-URL enthält bei OpenAI-kompatiblen Diensten den Versionspfad, z. B. https://api.mistral.ai/v1 oder https://openrouter.ai/api/v1. Der Test sendet nur ein kurzes „OK?“, keine Trainingsdaten.</string>
+    <string name="ai_profile_hint">Die Base-URL enthält bei OpenAI-kompatiblen Diensten den Versionspfad, z. B. https://api.mistral.ai/v1 oder https://openrouter.ai/api/v1. Der Test sendet nur ein kurzes „OK?“, die Modellliste fragt nur mit dem Key an, beides ohne Trainingsdaten.</string>
     <string name="ai_profile_error_name">Bitte einen Namen eingeben.</string>
     <string name="ai_profile_error_url">Bitte eine URL mit http:// oder https:// eingeben.</string>
     <string name="ai_profile_error_model">Bitte ein Modell eingeben.</string>
     <string name="ai_profile_error_key">Anthropic braucht einen API-Key.</string>
+    <string name="ai_models_choose">Modell auswählen</string>
+    <string name="ai_models_loading">Lade Modelle …</string>
+    <string name="ai_models_none">Der Provider meldet keine Modelle. Gib den Namen ein.</string>
+    <plurals name="ai_models_found">
+        <item quantity="one">%1$d Modell verfügbar, Auswahl über den Pfeil</item>
+        <item quantity="other">%1$d Modelle verfügbar, Auswahl über den Pfeil</item>
+    </plurals>
+    <string name="ai_models_failed">Modellliste nicht geladen: %1$s Du kannst den Namen eingeben.</string>
+    <string name="ai_models_reload">Erneut laden</string>
     <string name="ai_test_running">Teste …</string>
     <string name="ai_test_success">Verbindung ok.</string>
     <string name="ai_error_unauthorized">API-Key fehlt, ist falsch oder hat keine Berechtigung.</string>

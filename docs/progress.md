@@ -148,6 +148,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
+- Modellauswahl im KI-Profil testen (PR „Modellauswahl als Dropdown“): Einstellungen → KI-Coach → Profil. Nach Base-URL (+ Key) erscheint „N Modelle verfügbar“, über den Pfeil auswählen; falscher Key → Fehlermeldung + „Erneut laden“; bestehendes Profil öffnen → Liste lädt mit gespeichertem Key; Anthropic lädt erst mit Key; Ollama im LAN ohne Key
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
 - B-06 auf dem Pixel testen (PR-APK): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung
 - B-04 auf dem Pixel testen (PR-APK, braucht KI-Profil): Workout starten → „Per Text oder Sprache erfassen“

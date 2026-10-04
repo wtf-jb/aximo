@@ -4,6 +4,7 @@ import io.github.wtfjb.aximo.domain.ai.AiConnectionResult
 import io.github.wtfjb.aximo.domain.ai.AiConnectionTester
 import io.github.wtfjb.aximo.domain.ai.AiException
 import io.github.wtfjb.aximo.domain.ai.AiMessage
+import io.github.wtfjb.aximo.domain.ai.AiModels
 import io.github.wtfjb.aximo.domain.ai.AiProfileDraft
 import io.github.wtfjb.aximo.domain.ai.AiProfileFieldError
 import io.github.wtfjb.aximo.domain.ai.AiProfiles
@@ -144,5 +145,21 @@ class AiProfilesTest {
         val result = tester.test(profile(1), "k")
 
         assertEquals(AiException.Reason.TIMEOUT, (result as AiConnectionResult.Failure).error.reason)
+    }
+
+    @Test
+    fun canListModelsNeedsUrlAndForAnthropicAKey() {
+        assertFalse(AiProfileDraft().canListModels)
+        assertTrue(AiProfileDraft(baseUrl = "http://nas:11434/v1").canListModels)
+        val anthropic = AiProfileDraft().withKind(AiProviderKind.ANTHROPIC)
+        assertFalse(anthropic.canListModels)
+        assertTrue(anthropic.copy(apiKey = "sk").canListModels)
+        assertTrue(anthropic.copy(hasStoredKey = true).canListModels)
+        assertFalse(anthropic.copy(hasStoredKey = true, removeKey = true).canListModels)
+    }
+
+    @Test
+    fun modelIdsAreCleaned() {
+        assertEquals(listOf("a-model", "B-model", "c"), AiModels.clean(listOf("c", " B-model ", "", "a-model", "c")))
     }
 }
