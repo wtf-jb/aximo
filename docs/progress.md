@@ -132,7 +132,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: Suche/Zuordnung, Parser, ViewModels, Prüfung der echten Asset-Datei
   - Keine Bilder (Entscheidung Jonas 04.10.: weglassen)
 
-- B-04 Freitext-/Sprach-Logging (Branch `claude/b04-freitext-logging`, gestapelt auf PR #20, eigener PR):
+- B-04 Freitext-/Sprach-Logging (PR #21):
   - Domain `logging`: `LoggingInput` (Text + Übungsnamen + Einheit/Skala), `ExerciseMatcher` (lokaler Fuzzy-Match: sicher / unsicher mit 2–3 Kandidaten / kein Treffer), `LoggingBuilder` (Wertebereiche, „3x8“ → drei Sätze, Einheit → kg, RIR/RPE, neue Übung mit Katalog-Vorschlag), `LoggingProposal` (Vorschau, Einträge abwählbar, Auswahl), `LoggingService` (parsen, speichern als erledigte Sätze, neue Übungen erst beim Speichern), `SpeechInput` (Interface)
   - `:ai`: `LoggingPrompt` (`logging-v1`, Schema im Systemprompt, Antwortsprache = App-Sprache), `LoggingParser`, `KtorLoggingGenerator`; `JsonRead` um Dezimalzahlen erweitert
   - App: `AndroidSpeechInput` (on-device `SpeechRecognizer`, Mikrofon ausgeblendet ohne on-device-Erkenner; `RECORD_AUDIO` erst beim ersten Tippen), `LoggingScreen` (Textfeld + Mikrofon → Vorschau mit Schaltern/Kandidaten-Chips → „N Sätze speichern“), Button „Per Text oder Sprache erfassen“ im Workout (nur mit KI-Profil)
@@ -140,7 +140,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: Matcher, Builder/Vorschau, Parser/Prompt, `LoggingService`, `LoggingViewModel` (inkl. Sprache mit Fake), `WorkoutViewModel` (Button nur mit Profil)
 
 ## Nächster Schritt
-- B-05 Coach-Chat, B-07 Auto-Backup (B-04 wartet auf Feedback von Jonas)
+- B-05 Coach-Chat, B-07 Auto-Backup
 - Periodisierung (Rest von B-02: Zyklen/Blöcke mit Deload-Woche, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review): **nach B-05 einplanen**, wenn Jonas ≥ 4–6 Wochen Daten mit der App hat (Review-Fenster = 6 Wochen; Deload-Regeln brauchen echte RIR-/Stagnations-Verläufe) und die ersten Reviews auf dem Pixel getestet sind. Sinnvoller Startpunkt: Montag nach einer Deload-Woche oder direkt nach einem mit B-03 erzeugten Plan (= „Block 1“). Vorher von Jonas festlegen: Blocklänge (z. B. 4 + 1 Deload), Deload-Art (Volumen −40 % oder Gewicht −10 %)
 
 ## APK aufs Handy
