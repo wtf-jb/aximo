@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder launcher icon: dumbbell glyph from the mockups, centered in the 108dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <group
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:translateX="6"
+        android:translateY="6">
+        <path
+            android:pathData="M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12"
+            android:strokeWidth="2"
+            android:strokeColor="@color/ink"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>

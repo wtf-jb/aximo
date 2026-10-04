@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors tokens "ground" and "accent" for the window and launcher icon only. -->
+    <color name="ground">#F3F3F1</color>
+    <color name="accent">#F0643F</color>
+    <color name="ink">#17181C</color>
+</resources>

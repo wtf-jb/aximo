@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Aximo</string>
+
+    <!-- Bottom navigation and tab titles -->
+    <string name="nav_today">Today</string>
+    <string name="nav_plans">Plans</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_coach">Coach</string>
+    <string name="placeholder_body">Coming in a later step.</string>
+
+    <!-- Theme showcase (debug builds only) -->
+    <string name="showcase_open">Theme showcase</string>
+    <string name="showcase_title">Theme</string>
+    <string name="showcase_section_theme">Appearance</string>
+    <string name="showcase_section_colors">Colors</string>
+    <string name="showcase_section_type">Text styles</string>
+    <string name="showcase_section_components">Components</string>
+    <string name="showcase_button_primary">Start workout</string>
+    <string name="showcase_button_inverse">Apply</string>
+    <string name="showcase_button_secondary">Add set</string>
+    <string name="showcase_chip_hint">Progression: 82.5 kg (+2.5)</string>
+    <string name="showcase_sample_text">82.5 kg · 3 × 8 · Bench press</string>
+
+    <!-- Appearance setting -->
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <string name="action_back">Back</string>
+</resources>
