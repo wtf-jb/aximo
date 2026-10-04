@@ -64,6 +64,20 @@ class RoutineEditViewModelTest {
     }
 
     @Test
+    fun dragAndDropMovesASupersetAsBlock() {
+        val routines = FakeRoutineRepository(listOf(existing))
+        val vm = RoutineEditViewModel(routines, exercises, routineId = 7)
+
+        vm.addExercises(listOf(2, 3), superset = true)
+        vm.moveGroup(1, 0)
+        vm.save()
+
+        val saved = routines.all.single()
+        assertEquals(listOf(2L, 3L, 1L), saved.exercises.map { it.exerciseId })
+        assertEquals(listOf("A", "A", null), saved.exercises.map { it.supersetGroup })
+    }
+
+    @Test
     fun deleteRemovesTheRoutine() {
         val routines = FakeRoutineRepository(listOf(existing))
         val vm = RoutineEditViewModel(routines, exercises, routineId = 7)

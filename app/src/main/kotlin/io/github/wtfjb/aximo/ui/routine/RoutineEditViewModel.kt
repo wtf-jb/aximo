@@ -67,6 +67,9 @@ class RoutineEditViewModel(
 
     fun move(index: Int, delta: Int) = change { it.move(index, delta) }
 
+    /** Drag and drop: moves a whole card (single exercise or superset). */
+    fun moveGroup(from: Int, to: Int) = change { it.moveGroup(from, to) }
+
     fun remove(index: Int) = change { it.remove(index) }
 
     fun ungroup(index: Int) = change { it.ungroup(index) }

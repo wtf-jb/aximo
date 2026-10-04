@@ -74,4 +74,25 @@ class RoutineDraftTest {
         assertEquals("Push A", routine.name)
         assertEquals(3, entries.size)
     }
+
+    @Test
+    fun groupsKeepSupersetsTogether() {
+        assertEquals(listOf(listOf(0), listOf(1, 2)), draft.groups())
+    }
+
+    @Test
+    fun moveGroupMovesASupersetAsBlock() {
+        val moved = draft.moveGroup(1, 0)
+        assertEquals(listOf(2L, 3L, 1L), moved.entries.map { it.exerciseId })
+        assertEquals(listOf("A", "A", null), moved.entries.map { it.supersetGroup })
+        assertEquals(listOf(0, 1, 2), moved.entries.map { it.position })
+        assertEquals(listOf(1L, 2L, 3L), moved.moveGroup(0, 1).entries.map { it.exerciseId })
+    }
+
+    @Test
+    fun moveGroupIgnoresInvalidPositions() {
+        assertEquals(draft, draft.moveGroup(0, 0))
+        assertEquals(draft, draft.moveGroup(0, 5))
+        assertEquals(draft, draft.moveGroup(-1, 0))
+    }
 }

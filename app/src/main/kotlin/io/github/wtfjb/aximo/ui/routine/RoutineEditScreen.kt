@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -29,12 +31,20 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -58,6 +68,7 @@ import io.github.wtfjb.aximo.ui.components.CircleIconButton
 import io.github.wtfjb.aximo.ui.components.InverseButton
 import io.github.wtfjb.aximo.ui.format.formatRest
 import io.github.wtfjb.aximo.ui.icons.AppIcons
+import io.github.wtfjb.aximo.ui.theme.Elevation
 import io.github.wtfjb.aximo.ui.theme.Radii
 import io.github.wtfjb.aximo.ui.theme.Sizes
 import io.github.wtfjb.aximo.ui.theme.Spacing
@@ -108,7 +119,18 @@ fun RoutineEditScreen(
         if (state.loading) return@Column
 
         val entries = state.draft.entries
+        val groups = entryGroups(entries)
+        val keys = groupKeys(groups)
+        val currentKeys by rememberUpdatedState(keys)
+        val listState = rememberLazyListState()
+        val haptics = LocalHapticFeedback.current
+        val gapPx = with(LocalDensity.current) { Spacing.s8.toPx() }
+        // Key of the card being dragged and how far it is moved from its slot.
+        var draggedKey by remember { mutableStateOf<String?>(null) }
+        var dragOffset by remember { mutableFloatStateOf(0f) }
+        val cardShape = MaterialTheme.shapes.large
         LazyColumn(
+            state = listState,
             contentPadding = PaddingValues(start = Spacing.s16, end = Spacing.s16, top = Spacing.s10, bottom = Spacing.s24),
             verticalArrangement = Arrangement.spacedBy(Spacing.s8),
         ) {
@@ -131,9 +153,55 @@ fun RoutineEditScreen(
                     }
                 }
             }
-            items(entryGroups(entries), key = { group -> "${group.first().index}-${group.first().entry.exerciseId}" }) { group ->
+            itemsIndexed(groups, key = { index, _ -> keys[index] }) { index, group ->
+                val key = keys[index]
                 val letter = group.first().entry.supersetGroup
-                EntryCard(supersetLetter = letter) {
+                val dragged = key == draggedKey
+                val dragModifier = Modifier
+                    .then(
+                        if (dragged) {
+                            Modifier
+                                .zIndex(1f)
+                                .graphicsLayer {
+                                    translationY = dragOffset
+                                    shadowElevation = Elevation.float.toPx()
+                                    shape = cardShape
+                                }
+                        } else {
+                            Modifier.animateItem()
+                        },
+                    )
+                    // Long press on a card, then drag: moves the card (a superset as a whole).
+                    .pointerInput(key) {
+                        detectDragGesturesAfterLongPress(
+                            onDragStart = {
+                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                draggedKey = key
+                                dragOffset = 0f
+                            },
+                            onDragEnd = { draggedKey = null; dragOffset = 0f },
+                            onDragCancel = { draggedKey = null; dragOffset = 0f },
+                            onDrag = { change, amount ->
+                                change.consume()
+                                dragOffset += amount.y
+                                val visible = listState.layoutInfo.visibleItemsInfo
+                                val current = visible.firstOrNull { it.key == key } ?: return@detectDragGesturesAfterLongPress
+                                val from = currentKeys.indexOf(key)
+                                val center = current.offset + current.size / 2 + dragOffset
+                                val below = currentKeys.getOrNull(from + 1)?.let { next -> visible.firstOrNull { it.key == next } }
+                                val above = currentKeys.getOrNull(from - 1)?.let { prev -> visible.firstOrNull { it.key == prev } }
+                                // Swap with a neighbour once the card's centre passes the neighbour's centre.
+                                if (below != null && center > below.offset + below.size / 2) {
+                                    viewModel.moveGroup(from, from + 1)
+                                    dragOffset -= below.size + gapPx
+                                } else if (above != null && center < above.offset + above.size / 2) {
+                                    viewModel.moveGroup(from, from - 1)
+                                    dragOffset += above.size + gapPx
+                                }
+                            },
+                        )
+                    }
+                EntryCard(supersetLetter = letter, modifier = dragModifier) {
                     group.forEachIndexed { member, item ->
                         if (member > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         EntryRow(
@@ -241,6 +309,20 @@ private fun InfoChip(text: String) {
 /** An entry together with its index in the routine. */
 private data class IndexedEntry(val index: Int, val entry: RoutineExercise)
 
+/**
+ * Stable keys for the cards, so a card keeps its state (and the drag gesture) while
+ * it moves: first exercise id plus how often that exercise started a card before.
+ */
+private fun groupKeys(groups: List<List<IndexedEntry>>): List<String> {
+    val seen = mutableMapOf<Long, Int>()
+    return groups.map { group ->
+        val id = group.first().entry.exerciseId
+        val occurrence = seen.getOrDefault(id, 0)
+        seen[id] = occurrence + 1
+        "$id-$occurrence"
+    }
+}
+
 /** Consecutive entries with the same superset letter form one card, all others stand alone. */
 private fun entryGroups(entries: List<RoutineExercise>): List<List<IndexedEntry>> {
     val groups = mutableListOf<MutableList<IndexedEntry>>()
@@ -257,12 +339,12 @@ private fun entryGroups(entries: List<RoutineExercise>): List<List<IndexedEntry>
 
 /** White card; a superset gets a dark outline and the "SUPERSATZ A" header. */
 @Composable
-private fun EntryCard(supersetLetter: String?, content: @Composable () -> Unit) {
+private fun EntryCard(supersetLetter: String?, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surface,
         border = if (supersetLetter != null) BorderStroke(Sizes.borderActive, MaterialTheme.colorScheme.inverseSurface) else null,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(vertical = Spacing.s6)) {
             if (supersetLetter != null) {

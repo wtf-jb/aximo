@@ -75,18 +75,22 @@
   - UI: Einstellung „Satzbewertung“; Workout-Spalte, Werte-Dialog, Satz-Chips und Routinen-Ziele zeigen die gewählte Skala (die andere wird umgerechnet)
   - Tests: Domain, Data, ViewModels
 
-## In Arbeit
-- Feinschliff 1: Übungskatalog, PR #14:
+- Feinschliff 1: Übungskatalog, PR #14 (gemergt):
   - Domain: `CatalogExercise` (38 gängige Kraft-/Bodyweight-Übungen mit Muskelgruppen, Equipment, Wdh.-Bereich), `ExerciseCatalog`, `CatalogSeeder` (beim ersten Start, nur ohne Kraft-/Bodyweight-Übungen; „fehlende ergänzen“ nach `catalogId`)
   - App: Namen DE/EN als Strings, Anlage beim App-Start; Einstellungen „Standard-Übungen ergänzen“
   - Tests: Domain, Seeder, ViewModel
-- Feinschliff 2: Wochenziel, ebenfalls in PR #14:
+- Feinschliff 2: Wochenziel, PR #14 (gemergt):
   - `TrainingSettings.weeklyGoal` (kein Ziel oder 1–7 Einheiten), DataStore und Backup
   - „Heute“: „3 von 4 Einheiten“; Einstellungen: Zeile „Wochenziel“
 
+## In Arbeit
+- Feinschliff 3: Drag-and-drop in Routinen, PR #15:
+  - Domain: `RoutineDraft.groups()`/`moveGroup()` (Karten verschieben, Supersatz als Block)
+  - UI: Karte lange drücken und ziehen; Haptik, Schatten, Nachbarn rutschen animiert; ⋯-Menü „Nach oben/unten“ bleibt (Barrierefreiheit)
+  - Tests: Domain, ViewModel
+
 ## Nächster Schritt
-- Jonas hat entschieden (04.10.): erst Prio-A-Feinschliff, Prio B danach (braucht Freigabe der `INTERNET`-Permission)
-- Feinschliff 3: Drag-and-drop in Routinen
+- Feinschliff-Liste ist damit abgearbeitet. **Warten auf Jonas:** Prio B (braucht Freigabe der `INTERNET`-Permission) oder weitere Feinschliff-Wünsche nach Test auf dem Pixel
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk
