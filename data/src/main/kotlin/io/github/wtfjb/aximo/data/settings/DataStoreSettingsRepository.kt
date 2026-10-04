@@ -44,6 +44,7 @@ class DataStoreSettingsRepository(context: Context) : SettingsRepository {
             restSeconds = prefs[REST_SECONDS]?.takeIf { it >= 0 } ?: defaults.restSeconds,
             steps = WeightSteps(barbellKg = barbell, dumbbellKg = dumbbell),
             rating = SetRating.entries.firstOrNull { it.name == prefs[SET_RATING] } ?: SetRating.RIR,
+            weeklyGoal = prefs[WEEKLY_GOAL]?.takeIf { it in TrainingSettings.WEEKLY_GOAL_CHOICES },
         )
     }
 
@@ -54,6 +55,8 @@ class DataStoreSettingsRepository(context: Context) : SettingsRepository {
             prefs[STEP_BARBELL_KG] = settings.steps.barbellKg
             prefs[STEP_DUMBBELL_KG] = settings.steps.dumbbellKg
             prefs[SET_RATING] = settings.rating.name
+            // 0 = no goal (DataStore can't store null).
+            prefs[WEEKLY_GOAL] = settings.weeklyGoal ?: 0
         }
     }
 
@@ -64,5 +67,6 @@ class DataStoreSettingsRepository(context: Context) : SettingsRepository {
         val STEP_BARBELL_KG = doublePreferencesKey("step_barbell_kg")
         val STEP_DUMBBELL_KG = doublePreferencesKey("step_dumbbell_kg")
         val SET_RATING = stringPreferencesKey("set_rating")
+        val WEEKLY_GOAL = intPreferencesKey("weekly_goal")
     }
 }

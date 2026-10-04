@@ -19,7 +19,7 @@ class SettingsRepositoryTest {
     @Test
     fun trainingSettingsAreStoredAndReadBack() = runTest {
         val repository = DataStoreSettingsRepository(RuntimeEnvironment.getApplication())
-        val settings = TrainingSettings(restSeconds = 150, steps = WeightSteps(1.25, 1.0), rating = SetRating.RPE).withUnit(WeightUnit.LBS)
+        val settings = TrainingSettings(restSeconds = 150, steps = WeightSteps(1.25, 1.0), rating = SetRating.RPE, weeklyGoal = 3).withUnit(WeightUnit.LBS)
 
         repository.setTraining(settings)
 

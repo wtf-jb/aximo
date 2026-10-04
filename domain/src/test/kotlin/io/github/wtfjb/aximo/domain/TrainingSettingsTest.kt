@@ -58,6 +58,8 @@ class TrainingSettingsTest {
     fun invalidValuesAreRejected() {
         assertThrows(IllegalArgumentException::class.java) { WeightSteps(0.0, 2.0) }
         assertThrows(IllegalArgumentException::class.java) { TrainingSettings(restSeconds = -1) }
+        assertThrows(IllegalArgumentException::class.java) { TrainingSettings(weeklyGoal = 0) }
+        assertThrows(IllegalArgumentException::class.java) { TrainingSettings(weeklyGoal = 8) }
     }
 
     @Test

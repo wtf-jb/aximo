@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.wtfjb.aximo.domain.backup.BackupException
 import io.github.wtfjb.aximo.domain.backup.BackupRepository
 import io.github.wtfjb.aximo.domain.backup.SetsCsv
+import io.github.wtfjb.aximo.domain.exercise.CatalogSeeder
 import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
@@ -32,6 +33,8 @@ data class SettingsUiState(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val training: TrainingSettings = TrainingSettings(),
     val backup: BackupState = BackupState(),
+    /** How many standard exercises the last tap added, null before the first tap. */
+    val catalogAdded: Int? = null,
 )
 
 /**
@@ -44,12 +47,14 @@ class SettingsViewModel(
     private val workouts: WorkoutRepository,
     private val routines: RoutineRepository,
     private val documents: DocumentStore,
+    private val catalog: CatalogSeeder,
 ) : ViewModel() {
 
     private val backup = MutableStateFlow(BackupState())
+    private val catalogAdded = MutableStateFlow<Int?>(null)
 
-    val uiState: StateFlow<SettingsUiState> = combine(settings.themeMode, settings.training, backup) { theme, training, backup ->
-        SettingsUiState(theme, training, backup)
+    val uiState: StateFlow<SettingsUiState> = combine(settings.themeMode, settings.training, backup, catalogAdded) { theme, training, backup, added ->
+        SettingsUiState(theme, training, backup, added)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
     fun setThemeMode(mode: ThemeMode) {
@@ -62,6 +67,9 @@ class SettingsViewModel(
 
     fun setRating(rating: SetRating) = updateTraining { it.copy(rating = rating) }
 
+    /** null = no goal. */
+    fun setWeeklyGoal(goal: Int?) = updateTraining { it.copy(weeklyGoal = goal) }
+
     /**
      * Steps as typed in the display unit ("2,5", "2"). Returns false and changes
      * nothing if one of them is not a positive number.
@@ -73,6 +81,11 @@ class SettingsViewModel(
         val steps = WeightSteps(barbellKg = unit.toKg(barbellValue), dumbbellKg = unit.toKg(dumbbellValue))
         updateTraining { it.copy(steps = steps) }
         return true
+    }
+
+    /** Adds the catalog exercises that are missing (A-01). */
+    fun addStandardExercises() {
+        viewModelScope.launch { catalogAdded.value = catalog.addMissing() }
     }
 
     /** Full backup as JSON into the file the user created. */

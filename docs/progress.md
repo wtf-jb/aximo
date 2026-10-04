@@ -69,15 +69,24 @@
   - Coach-Tab aus der Navigation entfernt (Prio B, war nur Platzhalter)
   - Tests: Domain, ViewModel
 
-## In Arbeit
-- Schritt 12 RPE als Alternative zu RIR (A-02), PR #13:
+- Schritt 12 RPE als Alternative zu RIR (A-02), PR #13 (gemergt). **Prio A damit komplett.**
   - Domain: `SetRating` (RIR/RPE) in `TrainingSettings`, `Effort` (Umrechnung RIR = ⌊10 − RPE⌋, RPE-Eingabe in halben Punkten, nur eine Skala pro Satz gespeichert); Progression liest RPE als RIR
   - Data: Einstellung im DataStore und im Backup (`setRating`, ältere Dateien = RIR)
   - UI: Einstellung „Satzbewertung“; Workout-Spalte, Werte-Dialog, Satz-Chips und Routinen-Ziele zeigen die gewählte Skala (die andere wird umgerechnet)
   - Tests: Domain, Data, ViewModels
 
+## In Arbeit
+- Feinschliff 1: Übungskatalog, PR #14:
+  - Domain: `CatalogExercise` (38 gängige Kraft-/Bodyweight-Übungen mit Muskelgruppen, Equipment, Wdh.-Bereich), `ExerciseCatalog`, `CatalogSeeder` (beim ersten Start, nur ohne Kraft-/Bodyweight-Übungen; „fehlende ergänzen“ nach `catalogId`)
+  - App: Namen DE/EN als Strings, Anlage beim App-Start; Einstellungen „Standard-Übungen ergänzen“
+  - Tests: Domain, Seeder, ViewModel
+- Feinschliff 2: Wochenziel, ebenfalls in PR #14:
+  - `TrainingSettings.weeklyGoal` (kein Ziel oder 1–7 Einheiten), DataStore und Backup
+  - „Heute“: „3 von 4 Einheiten“; Einstellungen: Zeile „Wochenziel“
+
 ## Nächster Schritt
-- Prio A ist damit vollständig. **Warten auf Jonas:** Prio B (KI-Provider, Wochen-Review, Coach) braucht die `INTERNET`-Permission, die laut harten Regeln erst mit Prio B kommt. Vorher bestätigen lassen. Ohne Freigabe: Feinschliff (Übungskatalog vorbelegen? Drag-and-drop in Routinen?) nur nach Rückfrage
+- Jonas hat entschieden (04.10.): erst Prio-A-Feinschliff, Prio B danach (braucht Freigabe der `INTERNET`-Permission)
+- Feinschliff 3: Drag-and-drop in Routinen
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

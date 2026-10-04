@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -57,7 +58,7 @@ import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
 /** Which dialog is open. */
-private enum class SettingsDialog { LANGUAGE, REST, STEPS, IMPORT }
+private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, IMPORT }
 
 /**
  * Settings (A-09, mockup Einstellungen.html) with export and import (A-08).
@@ -120,6 +121,8 @@ fun SettingsScreen(
 
         SectionLabel(stringResource(R.string.settings_section_training))
         SettingsCard {
+            ValueRow(stringResource(R.string.settings_weekly_goal), weeklyGoalLabel(training.weeklyGoal), onClick = { dialog = SettingsDialog.WEEKLY_GOAL })
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             ValueRow(stringResource(R.string.settings_rest), formatRest(training.restSeconds), onClick = { dialog = SettingsDialog.REST })
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             ValueRow(stringResource(R.string.settings_steps), stepsLabel(training), onClick = { dialog = SettingsDialog.STEPS })
@@ -132,6 +135,22 @@ fun SettingsScreen(
             )
         }
         Hint(stringResource(R.string.settings_training_hint))
+
+        SettingsCard {
+            ValueRow(stringResource(R.string.settings_add_catalog), "", onClick = viewModel::addStandardExercises)
+            state.catalogAdded?.let { added ->
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Text(
+                    text = pluralStringResource(R.plurals.settings_catalog_added, added, added),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .padding(vertical = Spacing.s12)
+                        .semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+        }
+        Hint(stringResource(R.string.settings_add_catalog_hint))
 
         SectionLabel(stringResource(R.string.settings_section_data))
         BackupCard(
@@ -164,6 +183,20 @@ fun SettingsScreen(
             },
             onDismiss = { dialog = null },
         )
+        SettingsDialog.WEEKLY_GOAL -> {
+            // First option "no goal", then 1 to 7 sessions.
+            val goals = listOf<Int?>(null) + TrainingSettings.WEEKLY_GOAL_CHOICES.toList()
+            ChoiceDialog(
+                title = stringResource(R.string.settings_weekly_goal),
+                options = goals.map { weeklyGoalLabel(it) },
+                selectedIndex = goals.indexOf(training.weeklyGoal),
+                onSelect = { index ->
+                    dialog = null
+                    viewModel.setWeeklyGoal(goals[index])
+                },
+                onDismiss = { dialog = null },
+            )
+        }
         SettingsDialog.STEPS -> StepsDialog(
             training = training,
             onConfirm = { barbell, dumbbell -> if (viewModel.setSteps(barbell, dumbbell)) dialog = null },
@@ -246,6 +279,10 @@ private fun ImportDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
 private fun Hint(text: String) {
     Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
+
+@Composable
+private fun weeklyGoalLabel(goal: Int?): String =
+    if (goal == null) stringResource(R.string.settings_weekly_goal_none) else pluralStringResource(R.plurals.today_week_sessions, goal, goal)
 
 @Composable
 private fun languageLabel(language: AppLanguage): String = when (language) {

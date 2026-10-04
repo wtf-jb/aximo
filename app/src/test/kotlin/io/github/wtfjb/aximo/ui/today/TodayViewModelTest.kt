@@ -20,6 +20,8 @@ import io.github.wtfjb.aximo.ui.cardio.FakeCardioRepository
 import io.github.wtfjb.aximo.ui.exercises.FakeExerciseRepository
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
 import io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository
+import io.github.wtfjb.aximo.ui.settings.FakeSettingsRepository
+import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.ui.workout.FakeProgressionRepository
 import io.github.wtfjb.aximo.ui.workout.FakeWorkoutRepository
 import kotlin.time.Duration.Companion.days
@@ -50,7 +52,7 @@ class TodayViewModelTest {
         val cardio = FakeCardioRepository(listOf(CardioEntry(id = 1, exerciseId = run.id, startedAt = t0 - 1.days, durationSec = 1721)))
         workouts.recentFinished.value = listOf(WorkoutDetail(Workout(id = 5, startedAt = t0, endedAt = t0 + 50.minutes), emptyList()))
         val starter = WorkoutStarter(workouts, routines, FakeProgressionRepository(), TimeSource { t0 })
-        val vm = TodayViewModel(workouts, routines, cardio, exercises, FakeProgressionRepository(), starter, TimeSource { t0 }, TimeZone.UTC)
+        val vm = TodayViewModel(workouts, routines, cardio, exercises, FakeProgressionRepository(), starter, TimeSource { t0 }, FakeSettingsRepository(), TimeZone.UTC)
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect() }
 
         val recent = vm.uiState.value.recent
@@ -73,7 +75,7 @@ class TodayViewModelTest {
         val progression = FakeProgressionRepository(listOf(ProgressionState(1, 85.0, 6, ProgressionReason.INCREASE_WEIGHT)))
         workouts.allFinished.value = listOf(WorkoutDetail(Workout(id = 5, startedAt = t0 - 1.hours, endedAt = t0), emptyList()))
         val starter = WorkoutStarter(workouts, routines, progression, TimeSource { t0 })
-        val vm = TodayViewModel(workouts, routines, FakeCardioRepository(emptyList()), FakeExerciseRepository(listOf(bench)), progression, starter, TimeSource { t0 }, TimeZone.UTC)
+        val vm = TodayViewModel(workouts, routines, FakeCardioRepository(emptyList()), FakeExerciseRepository(listOf(bench)), progression, starter, TimeSource { t0 }, FakeSettingsRepository(TrainingSettings(weeklyGoal = 4)), TimeZone.UTC)
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect() }
 
         val next = vm.uiState.value.next!!
@@ -83,5 +85,6 @@ class TodayViewModelTest {
         assertEquals(10, next.estimatedMinutes)
         assertEquals(2.5, next.preview.single().deltaKg!!, 1e-9)
         assertEquals(1, vm.uiState.value.week!!.sessions)
+        assertEquals(4, vm.uiState.value.weeklyGoal)
     }
 }
