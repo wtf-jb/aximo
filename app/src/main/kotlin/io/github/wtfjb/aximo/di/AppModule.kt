@@ -1,6 +1,13 @@
 package io.github.wtfjb.aximo.di
 
 import io.github.wtfjb.aximo.MainViewModel
+import io.github.wtfjb.aximo.ai.ChatPrompt
+import io.github.wtfjb.aximo.ai.KtorChatGenerator
+import io.github.wtfjb.aximo.data.repository.RoomAiChatRepository
+import io.github.wtfjb.aximo.domain.chat.AiChatRepository
+import io.github.wtfjb.aximo.domain.chat.ChatGenerator
+import io.github.wtfjb.aximo.domain.chat.ChatService
+import io.github.wtfjb.aximo.ui.coach.ChatViewModel
 import io.github.wtfjb.aximo.ai.AiHttp
 import io.github.wtfjb.aximo.ai.KtorAiProviderFactory
 import io.github.wtfjb.aximo.ai.KtorModelLister
@@ -103,6 +110,9 @@ val appModule = module {
     single<ReviewGenerator> { KtorReviewGenerator() }
     single<AiPreferences> { DataStoreAiPreferences(androidContext()) }
     single { ReviewService(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single<AiChatRepository> { RoomAiChatRepository(get<AximoDatabase>().aiChatDao()) }
+    single<ChatGenerator> { KtorChatGenerator() }
+    single { ChatService(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single<PlanGenerator> { KtorPlanGenerator() }
     single<CatalogRepository> { AssetCatalogRepository(androidContext()) }
     single { PlanService(get(), get(), get(), get(), get()) }
@@ -136,6 +146,18 @@ val appModule = module {
             preferences = get(),
             language = { context.resources.configuration.locales[0].language },
             formatContext = { ReviewPrompt.prettyContext(it) },
+        )
+    }
+    viewModel {
+        val context = androidContext()
+        ChatViewModel(
+            chat = get(),
+            review = get(),
+            routines = get(),
+            exercises = get(),
+            preferences = get(),
+            language = { context.resources.configuration.locales[0].language },
+            formatPayload = { ChatPrompt.prettyPayload(it) },
         )
     }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }

@@ -117,30 +117,37 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Heute: Karte „Wochen-Review bereit“ mit Zahl offener Vorschläge, öffnet den Coach-Tab
   - Tests: Zeitplan, DataStore, Settings-ViewModel
 
-## In Arbeit
-- B-03 Plan-Generierung („Mit KI erstellen“ auf Pläne) und B-06 Übungskatalog (Text, ohne Bilder), beides in PR #20 (nächste Session: CI prüfen, per Squash mergen, Branch neu von main). B-04 (läuft in eigener Session, gestapelt auf diesem Branch) und B-05 stehen noch aus:
-- B-03 Plan-Generierung:
+- B-03 Plan-Generierung, PR #20 (gemergt):
   - Domain `plan`: `PlanRequest` (Ziel, Tage 2–6, Dauer, Equipment, Einschränkungen als Freitext) + `PlanOptions`, `PlanInput` (nutzbare Übungen: Kraft/Bodyweight, nicht archiviert, passendes Equipment, max. 120), `PlanBuilder` (prüft Antwort gegen angebotene Übungen und Wertebereiche, verwirft und zählt Unpassendes), `PlanProposal` (Entwurf), `PlanService` (erzeugen, speichern ans Listenende)
   - `:ai`: `PlanPrompt` (`plan-v1`, Schema im Systemprompt, nur Wünsche + Übungsliste als JSON, kein Trainingsverlauf), `PlanParser`, `KtorPlanGenerator`; gemeinsame JSON-Helfer in `JsonRead` (auch vom `ReviewParser` genutzt)
   - UI: „Mit KI erstellen“ neben „Übungen“ auf Pläne (nur mit KI-Profil) → Formular (Chips, Freitext) → Entwurf (Zusammenfassung, Routinen mit Übungen und Zielen, je Routine „Entfernen“, „N Routinen speichern“, „Wünsche ändern“); Datenschutz-Hinweis beim ersten KI-Aufruf, „Gesendete Daten ansehen“
   - Tests: Domain (Builder, Eingabe), Parser/Prompt, `PlanService`, `PlanGeneratorViewModel`, `PlansViewModel`
 
-- B-06 Übungskatalog (Text):
+- B-06 Übungskatalog (Text), PR #20 (gemergt):
   - Asset `exercise_catalog.json` (668 Übungen aus free-exercise-db, Unlicense; `tools/build_exercise_catalog.py`, Lizenztext in `licenses/`), Parser `CatalogFile` (`:data`), `AssetCatalogRepository` (`:app`)
   - Domain `catalog`: `CatalogEntry`, `CatalogSearch` (Suche, Region, Übung aus Eintrag, Anleitung zu `catalogId`), Zuordnung der 38 Startübungen zu Katalogeinträgen
   - UI: „Aus Katalog hinzufügen“ in der Übungsliste (auch im Picker), Katalog-Screen mit Suche, Region-Chips, Details mit Anleitung, „Zu meinen Übungen“; Anleitung im Tab „Info“ der Übung; Badge „EIGENE“
   - Tests: Suche/Zuordnung, Parser, ViewModels, Prüfung der echten Asset-Datei
   - Keine Bilder (Entscheidung Jonas 04.10.: weglassen)
 
-- B-04 Freitext-/Sprach-Logging (PR #21):
+- B-04 Freitext-/Sprach-Logging, PR #21 (gemergt):
   - Domain `logging`: `LoggingInput` (Text + Übungsnamen + Einheit/Skala), `ExerciseMatcher` (lokaler Fuzzy-Match: sicher / unsicher mit 2–3 Kandidaten / kein Treffer), `LoggingBuilder` (Wertebereiche, „3x8“ → drei Sätze, Einheit → kg, RIR/RPE, neue Übung mit Katalog-Vorschlag), `LoggingProposal` (Vorschau, Einträge abwählbar, Auswahl), `LoggingService` (parsen, speichern als erledigte Sätze, neue Übungen erst beim Speichern), `SpeechInput` (Interface)
   - `:ai`: `LoggingPrompt` (`logging-v1`, Schema im Systemprompt, Antwortsprache = App-Sprache), `LoggingParser`, `KtorLoggingGenerator`; `JsonRead` um Dezimalzahlen erweitert
   - App: `AndroidSpeechInput` (on-device `SpeechRecognizer`, Mikrofon ausgeblendet ohne on-device-Erkenner; `RECORD_AUDIO` erst beim ersten Tippen), `LoggingScreen` (Textfeld + Mikrofon → Vorschau mit Schaltern/Kandidaten-Chips → „N Sätze speichern“), Button „Per Text oder Sprache erfassen“ im Workout (nur mit KI-Profil)
   - `PlannedSet` um `rpe` und `completedAt` ergänzt (Standard `null`)
   - Tests: Matcher, Builder/Vorschau, Parser/Prompt, `LoggingService`, `LoggingViewModel` (inkl. Sprache mit Fake), `WorkoutViewModel` (Button nur mit Profil)
 
+## In Arbeit
+- B-05 Coach-Chat (Branch `claude/b05-coach-chat`, PR gegen main; danach Stopp und Feedback von Jonas abwarten):
+  - Domain `chat`: `ChatContext` + `ChatContextBuilder` (Review-Kontext 6 Wochen + Bestwert je Übung in 6 × 4 Wochen, ohne Cardio), `ChatHistory` (letzte 12 Nachrichten, ~12 000 Zeichen, beginnt mit Frage), `ChatMessage`, `ChatPayload`, `ChatService` (senden, prüfen, speichern, „Neues Gespräch“), `AiChatRepository`; `SuggestionApplier.applicable` (auch vom Review genutzt); `AiSuggestion` hat `reviewId` oder `chatMessageId`
+  - `:ai`: `ChatPrompt` (`chat-v1`, Kontext im Systemprompt, Verlauf als Nachrichten, frühere Antworten im Antwortformat), `ChatParser` (`reply` + max. 3 Vorschläge, Text ohne JSON = Antwort ohne Vorschläge), `KtorChatGenerator`, `SuggestionJson` (gemeinsam mit `ReviewParser`). Kein Streaming
+  - Data: Tabelle `ai_chat_messages`, `ai_suggestions.reviewId` nullable + `chatMessageId` (DB v4, Auto-Migration, Migrationstest), `RoomAiChatRepository`; `chatNoticeAccepted` im DataStore
+  - UI: Coach-Tab mit Umschalter „Wochen-Review | Chat“; Chat mit Blasen, Vorschlagskarten inline (Übernehmen/Verwerfen über `ReviewService`), „Coach denkt …“, Beispielfragen, Eingabefeld, Hinweis + „Daten ansehen“, „Neues Gespräch“ mit Rückfrage, eigener Datenschutz-Hinweis beim ersten Senden
+  - Tests: Domain (Kontext, Kürzung, `applicable`), Prompt/Parser + MockEngine-Rundreise, Room (Repository, Migration 3→4, DataStore), `ChatService`, `ChatViewModel`
+  - Nachtrag (Feedback Jonas): Coach erstellt Pläne direkt aus dem Chat (Plan-Karte mit abwählbaren Routinen, „N Routinen speichern“; fehlende Übungen lokal aus dem Katalog zugeordnet und beim Speichern angelegt) und kann zusätzlich Übungen tauschen, Reihenfolge ändern, Routinen umbenennen und löschen. Prompt `chat-v2`
+
 ## Nächster Schritt
-- B-05 Coach-Chat, B-07 Auto-Backup
+- Feedback von Jonas zu B-05 abwarten (PR prüfen, auf dem Pixel testen). Danach B-07 Auto-Backup
 - Periodisierung (Rest von B-02: Zyklen/Blöcke mit Deload-Woche, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review): **nach B-05 einplanen**, wenn Jonas ≥ 4–6 Wochen Daten mit der App hat (Review-Fenster = 6 Wochen; Deload-Regeln brauchen echte RIR-/Stagnations-Verläufe) und die ersten Reviews auf dem Pixel getestet sind. Sinnvoller Startpunkt: Montag nach einer Deload-Woche oder direkt nach einem mit B-03 erzeugten Plan (= „Block 1“). Vorher von Jonas festlegen: Blocklänge (z. B. 4 + 1 Deload), Deload-Art (Volumen −40 % oder Gewicht −10 %)
 
 ## APK aufs Handy
@@ -150,15 +157,25 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 ## Offen für Jonas
 - Modellauswahl im KI-Profil testen (PR „Modellauswahl als Dropdown“): Einstellungen → KI-Coach → Profil. Nach Base-URL (+ Key) erscheint „N Modelle verfügbar“, über den Pfeil auswählen; falscher Key → Fehlermeldung + „Erneut laden“; bestehendes Profil öffnen → Liste lädt mit gespeichertem Key; Anthropic lädt erst mit Key; Ollama im LAN ohne Key
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
-- B-06 auf dem Pixel testen (PR-APK): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung
-- B-04 auf dem Pixel testen (PR-APK, braucht KI-Profil): Workout starten → „Per Text oder Sprache erfassen“
+- B-06 auf dem Pixel testen (APK von main): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung
+- B-04 auf dem Pixel testen (APK von main, braucht KI-Profil): Workout starten → „Per Text oder Sprache erfassen“
   - Text „Bankdrücken 3x8 80 kg RIR 2“ → Datenschutz-Hinweis beim ersten Mal, „Daten ansehen“ (nur Text + Übungsnamen), Vorschau: drei Sätze, speichern → erscheinen als erledigte Sätze im Workout
   - „Kniebeuge 100 kg 5 Wdh, 105 kg 3 Wdh“, „Klimmzüge 4x10“, mehrere Übungen in einem Satz, „Aufwärmsatz 40 kg 10“
   - Fuzzy-Match: „Kniebeugen“, „bankdrucken“, Tippfehler → automatisch zugeordnet; mehrdeutiger Name (z. B. „Bankdrücken“ bei mehreren Varianten) → Kandidaten-Chips, Speichern erst nach Auswahl; unbekannte Übung („Cable Pullover“) → „Neu: …“ mit Badge, Eintrag abwählen, nichts wird angelegt
   - Einheit lbs und Skala RPE in den Einstellungen umstellen: „225 lbs 5 @8“
   - Mikrofon: erstes Tippen fragt die Berechtigung; Diktat landet im Feld und ist korrigierbar; Berechtigung ablehnen → Hinweis; Flugmodus (on-device-Erkennung geht ohne Netz, nur die KI-Auswertung nicht); fehlt das deutsche Sprachpaket → Hinweis. Ohne on-device-Erkenner ist das Mikrofon nicht sichtbar
   - Fehler: Netz aus, falscher Key, Text ohne Sätze („Hallo“)
-- B-03 auf dem Pixel testen (PR-APK): Pläne → „Mit KI erstellen“, Plan erzeugen, Entwurf prüfen, speichern
+- B-03 auf dem Pixel testen (APK von main): Pläne → „Mit KI erstellen“, Plan erzeugen, Entwurf prüfen, speichern
+- B-05 auf dem Pixel testen (PR-APK, braucht KI-Profil): Coach-Tab → „Chat“
+  - Beispielfrage antippen oder „Warum stagniert mein Bankdrücken?“ → beim ersten Mal Chat-Hinweis (auch wenn der Review-Hinweis schon bestätigt war), „Daten ansehen“ zeigt Kontext + Nachrichten
+  - Antwort nennt Zahlen aus deinen Daten; „Coach denkt …“ während der Anfrage
+  - „Was soll ich an Push A ändern?“ → Vorschlagskarten in der Antwort; eine übernehmen (Routine prüfen), eine verwerfen; Karte, die nach einer Routinen-Änderung nicht mehr passt, zeigt den Hinweis
+  - App schließen und neu öffnen → Verlauf und Status der Karten sind noch da
+  - „Neues Gespräch“ → Rückfrage → Verlauf leer, übernommene Änderung bleibt in der Routine
+  - Fehler: Flugmodus, falscher Key → Fehlermeldung, Frage steht wieder im Feld, erneut senden
+  - Tastatur: Eingabefeld bleibt sichtbar, Verlauf scrollt; Wochen-Review weiterhin über den Umschalter, „Wochen-Review bereit“ auf Heute öffnet den Review
+  - Plan: „Erstelle mir einen Plan für 3 Tage, Gym“ → Plan-Karte; eine Routine abschalten, „N Routinen speichern“ → in „Pläne“ hinten angehängt, NEU-Übungen stehen in der Übungsliste (mit Anleitung, wenn aus dem Katalog). Ohne Angaben fragt der Coach nach Tagen/Equipment
+  - Anpassungen: „Tausche Bankdrücken gegen Kurzhantel-Bankdrücken“, „Setz Kniebeuge an den Anfang von Push A“, „Benenne Push A in Oberkörper A um“, „Lösch Routine X“ → Karten mit Diff, übernehmen, in „Pläne“ prüfen
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
 - Setup-Skript im Environment prüfen: Plattform-Paket heißt `platforms;android-37.0` (in `docs/cloud-environment.md` korrigiert)
 - Routine im claude.ai-UI anlegen (meine per Tool angelegte Routine hat kein Repo und keinen GitHub-Zugang und ist deaktiviert), Prompt siehe `docs/routine-prompt.md`

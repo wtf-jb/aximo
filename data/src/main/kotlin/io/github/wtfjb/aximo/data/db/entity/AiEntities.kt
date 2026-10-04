@@ -33,30 +33,50 @@ data class AiReviewEntity(
     val droppedSuggestions: Int,
 )
 
+/** A message of the coach chat (B-05). Not part of the JSON backup. */
+@Entity(tableName = "ai_chat_messages")
+data class AiChatMessageEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    /** [io.github.wtfjb.aximo.domain.chat.ChatRole] name. */
+    val role: String,
+    val text: String,
+    val createdAt: Instant,
+    val droppedSuggestions: Int,
+)
+
 /**
- * A suggestion of a review. [type] names the kind of change, [payloadJson]
- * holds its values ([io.github.wtfjb.aximo.data.ai.SuggestionPayload]).
+ * A suggestion of a review or of a chat answer: exactly one of [reviewId] and
+ * [chatMessageId] is set. [type] names the kind of change, [payloadJson] holds
+ * its values ([io.github.wtfjb.aximo.data.ai.SuggestionPayload]).
  */
 @Entity(
     tableName = "ai_suggestions",
     foreignKeys = [
         ForeignKey(entity = AiReviewEntity::class, parentColumns = ["id"], childColumns = ["reviewId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = AiChatMessageEntity::class, parentColumns = ["id"], childColumns = ["chatMessageId"], onDelete = ForeignKey.CASCADE),
     ],
-    indices = [Index("reviewId")],
+    indices = [Index("reviewId"), Index("chatMessageId")],
 )
 data class AiSuggestionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val reviewId: Long,
+    val reviewId: Long?,
     val position: Int,
     val type: String,
     val payloadJson: String,
     val rationale: String,
     /** [io.github.wtfjb.aximo.domain.review.SuggestionStatus] name. */
     val status: String,
+    val chatMessageId: Long? = null,
 )
 
 data class AiReviewWithSuggestions(
     @Embedded val review: AiReviewEntity,
     @Relation(parentColumn = "id", entityColumn = "reviewId")
+    val suggestions: List<AiSuggestionEntity>,
+)
+
+data class AiChatMessageWithSuggestions(
+    @Embedded val message: AiChatMessageEntity,
+    @Relation(parentColumn = "id", entityColumn = "chatMessageId")
     val suggestions: List<AiSuggestionEntity>,
 )

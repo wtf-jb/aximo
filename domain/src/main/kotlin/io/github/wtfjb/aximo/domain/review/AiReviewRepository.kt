@@ -10,6 +10,7 @@ interface AiReviewRepository {
     /** Saves the review and its suggestions; returns the review id. */
     suspend fun saveReview(review: AiReview): Long
 
+    /** Any stored suggestion, from a review or the chat (one table). */
     suspend fun getSuggestion(id: Long): AiSuggestion?
 
     suspend fun setStatus(suggestionId: Long, status: SuggestionStatus)
