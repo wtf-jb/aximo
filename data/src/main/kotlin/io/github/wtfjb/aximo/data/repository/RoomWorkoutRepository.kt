@@ -23,6 +23,12 @@ class RoomWorkoutRepository(private val dao: WorkoutDao) : WorkoutRepository {
     override fun observeRecentFinished(limit: Int): Flow<List<WorkoutDetail>> =
         dao.observeRecentFinished(limit).map { rows -> rows.map { it.toDomain() } }
 
+    override fun observeFinished(): Flow<List<WorkoutDetail>> =
+        dao.observeFinished().map { rows -> rows.map { it.toDomain() } }
+
+    override suspend fun previousOfRoutine(routineId: Long, before: Instant): WorkoutDetail? =
+        dao.previousOfRoutine(routineId, before)?.toDomain()
+
     override suspend fun startWorkout(startedAt: Instant, routineId: Long?): Long =
         dao.insert(WorkoutEntity(startedAt = startedAt, endedAt = null, routineId = routineId, note = "", rating = null))
 

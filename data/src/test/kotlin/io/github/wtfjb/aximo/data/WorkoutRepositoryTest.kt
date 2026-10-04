@@ -1,7 +1,9 @@
 package io.github.wtfjb.aximo.data
 
 import io.github.wtfjb.aximo.data.repository.RoomExerciseRepository
+import io.github.wtfjb.aximo.data.repository.RoomRoutineRepository
 import io.github.wtfjb.aximo.data.repository.RoomWorkoutRepository
+import io.github.wtfjb.aximo.domain.model.Routine
 import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.domain.workout.PlannedSet
 import kotlin.time.Instant
@@ -67,6 +69,39 @@ class WorkoutRepositoryTest : DatabaseTest() {
 
         assertEquals(listOf(newer, older), recent.map { it.workout.id })
         assertEquals("Bankdrücken", recent[1].exercises[0].exercise.name)
+    }
+
+    @Test
+    fun finishedListsAllFinishedWorkoutsNewestFirst() = runTest {
+        val older = workouts.startWorkout(t0)
+        workouts.addExercise(older, benchId, null, listOf(PlannedSet(80.0, 8)))
+        workouts.finishWorkout(older, t0.plus(kotlin.time.Duration.parse("1h")), "")
+        val newer = workouts.startWorkout(t0.plus(kotlin.time.Duration.parse("1d")))
+        workouts.finishWorkout(newer, t0.plus(kotlin.time.Duration.parse("25h")), "")
+        workouts.startWorkout(t0.plus(kotlin.time.Duration.parse("2d")))
+
+        val finished = workouts.observeFinished().first()
+
+        assertEquals(listOf(newer, older), finished.map { it.workout.id })
+        assertEquals(1, finished[1].exercises[0].sets.size)
+    }
+
+    @Test
+    fun previousOfRoutineIsTheLastFinishedBefore() = runTest {
+        val routines = RoomRoutineRepository(db.routineDao())
+        val push = routines.saveRoutine(Routine(name = "Push A"), emptyList())
+        val pull = routines.saveRoutine(Routine(name = "Pull A"), emptyList())
+        val first = workouts.startWorkout(t0, push)
+        workouts.finishWorkout(first, t0.plus(kotlin.time.Duration.parse("1h")), "")
+        val second = workouts.startWorkout(t0.plus(kotlin.time.Duration.parse("1d")), push)
+        workouts.finishWorkout(second, t0.plus(kotlin.time.Duration.parse("25h")), "")
+        val other = workouts.startWorkout(t0.plus(kotlin.time.Duration.parse("2d")), pull)
+        workouts.finishWorkout(other, t0.plus(kotlin.time.Duration.parse("49h")), "")
+        val current = t0.plus(kotlin.time.Duration.parse("3d"))
+
+        assertEquals(second, workouts.previousOfRoutine(push, current)?.workout?.id)
+        assertEquals(first, workouts.previousOfRoutine(push, t0.plus(kotlin.time.Duration.parse("1d")))?.workout?.id)
+        assertNull(workouts.previousOfRoutine(push, t0))
     }
 
     @Test

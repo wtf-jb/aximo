@@ -32,3 +32,34 @@ fun formatTime(instant: kotlin.time.Instant, locale: Locale = Locale.getDefault(
 /** Whole number with the locale's grouping, e.g. 9420 → "9.420" in German. */
 fun formatInteger(value: Double, locale: Locale = Locale.getDefault()): String =
     java.text.NumberFormat.getIntegerInstance(locale).format(Math.round(value))
+
+/** Relative change with sign and one decimal, e.g. 0.091 → "+9,1 %" in German. */
+fun formatPercentChange(change: Double, locale: Locale = Locale.getDefault()): String {
+    val format = java.text.NumberFormat.getPercentInstance(locale).apply {
+        minimumFractionDigits = 1
+        maximumFractionDigits = 1
+    }
+    val text = format.format(kotlin.math.abs(change))
+    return when {
+        change > 0 -> "+$text"
+        change < 0 -> "−$text"
+        else -> text
+    }
+}
+
+/** Number with at most one decimal, e.g. 3.4 → "3,4", 14.0 → "14". */
+fun formatOneDecimal(value: Double, locale: Locale = Locale.getDefault()): String =
+    java.text.NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = 1 }.format(value)
+
+/**
+ * Weight and reps of a set: "82,5 × 8". For bodyweight exercises the weight is
+ * the extra load: "8" without, "+5 × 8" with extra weight, "−10 × 8" with assistance.
+ */
+fun formatSetValue(weightKg: Double, reps: Int, bodyweight: Boolean, unit: io.github.wtfjb.aximo.domain.units.WeightUnit): String {
+    if (!bodyweight) return "${formatWeight(weightKg, unit)} × $reps"
+    return when {
+        weightKg > 0 -> "+${formatWeight(weightKg, unit)} × $reps"
+        weightKg < 0 -> "−${formatWeight(-weightKg, unit)} × $reps"
+        else -> reps.toString()
+    }
+}

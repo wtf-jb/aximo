@@ -8,6 +8,9 @@ interface CardioRepository {
     /** The newest [limit] entries, newest first. */
     fun observeRecent(limit: Int): Flow<List<CardioEntry>>
 
+    /** All entries, newest first (statistics, A-07). */
+    fun observeAll(): Flow<List<CardioEntry>>
+
     suspend fun getEntry(id: Long): CardioEntry?
 
     /** Inserts (id = 0) or updates the entry. Returns the id. */

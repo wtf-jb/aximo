@@ -34,6 +34,12 @@ import kotlinx.serialization.Serializable
 /** Exercise list in selection mode, returns the picked ids to the screen that opened it. */
 @Serializable data object ExercisePickerRoute
 
+/** Progress, history and records of one exercise (A-07). */
+@Serializable data class ExerciseDetailRoute(val exerciseId: Long)
+
+/** A finished workout, opened from "Zuletzt". */
+@Serializable data class WorkoutDetailRoute(val workoutId: Long)
+
 /** exerciseId = 0 creates a new exercise. */
 @Serializable data class ExerciseEditRoute(val exerciseId: Long = 0)
 

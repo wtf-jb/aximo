@@ -16,6 +16,7 @@ val AppShapes = Shapes(
 /** Radii that are not Material 3 shape steps. */
 object Radii {
     val sm = RoundedCornerShape(10.dp) // radius-sm
+    val smHalf = RoundedCornerShape(5.dp) // radius-sm, 5px variant for heatmap cells
     val xxl = RoundedCornerShape(26.dp) // radius-2xl
     val full = CircleShape // radius-full
 }

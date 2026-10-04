@@ -39,6 +39,7 @@ object AppIcons {
     val ArrowRight by lazy { lineIcon("ArrowRight", "M5 12h14M13 6l6 6-6 6") }
     val Minus by lazy { lineIcon("Minus", "M5 12h14") }
     val Minimize by lazy { lineIcon("Minimize", "M6 9l6 6 6-6") }
+    val ChevronDown by lazy { lineIcon("ChevronDown", "M6 9l6 6 6-6") }
     val Superset by lazy { lineIcon("Superset", "M7 7h10M7 12h10M7 17h10") }
     val Plus by lazy { lineIcon("Plus", "M12 5v14M5 12h14") }
     val Dumbbell by lazy { lineIcon("Dumbbell", "M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12") }

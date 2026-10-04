@@ -16,6 +16,8 @@ class FakeCardioRepository(initial: List<CardioEntry> = emptyList()) : CardioRep
     override fun observeRecent(limit: Int): Flow<List<CardioEntry>> =
         entries.map { list -> list.sortedByDescending { it.startedAt }.take(limit) }
 
+    override fun observeAll(): Flow<List<CardioEntry>> = entries.map { list -> list.sortedByDescending { it.startedAt } }
+
     override suspend fun getEntry(id: Long): CardioEntry? = entries.value.find { it.id == id }
 
     override suspend fun saveEntry(entry: CardioEntry): Long {

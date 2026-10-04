@@ -172,7 +172,7 @@ private fun HeroCard(state: SummaryUiState, unit: WeightUnit) {
                 StatTile(WorkoutLogic.formatElapsed(state.durationSeconds), stringResource(R.string.summary_duration), Modifier.weight(1f))
                 StatTile(
                     formatInteger(unit.fromKg(state.volumeKg)),
-                    stringResource(R.string.summary_volume, stringResource(unit.label())),
+                    volumeLabel(state, stringResource(R.string.summary_volume, stringResource(unit.label()))),
                     Modifier.weight(1f),
                 )
             }
@@ -182,6 +182,15 @@ private fun HeroCard(state: SummaryUiState, unit: WeightUnit) {
             }
         }
     }
+}
+
+/** "Volumen (kg)" plus "· +4 % ggü. letzter Push A" when there is a previous workout of the routine. */
+@Composable
+private fun volumeLabel(state: SummaryUiState, base: String): String {
+    val change = state.volumeChange ?: return base
+    val name = state.routineName ?: return base
+    val percent = String.format(java.util.Locale.ROOT, "%+d", Math.round(change * 100))
+    return stringResource(R.string.workout_meta, base, stringResource(R.string.summary_volume_change, percent, name))
 }
 
 @Composable

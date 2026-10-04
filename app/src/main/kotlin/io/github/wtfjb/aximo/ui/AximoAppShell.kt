@@ -18,6 +18,7 @@ import androidx.navigation.toRoute
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.ui.navigation.AppNavigationBar
+import io.github.wtfjb.aximo.ui.exercisedetail.ExerciseDetailScreen
 import io.github.wtfjb.aximo.ui.exercises.ExerciseEditScreen
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListScreen
 import io.github.wtfjb.aximo.ui.cardio.CardioScreen
@@ -42,6 +43,8 @@ import io.github.wtfjb.aximo.ui.screens.PlaceholderTab
 import io.github.wtfjb.aximo.ui.screens.PlansScreen
 import io.github.wtfjb.aximo.ui.screens.ThemeShowcaseScreen
 import io.github.wtfjb.aximo.ui.screens.TodayScreen
+import io.github.wtfjb.aximo.ui.stats.StatsScreen
+import io.github.wtfjb.aximo.ui.navigation.ExerciseDetailRoute
 
 /** App frame: bottom navigation plus the screen of the selected tab. */
 @Composable
@@ -84,6 +87,7 @@ fun AximoAppShell(
                     onOpenWorkout = { navController.navigate(WorkoutRoute) { launchSingleTop = true } },
                     onOpenThemeShowcase = { navController.navigate(ThemeShowcaseRoute) },
                     onOpenCardio = { id -> navController.navigate(CardioRoute(id)) },
+                    onOpenFinishedWorkout = { id -> navController.navigate(SummaryRoute(id)) },
                 )
             }
             composable<PlansRoute> {
@@ -96,7 +100,14 @@ fun AximoAppShell(
                 )
             }
             composable<StatsRoute> {
-                PlaceholderTab(stringResource(R.string.nav_stats), stringResource(R.string.placeholder_body))
+                StatsScreen(onOpenExercise = { id -> navController.navigate(ExerciseDetailRoute(id)) })
+            }
+            composable<ExerciseDetailRoute> { entry ->
+                ExerciseDetailScreen(
+                    exerciseId = entry.toRoute<ExerciseDetailRoute>().exerciseId,
+                    onBack = { navController.popBackStack() },
+                    onEdit = { id -> navController.navigate(ExerciseEditRoute(id)) },
+                )
             }
             composable<CoachRoute> {
                 PlaceholderTab(stringResource(R.string.nav_coach), stringResource(R.string.placeholder_body))
@@ -105,7 +116,7 @@ fun AximoAppShell(
                 ExerciseListScreen(
                     onBack = { navController.popBackStack() },
                     onCreate = { navController.navigate(ExerciseEditRoute()) },
-                    onOpen = { id -> navController.navigate(ExerciseEditRoute(id)) },
+                    onOpen = { id -> navController.navigate(ExerciseDetailRoute(id)) },
                 )
             }
             composable<WorkoutRoute> { entry ->
