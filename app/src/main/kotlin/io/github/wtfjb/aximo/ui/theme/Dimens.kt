@@ -70,6 +70,27 @@ object Sizes {
     /** Mood tile on the finish screen (mockup: 64). */
     val moodTile = 64.dp
 
+    /** Line chart (mockup Statistik.html: 140 high, line 2.5, points r 3.5 / last r 6). */
+    val chartHeight = 140.dp
+    val chartLine = 2.5.dp
+    val chartPoint = 7.dp
+    val chartPointLast = 12.dp
+    val chartPointStroke = 2.dp
+
+    /** Sets per muscle group: bar height and the label / value columns (82 | 1fr | 28). */
+    val volumeBar = 12.dp
+    val volumeLabelColumn = 82.dp
+    val volumeValueColumn = 28.dp
+
+    /** Heatmap cell height and legend swatches (16 × 10 bar, 10 × 10 dot). */
+    val heatCell = 18.dp
+    val legendBarWidth = 16.dp
+    val legendBarHeight = 10.dp
+    val legendDot = 10.dp
+
+    /** Set chip in the exercise history ("82,5 × 8 · R2"). */
+    val setChip = 34.dp
+
     /** Color swatch in the theme showcase. */
     val swatch = 40.dp
 }

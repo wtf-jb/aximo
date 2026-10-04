@@ -17,6 +17,12 @@ interface WorkoutRepository {
     /** The newest [limit] finished workouts, newest first. */
     fun observeRecentFinished(limit: Int): Flow<List<WorkoutDetail>>
 
+    /** All finished workouts with exercises and sets, newest first (statistics, A-07). */
+    fun observeFinished(): Flow<List<WorkoutDetail>>
+
+    /** The last finished workout of the routine that started before [before], or null. */
+    suspend fun previousOfRoutine(routineId: Long, before: Instant): WorkoutDetail?
+
     suspend fun startWorkout(startedAt: Instant, routineId: Long? = null): Long
 
     /** Adds the exercise at the end of the workout with the given sets. Returns the workout-exercise id. */

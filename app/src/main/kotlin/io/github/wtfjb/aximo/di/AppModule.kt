@@ -22,10 +22,12 @@ import io.github.wtfjb.aximo.domain.workout.WorkoutStarter
 import io.github.wtfjb.aximo.rest.AndroidRestTimerEffects
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.ui.cardio.CardioViewModel
+import io.github.wtfjb.aximo.ui.exercisedetail.ExerciseDetailViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
 import io.github.wtfjb.aximo.ui.plans.PlansViewModel
 import io.github.wtfjb.aximo.ui.routine.RoutineEditViewModel
+import io.github.wtfjb.aximo.ui.stats.StatsViewModel
 import io.github.wtfjb.aximo.ui.summary.SummaryViewModel
 import io.github.wtfjb.aximo.ui.today.TodayViewModel
 import io.github.wtfjb.aximo.ui.workout.WorkoutViewModel
@@ -59,6 +61,7 @@ val appModule = module {
     viewModel { MainViewModel(get()) }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), exerciseId) }
+    viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), exerciseId) }
     viewModel { TodayViewModel(get(), get(), get(), get(), get()) }
     viewModel { (entryId: Long) ->
         val context = androidContext()
@@ -68,6 +71,7 @@ val appModule = module {
     viewModel { (routineId: Long) -> RoutineEditViewModel(get(), get(), routineId) }
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
+    viewModel { StatsViewModel(get(), get(), get(), get()) }
 }
 
 /** Display name of a default cardio activity, stored once when the activities are created. */

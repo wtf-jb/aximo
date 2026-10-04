@@ -11,6 +11,9 @@ class RoomCardioRepository(private val dao: CardioDao) : CardioRepository {
     override fun observeRecent(limit: Int): Flow<List<CardioEntry>> =
         dao.observeRecent(limit).map { rows -> rows.map { it.toDomain() } }
 
+    override fun observeAll(): Flow<List<CardioEntry>> =
+        dao.observeAll().map { rows -> rows.map { it.toDomain() } }
+
     override suspend fun getEntry(id: Long): CardioEntry? = dao.getById(id)?.toDomain()
 
     override suspend fun saveEntry(entry: CardioEntry): Long =

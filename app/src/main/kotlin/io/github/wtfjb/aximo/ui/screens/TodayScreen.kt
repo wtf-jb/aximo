@@ -26,6 +26,7 @@ fun TodayScreen(
     onOpenWorkout: () -> Unit,
     onOpenThemeShowcase: () -> Unit,
     onOpenCardio: (Long) -> Unit,
+    onOpenFinishedWorkout: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = koinViewModel(),
 ) {
@@ -56,7 +57,7 @@ fun TodayScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
-        RecentList(items = state.recent, onOpenCardio = onOpenCardio)
+        RecentList(items = state.recent, onOpenCardio = onOpenCardio, onOpenWorkout = onOpenFinishedWorkout)
         if (BuildConfig.DEBUG) {
             SecondaryButton(
                 text = stringResource(R.string.showcase_open),

@@ -34,6 +34,19 @@ interface WorkoutDao {
     @Query("SELECT * FROM workouts WHERE endedAt IS NOT NULL ORDER BY startedAt DESC LIMIT :limit")
     fun observeRecentFinished(limit: Int): Flow<List<WorkoutWithDetails>>
 
+    /** All finished workouts with exercises and sets, newest first. */
+    @Transaction
+    @Query("SELECT * FROM workouts WHERE endedAt IS NOT NULL ORDER BY startedAt DESC")
+    fun observeFinished(): Flow<List<WorkoutWithDetails>>
+
+    /** The last finished workout of [routineId] that started before [before]. */
+    @Transaction
+    @Query(
+        "SELECT * FROM workouts WHERE routineId = :routineId AND endedAt IS NOT NULL AND startedAt < :before " +
+            "ORDER BY startedAt DESC LIMIT 1",
+    )
+    suspend fun previousOfRoutine(routineId: Long, before: Instant): WorkoutWithDetails?
+
     @Query("SELECT * FROM workouts WHERE id = :id")
     suspend fun getById(id: Long): WorkoutEntity?
 

@@ -300,4 +300,102 @@
         <item quantity="one">%d min</item>
         <item quantity="other">%d min</item>
     </plurals>
+    <!-- Statistik (A-07) -->
+    <string name="stats_period_4w">4 W</string>
+    <string name="stats_period_3m">3 M</string>
+    <string name="stats_period_1y">1 J</string>
+    <string name="stats_period_all">Gesamt</string>
+    <string name="stats_empty">Noch keine Daten. Logge ein Workout oder eine Cardio-Einheit, dann erscheinen hier deine Auswertungen.</string>
+    <string name="stats_pick_exercise">Übung wählen, aktuell: %1$s</string>
+    <string name="stats_details">Details</string>
+    <string name="stats_e1rm_label">Geschätztes 1RM (e1RM)</string>
+    <string name="stats_reps_label">Meiste Wdh. in einem Satz</string>
+    <string name="stats_change">%1$s in %2$s</string>
+    <string name="stats_no_sessions">Keine Einheiten im Zeitraum.</string>
+    <string name="stats_too_few">Für ein Diagramm braucht es mindestens zwei Einheiten.</string>
+    <string name="stats_chart_e1rm">e1RM %1$s von %2$s bis %3$s</string>
+    <string name="stats_chart_reps">Meiste Wdh. %1$s von %2$s bis %3$s</string>
+    <string name="stats_max_weight">Max. Gewicht</string>
+    <string name="stats_max_extra">Max. Zusatz</string>
+    <string name="stats_best_set">Beste Serie</string>
+    <string name="stats_volume">Volumen (%1$s)</string>
+    <string name="stats_total_reps">Wdh. gesamt</string>
+    <string name="stats_sets_title">Sätze pro Muskelgruppe</string>
+    <string name="stats_per_week">Ø / Woche</string>
+    <string name="stats_target_band">Zielbereich %1$d–%2$d</string>
+    <string name="stats_below_target">Unter Ziel</string>
+    <string name="stats_region_sets">%1$s: %2$s Sätze pro Woche</string>
+    <string name="stats_consistency">Konsistenz</string>
+    <string name="stats_sessions_per_week">%1$s Einheiten / Woche</string>
+    <plurals name="stats_heatmap_caption">
+        <item quantity="one">%d Woche · Mo oben</item>
+        <item quantity="other">%d Wochen · Mo oben</item>
+    </plurals>
+    <plurals name="stats_heatmap_description">
+        <item quantity="one">Trainingstage der letzten %1$d Woche: %2$d Kraft, %3$d Cardio</item>
+        <item quantity="other">Trainingstage der letzten %1$d Wochen: %2$d Kraft, %3$d Cardio</item>
+    </plurals>
+    <string name="stats_strength">Kraft</string>
+    <string name="stats_cardio">Cardio</string>
+    <plurals name="stats_streak_weeks">
+        <item quantity="one">%d Woche</item>
+        <item quantity="other">%d Wochen</item>
+    </plurals>
+    <string name="stats_streak_label">Aktiv ohne Pause</string>
+    <string name="stats_sessions_label">Einheiten</string>
+    <string name="stats_metric_pace">Pace</string>
+    <string name="stats_metric_speed">Tempo</string>
+    <string name="stats_metric_distance">Distanz</string>
+    <string name="stats_metric_duration">Dauer</string>
+    <string name="stats_metric_heart_rate">Puls</string>
+    <string name="stats_cardio_latest">Zuletzt</string>
+    <string name="stats_cardio_chart">%1$s %2$s von %3$s bis %4$s</string>
+    <string name="stats_cardio_no_values">Dafür gibt es im Zeitraum keine Werte.</string>
+    <string name="stats_distance_km">Distanz (km)</string>
+    <string name="stats_duration_total">Dauer</string>
+    <string name="stats_avg_heart_rate">Ø Puls</string>
+    <string name="stats_bpm">%1$d bpm</string>
+
+    <!-- Übungsdetail (A-07) -->
+    <string name="exercise_detail_set_rir">%1$s · R%2$d</string>
+    <string name="exercise_detail_none">–</string>
+
+    <!-- Workout-Detail -->
+
+    <!-- Bilanz-Vergleich -->
+
+    <string name="detail_edit">Bearbeiten</string>
+    <string name="detail_tab_history">Verlauf</string>
+    <string name="detail_tab_chart">Diagramm</string>
+    <string name="detail_tab_records">Bestwerte</string>
+    <string name="detail_tab_info">Info</string>
+    <string name="detail_e1rm">e1RM (%1$s)</string>
+    <string name="detail_max">Max. (%1$s)</string>
+    <string name="detail_best_reps">Meiste Wdh.</string>
+    <string name="detail_sessions">Einheiten</string>
+    <string name="detail_next_time">NÄCHSTES MAL</string>
+    <string name="detail_next_sets">%1$d × %2$s · Ziel-Wdh.: %3$d</string>
+    <string name="detail_next_reason_increase">Alle Arbeitssätze haben das obere Ziel erreicht, das Gewicht steigt.</string>
+    <string name="detail_next_reason_reps">Eine Wdh. mehr ist das Ziel; am oberen Ende kommt Gewicht dazu.</string>
+    <string name="detail_next_reason_hold">Nicht alle Sätze haben das obere Ziel erreicht, das Gewicht bleibt.</string>
+    <string name="detail_next_reason_decrease">Zweimal unter dem Bereich, ein leichteres Gewicht wird vorgeschlagen.</string>
+    <string name="detail_no_history">Noch keine beendeten Einheiten mit dieser Übung.</string>
+    <string name="detail_session_meta_volume">Volumen %1$s %2$s</string>
+    <string name="detail_pr">PR</string>
+    <string name="detail_set_chip">%1$s × %2$d</string>
+    <string name="detail_set_chip_rir">%1$s × %2$d · R%3$d</string>
+    <string name="detail_set_chip_warmup">W %1$s × %2$d</string>
+    <string name="detail_best_e1rm">Bestes e1RM</string>
+    <string name="detail_rep_records">Meiste Wdh. bei Gewicht</string>
+    <string name="detail_rep_record">%1$d × %2$s</string>
+    <string name="detail_info_type">Typ</string>
+    <string name="detail_info_equipment">Equipment</string>
+    <string name="detail_info_primary">Primäre Muskeln</string>
+    <string name="detail_info_secondary">Sekundäre Muskeln</string>
+    <string name="detail_info_reps">Wdh.-Bereich</string>
+    <string name="detail_info_increment">Inkrement</string>
+    <string name="detail_info_rest">Pause</string>
+    <string name="detail_info_note">Notiz</string>
+    <string name="detail_none">–</string>
+    <string name="summary_volume_change">%1$s %% ggü. letzter %2$s</string>
 </resources>

@@ -67,3 +67,10 @@
 | 2026-10-04 | Pläne-Tab | „Freies Training“ + „Cardio erfassen“ wie im Mockup; „Übungen“ wandert als Textbutton neben „Routinen“ (der Platz von „Mit KI erstellen“, Prio B) | Übungsliste bleibt erreichbar, ohne das Mockup zu verbiegen |
 | 2026-10-04 | „Zuletzt“ auf Heute | Letzte 5 Einträge aus beendeten Workouts (Dauer, Volumen) und Cardio (Distanz, Dauer, Pace/Tempo); Cardio-Zeilen öffnen den Eintrag zum Bearbeiten/Löschen. Workout-Detail folgt mit Schritt 9 | Sonst sieht man gespeicherte Cardio-Einheiten nirgends; Liste stammt aus `Heute.html` |
 | 2026-10-04 | Health Connect | Button „Aus Health Connect importieren“ weggelassen | Prio C |
+| 2026-10-04 | Diagramme | Vico 3 (`compose`), Linie mit Punkten; Y-Achse über eigene `ChartScale` | Stack-Vorgabe; eigene Skala hält Achsen ruhig bei wenigen Punkten |
+| 2026-10-04 | Fortschritts-Metrik | e1RM für Übungen mit Gewicht, sonst meiste Wdh. pro Session | Bodyweight ohne Zusatzgewicht hat kein sinnvolles e1RM |
+| 2026-10-04 | Muskelvolumen | Arbeitssätze je Region pro Woche, primäre Muskeln zählen 1, sekundäre 0,5 | Gängige Zählweise; Zielband aus dem Mockup |
+| 2026-10-04 | Konsistenz | Heatmap 12 Wochen (Mo oben), Streak = Wochen in Folge mit mindestens einer Einheit, laufende Woche zählt erst ab der ersten Einheit | Wochen-Streak ist bei 3–4 Einheiten/Woche aussagekräftiger als Tage |
+| 2026-10-04 | Workout-Detail | Tap auf ein Workout in „Zuletzt“ öffnet den Abschluss-Screen (Bilanz, Bestwerte, Bewertung, Notiz) | Zeigt schon alles Nötige; kein zweiter fast gleicher Screen |
+| 2026-10-04 | Volumen-Vergleich | Gegen die letzte beendete Einheit derselben Routine; freie Workouts ohne Vergleich | Mockup „+4 % ggü. letzter Push A“ |
+| 2026-10-04 | Übungsdetail | Öffnet aus der Übungsliste; „Bearbeiten“ führt zum bisherigen Formular | Mockup `UebungDetail.html` |

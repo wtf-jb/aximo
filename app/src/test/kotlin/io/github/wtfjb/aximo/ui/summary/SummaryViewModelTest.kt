@@ -66,4 +66,20 @@ class SummaryViewModelTest {
         assertEquals(4, workouts.finished.getValue(id).workout.rating)
         assertEquals("stark", workouts.finished.getValue(id).workout.note)
     }
+
+    @Test
+    fun comparesVolumeWithThePreviousWorkoutOfTheRoutine() = runTest {
+        val routines = FakeRoutineRepository()
+        val routineId = routines.saveRoutine(io.github.wtfjb.aximo.domain.model.Routine(name = "Push A"), emptyList())
+        workouts.allFinished.value = listOf(io.github.wtfjb.aximo.ui.stats.StatsTestWorkouts.workout(90, 30, 100.0, 10, routineId))
+        val id = workouts.startWorkout(start, routineId)
+        workouts.addExercise(id, 1, null, listOf(PlannedSet(110.0, 10)))
+        workouts.current!!.exercises.single().sets.forEach { workouts.updateSet(it.copy(completedAt = start)) }
+        workouts.finishWorkout(id, start + 50.minutes, "")
+
+        val vm = SummaryViewModel(workouts, routines, progression, id)
+
+        assertEquals(0.1, vm.uiState.value.volumeChange!!, 1e-9)
+        assertEquals("Push A", vm.uiState.value.routineName)
+    }
 }

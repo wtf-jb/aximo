@@ -309,4 +309,103 @@
         <item quantity="one">%d min</item>
         <item quantity="other">%d min</item>
     </plurals>
+    <!-- Statistics (A-07) -->
+    <string name="stats_period_4w">4 W</string>
+    <string name="stats_period_3m">3 M</string>
+    <string name="stats_period_1y">1 Y</string>
+    <string name="stats_period_all">All</string>
+    <string name="stats_empty">No data yet. Log a workout or a cardio session and your statistics show up here.</string>
+    <string name="stats_pick_exercise">Choose exercise, current: %1$s</string>
+    <string name="stats_details">Details</string>
+    <string name="stats_e1rm_label">Estimated 1RM (e1RM)</string>
+    <string name="stats_reps_label">Most reps in a set</string>
+    <string name="stats_change">%1$s in %2$s</string>
+    <string name="stats_no_sessions">No sessions in this period.</string>
+    <string name="stats_too_few">At least two sessions are needed for a chart.</string>
+    <string name="stats_chart_e1rm">e1RM of %1$s from %2$s to %3$s</string>
+    <string name="stats_chart_reps">Most reps of %1$s from %2$s to %3$s</string>
+    <string name="stats_max_weight">Max weight</string>
+    <string name="stats_max_extra">Max extra load</string>
+    <string name="stats_best_set">Best set</string>
+    <string name="stats_volume">Volume (%1$s)</string>
+    <string name="stats_total_reps">Total reps</string>
+    <string name="stats_sets_title">Sets per muscle group</string>
+    <string name="stats_per_week">Avg / week</string>
+    <string name="stats_target_band">Target %1$d–%2$d</string>
+    <string name="stats_below_target">Below target</string>
+    <string name="stats_region_sets">%1$s: %2$s sets per week</string>
+    <string name="stats_consistency">Consistency</string>
+    <string name="stats_sessions_per_week">%1$s sessions / week</string>
+    <plurals name="stats_heatmap_caption">
+        <item quantity="one">%d week · Mon on top</item>
+        <item quantity="other">%d weeks · Mon on top</item>
+    </plurals>
+    <plurals name="stats_heatmap_description">
+        <item quantity="one">Training days of the last %1$d week: %2$d strength, %3$d cardio</item>
+        <item quantity="other">Training days of the last %1$d weeks: %2$d strength, %3$d cardio</item>
+    </plurals>
+    <string name="stats_strength">Strength</string>
+    <string name="stats_cardio">Cardio</string>
+    <plurals name="stats_streak_weeks">
+        <item quantity="one">%d week</item>
+        <item quantity="other">%d weeks</item>
+    </plurals>
+    <string name="stats_streak_label">Active in a row</string>
+    <string name="stats_sessions_label">Sessions</string>
+    <string name="stats_metric_pace">Pace</string>
+    <string name="stats_metric_speed">Speed</string>
+    <string name="stats_metric_distance">Distance</string>
+    <string name="stats_metric_duration">Duration</string>
+    <string name="stats_metric_heart_rate">Heart rate</string>
+    <string name="stats_cardio_latest">Latest</string>
+    <string name="stats_cardio_chart">%1$s of %2$s from %3$s to %4$s</string>
+    <string name="stats_cardio_no_values">No values for this in the period.</string>
+    <string name="stats_distance_km">Distance (km)</string>
+    <string name="stats_duration_total">Duration</string>
+    <string name="stats_avg_heart_rate">Avg HR</string>
+    <string name="stats_bpm">%1$d bpm</string>
+
+    <!-- Exercise detail (A-07) -->
+    <string name="exercise_detail_set_rir">%1$s · R%2$d</string>
+    <string name="exercise_detail_none">–</string>
+
+    <!-- Workout detail -->
+
+    <!-- Summary comparison -->
+
+    <!-- Exercise detail (A-07) -->
+    <string name="detail_edit">Edit</string>
+    <string name="detail_tab_history">History</string>
+    <string name="detail_tab_chart">Chart</string>
+    <string name="detail_tab_records">Records</string>
+    <string name="detail_tab_info">Info</string>
+    <string name="detail_e1rm">e1RM (%1$s)</string>
+    <string name="detail_max">Max. (%1$s)</string>
+    <string name="detail_best_reps">Most reps</string>
+    <string name="detail_sessions">Sessions</string>
+    <string name="detail_next_time">NEXT TIME</string>
+    <string name="detail_next_sets">%1$d × %2$s · target reps: %3$d</string>
+    <string name="detail_next_reason_increase">All working sets reached the top of the range, the weight goes up.</string>
+    <string name="detail_next_reason_reps">One more rep is the target; weight follows at the top of the range.</string>
+    <string name="detail_next_reason_hold">Not all sets reached the top, the weight stays.</string>
+    <string name="detail_next_reason_decrease">Twice below the range, a lower weight is suggested.</string>
+    <string name="detail_no_history">No finished sessions with this exercise yet.</string>
+    <string name="detail_session_meta_volume">Volume %1$s %2$s</string>
+    <string name="detail_pr">PR</string>
+    <string name="detail_set_chip">%1$s × %2$d</string>
+    <string name="detail_set_chip_rir">%1$s × %2$d · R%3$d</string>
+    <string name="detail_set_chip_warmup">W %1$s × %2$d</string>
+    <string name="detail_best_e1rm">Best e1RM</string>
+    <string name="detail_rep_records">Most reps at weight</string>
+    <string name="detail_rep_record">%1$d × %2$s</string>
+    <string name="detail_info_type">Type</string>
+    <string name="detail_info_equipment">Equipment</string>
+    <string name="detail_info_primary">Primary muscles</string>
+    <string name="detail_info_secondary">Secondary muscles</string>
+    <string name="detail_info_reps">Rep range</string>
+    <string name="detail_info_increment">Increment</string>
+    <string name="detail_info_rest">Rest</string>
+    <string name="detail_info_note">Note</string>
+    <string name="detail_none">–</string>
+    <string name="summary_volume_change">%1$s%% vs. last %2$s</string>
 </resources>

@@ -34,7 +34,7 @@ import io.github.wtfjb.aximo.ui.theme.Spacing
  * volume, cardio with distance, duration and pace. Cardio rows open the entry.
  */
 @Composable
-fun RecentList(items: List<RecentItem>, onOpenCardio: (Long) -> Unit) {
+fun RecentList(items: List<RecentItem>, onOpenCardio: (Long) -> Unit, onOpenWorkout: (Long) -> Unit) {
     if (items.isEmpty()) return
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s10)) {
         Text(text = stringResource(R.string.today_recent), style = MaterialTheme.typography.titleSmall)
@@ -43,7 +43,7 @@ fun RecentList(items: List<RecentItem>, onOpenCardio: (Long) -> Unit) {
                 items.forEachIndexed { index, item ->
                     if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     when (item) {
-                        is RecentItem.WorkoutItem -> WorkoutRow(item)
+                        is RecentItem.WorkoutItem -> WorkoutRow(item, onClick = { onOpenWorkout(item.workoutId) })
                         is RecentItem.CardioItem -> CardioRow(item, onClick = { onOpenCardio(item.entry.id) })
                     }
                 }
@@ -53,17 +53,19 @@ fun RecentList(items: List<RecentItem>, onOpenCardio: (Long) -> Unit) {
 }
 
 @Composable
-private fun WorkoutRow(item: RecentItem.WorkoutItem) {
+private fun WorkoutRow(item: RecentItem.WorkoutItem, onClick: () -> Unit) {
     val minutes = (item.durationSec / 60).toInt()
-    RecentRow(
-        title = item.routineName ?: stringResource(R.string.today_recent_free),
-        meta = stringResource(
-            R.string.workout_meta,
-            formatShortDate(item.startedAt),
-            pluralStringResource(R.plurals.today_recent_minutes, minutes, minutes),
-        ),
-        value = "${formatInteger(item.volumeKg)} ${stringResource(WeightUnit.KG.label())}",
-    )
+    Surface(onClick = onClick, color = MaterialTheme.colorScheme.surface) {
+        RecentRow(
+            title = item.routineName ?: stringResource(R.string.today_recent_free),
+            meta = stringResource(
+                R.string.workout_meta,
+                formatShortDate(item.startedAt),
+                pluralStringResource(R.plurals.today_recent_minutes, minutes, minutes),
+            ),
+            value = "${formatInteger(item.volumeKg)} ${stringResource(WeightUnit.KG.label())}",
+        )
+    }
 }
 
 @Composable

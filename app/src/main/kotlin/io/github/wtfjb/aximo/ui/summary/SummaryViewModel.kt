@@ -10,6 +10,7 @@ import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
 import io.github.wtfjb.aximo.domain.stats.PersonalRecord
 import io.github.wtfjb.aximo.domain.stats.Records
+import io.github.wtfjb.aximo.domain.stats.WorkoutComparison
 import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,8 @@ data class SummaryUiState(
     val durationSeconds: Long = 0,
     val volumeKg: Double = 0.0,
     val workingSets: Int = 0,
+    /** Volume change against the previous workout of the same routine, e.g. 0.04 = +4 %. */
+    val volumeChange: Double? = null,
     val records: List<RecordItem> = emptyList(),
     val nextTime: List<NextTimeItem> = emptyList(),
     /** 1–5, null = not chosen. */
@@ -81,6 +84,9 @@ class SummaryViewModel(
                 routineName = detail.workout.routineId?.let { id -> routines.getRoutine(id)?.routine?.name },
                 durationSeconds = detail.workout.endedAt?.let { end -> (end - start).inWholeSeconds } ?: 0,
                 volumeKg = Records.volume(allSets),
+                volumeChange = detail.workout.routineId?.let { routineId ->
+                    WorkoutComparison.volumeChange(detail, workouts.previousOfRoutine(routineId, start))
+                },
                 workingSets = Records.countingSets(allSets).size,
                 records = records,
                 nextTime = nextTime,

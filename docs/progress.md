@@ -42,15 +42,20 @@
   - Domain: `ProgressionRules` (Double Progression, Reduktion nach 2× unter Untergrenze, Bodyweight Wdh. → Gewicht, Rundung auf Scheibenschritte), `Records` (e1RM Epley ≤ 12 Wdh., Volumen, neue Bestwerte), `WorkoutFinisher`
   - UI: Hinweis-Chip „Progression“ im Workout; Abschluss-Screen mit Bilanz, Bestwerten, „Fürs nächste Mal“, Bewertung, Notiz
 
-## In Arbeit
-- Schritt 8 Cardio manuell (A-04), PR #8:
-  - Domain: `CardioMath` (Pace /km und /500 m, km/h, Dauer-Format und -Eingabe), `CardioActivities` (Standard-Aktivitäten, Auswahl, Vorauswahl, Pace-Stil), `CardioDraft` (Formular, Validierung, Parser), `CardioRepository`, `RecentActivity` („Zuletzt“ aus Workouts + Cardio)
-  - Data: `RoomCardioRepository`, letzte beendete Workouts als Flow (kein Schemawechsel)
-  - UI: „Cardio erfassen“ nach `Cardio.html` (Aktivität, Datum/Uhrzeit, Dauer, Distanz, berechnete Pace/Tempo, Puls, Höhenmeter, Notiz), Bearbeiten/Löschen; Pläne-Tab mit „Cardio erfassen“; „Zuletzt“ auf Heute
+- Schritt 8 Cardio manuell (A-04), PR #8 (gemergt):
+  - Domain: `CardioMath`, `CardioActivities`, `CardioDraft`, `CardioRepository`, `RecentActivity`
+  - UI: „Cardio erfassen“ nach `Cardio.html`, Bearbeiten/Löschen; Pläne-Tab mit „Cardio erfassen“; „Zuletzt“ auf Heute
+- Schritt 9 Auswertungen (A-07), PR #9:
+  - Domain `stats`: `StatsPeriod`, `ExerciseStats` (Sessions, e1RM- bzw. Wdh.-Verlauf, Bestwerte, Wdh. bei Gewicht, PR-Sessions), `MuscleVolume` (Sätze je Region pro Woche), `Consistency` (Heatmap 12 Wochen, Einheiten/Woche, Streak), `CardioTrends`, `WorkoutComparison`
+  - Data: alle beendeten Workouts / Cardio-Einträge als Flow, vorherige Einheit einer Routine
+  - UI: Statistik-Tab mit Vico-Diagramm, Übungsdetail (Verlauf, Diagramm, Bestwerte, Info, „Nächstes Mal“), Workout-Detail aus „Zuletzt“ (Abschluss-Screen), Volumen-Vergleich ggü. letzter gleicher Routine
   - Tests: Domain, Room, ViewModels
 
+## In Arbeit
+- Schritt 10 Export/Import (A-08), Einstellungen (A-09)
+
 ## Nächster Schritt
-- 9. Auswertungen (A-07), Übungsdetail (`Statistik.html`, `UebungDetail.html`); dabei Workout-Detail aus „Zuletzt“ und Bilanz-Vergleich auf dem Abschluss-Screen
+- 10. Export/Import (A-08), Einstellungen (A-09): Einheit kg/lbs, Sprache, Standard-Pause, Gewichtsschritte, Theme-Wahl aus dem Showcase
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

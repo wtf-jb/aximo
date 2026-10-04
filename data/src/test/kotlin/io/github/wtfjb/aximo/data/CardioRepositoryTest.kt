@@ -60,4 +60,13 @@ class CardioRepositoryTest : DatabaseTest() {
 
         assertEquals(listOf(t0 + 2.days, t0 + 1.days), recent.map { it.startedAt })
     }
+
+    @Test
+    fun allEntriesAreNewestFirst() = runTest {
+        cardio.saveEntry(entry(t0))
+        cardio.saveEntry(entry(t0 + 2.days))
+        cardio.saveEntry(entry(t0 + 1.days))
+
+        assertEquals(listOf(t0 + 2.days, t0 + 1.days, t0), cardio.observeAll().first().map { it.startedAt })
+    }
 }

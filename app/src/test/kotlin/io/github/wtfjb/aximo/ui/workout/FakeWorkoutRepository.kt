@@ -35,6 +35,16 @@ class FakeWorkoutRepository(
 
     override fun observeRecentFinished(limit: Int): Flow<List<WorkoutDetail>> = recentFinished
 
+    /** All finished workouts for the statistics; tests set it directly. */
+    val allFinished = MutableStateFlow<List<WorkoutDetail>>(emptyList())
+
+    override fun observeFinished(): Flow<List<WorkoutDetail>> = allFinished
+
+    override suspend fun previousOfRoutine(routineId: Long, before: Instant): WorkoutDetail? =
+        (finished.values + allFinished.value)
+            .filter { it.workout.routineId == routineId && it.workout.startedAt < before }
+            .maxByOrNull { it.workout.startedAt }
+
     override suspend fun startWorkout(startedAt: Instant, routineId: Long?): Long {
         val id = nextId++
         active.value = WorkoutDetail(Workout(id = id, startedAt = startedAt, routineId = routineId), emptyList())
@@ -81,6 +91,7 @@ class FakeWorkoutRepository(
 
     override suspend fun getWorkout(workoutId: Long): WorkoutDetail? =
         active.value?.takeIf { it.workout.id == workoutId } ?: finished[workoutId]
+            ?: allFinished.value.find { it.workout.id == workoutId }
 
     override suspend fun rateWorkout(workoutId: Long, rating: Int?, note: String) {
         finished[workoutId]?.let { finished[workoutId] = it.copy(workout = it.workout.copy(rating = rating, note = note)) }
@@ -89,7 +100,9 @@ class FakeWorkoutRepository(
     override suspend fun setsBefore(exerciseId: Long, before: Instant): List<SetEntry> = history[exerciseId].orEmpty()
 
     override suspend fun discardWorkout(workoutId: Long) {
-        active.value = null
+        if (active.value?.workout?.id == workoutId) active.value = null
+        finished.remove(workoutId)
+        allFinished.value = allFinished.value.filter { it.workout.id != workoutId }
     }
 
     override suspend fun lastSessionSets(exerciseId: Long, excludeWorkoutId: Long): List<SetEntry> =
