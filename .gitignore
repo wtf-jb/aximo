@@ -1,0 +1,19 @@
+# Gradle
+.gradle/
+build/
+.kotlin/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# OS
+.DS_Store
+
+# Signing (the shared debug key app/debug.keystore is committed on purpose)
+*.jks
+release.keystore

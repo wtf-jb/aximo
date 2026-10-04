@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_today">Heute</string>
+    <string name="nav_plans">Pläne</string>
+    <string name="nav_stats">Statistik</string>
+    <string name="nav_coach">Coach</string>
+    <string name="placeholder_body">Kommt in einem späteren Schritt.</string>
+
+    <string name="showcase_open">Theme-Showcase</string>
+    <string name="showcase_title">Theme</string>
+    <string name="showcase_section_theme">Design</string>
+    <string name="showcase_section_colors">Farben</string>
+    <string name="showcase_section_type">Textstile</string>
+    <string name="showcase_section_components">Komponenten</string>
+    <string name="showcase_button_primary">Workout starten</string>
+    <string name="showcase_button_inverse">Übernehmen</string>
+    <string name="showcase_button_secondary">Satz hinzufügen</string>
+    <string name="showcase_chip_hint">Progression: 82,5 kg (+2,5)</string>
+    <string name="showcase_sample_text">82,5 kg · 3 × 8 · Bankdrücken</string>
+
+    <string name="theme_system">System</string>
+    <string name="theme_light">Hell</string>
+    <string name="theme_dark">Dunkel</string>
+
+    <string name="action_back">Zurück</string>
+</resources>
