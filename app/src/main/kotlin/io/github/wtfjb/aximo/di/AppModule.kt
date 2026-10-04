@@ -109,7 +109,7 @@ val appModule = module {
     single { ReviewService(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single<AiChatRepository> { RoomAiChatRepository(get<AximoDatabase>().aiChatDao()) }
     single<ChatGenerator> { KtorChatGenerator() }
-    single { ChatService(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ChatService(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single<PlanGenerator> { KtorPlanGenerator() }
     single<CatalogRepository> { AssetCatalogRepository(androidContext()) }
     single { PlanService(get(), get(), get(), get(), get()) }

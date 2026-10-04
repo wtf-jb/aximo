@@ -10,8 +10,14 @@ import io.github.wtfjb.aximo.domain.chat.ChatMessage
 import io.github.wtfjb.aximo.domain.chat.ChatPayload
 import io.github.wtfjb.aximo.domain.chat.ChatRole
 import io.github.wtfjb.aximo.domain.chat.ChatService
+import io.github.wtfjb.aximo.domain.plan.PlanService
 import io.github.wtfjb.aximo.domain.chat.GeneratedReply
+import io.github.wtfjb.aximo.domain.catalog.CatalogEntry
 import io.github.wtfjb.aximo.domain.model.Equipment
+import io.github.wtfjb.aximo.domain.model.MuscleGroup
+import io.github.wtfjb.aximo.domain.review.PlanEntry
+import io.github.wtfjb.aximo.domain.review.PlanExerciseRef
+import io.github.wtfjb.aximo.domain.review.PlanRoutine
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.ExerciseType
 import io.github.wtfjb.aximo.domain.model.Routine
@@ -36,6 +42,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -79,6 +86,12 @@ class ChatServiceTest {
     private val sent = mutableListOf<ChatPayload>()
     private var sentLanguage: String? = null
 
+    private val crossover = CatalogEntry(
+        id = "Cable_Crossover", name = "Cable Crossover", type = ExerciseType.STRENGTH, equipment = Equipment.CABLE,
+        primary = setOf(MuscleGroup.CHEST), secondary = emptySet(), repMin = 10, repMax = 15, instructions = listOf("Pull."),
+    )
+    private val catalog = listOf(crossover)
+
     private val factory = { _: io.github.wtfjb.aximo.domain.ai.AiProviderProfile, _: String? ->
         object : AiProvider {
             override suspend fun complete(request: AiRequest): String = error("not used, the generator is faked")
@@ -92,7 +105,8 @@ class ChatServiceTest {
             sentLanguage = language
             answer()
         },
-        chats, TimeSource { now }, { TimeZone.UTC },
+        chats, { catalog }, reviews, PlanService(exercises, routines, profiles, factory, { _, _, _ -> error("not used") }),
+        TimeSource { now }, { TimeZone.UTC },
     )
 
     private val reviewService = ReviewService(
@@ -210,5 +224,102 @@ class ChatServiceTest {
         service.clear()
 
         assertTrue(service.observeMessages().first().isEmpty())
+    }
+
+    private fun planAnswer() = GeneratedReply(
+        "Zwei Ganzkörper-Einheiten.",
+        listOf(
+            GeneratedSuggestion(
+                SuggestionChange.CreatePlan(
+                    listOf(
+                        PlanRoutine(
+                            "Ganzkörper A",
+                            listOf(
+                                PlanEntry(PlanExerciseRef.Existing(bench.id), 3, 8, 12, 2),
+                                PlanEntry(PlanExerciseRef.New("Kabelzug-Fliegende", ExerciseType.STRENGTH, Equipment.OTHER, catalogName = "Cable Crossover"), 3, 10, 15, null),
+                            ),
+                        ),
+                        PlanRoutine(
+                            "Ganzkörper B",
+                            listOf(
+                                PlanEntry(PlanExerciseRef.Existing(dips.id), 3, 8, 12, 2),
+                                PlanEntry(PlanExerciseRef.New("Kabelzug-Fliegende", ExerciseType.STRENGTH, Equipment.OTHER, catalogName = "Cable Crossover"), 2, 10, 15, null),
+                                PlanEntry(PlanExerciseRef.Existing(99), 3, 8, 12, null),
+                            ),
+                        ),
+                    ),
+                ),
+                "3 Tage pro Woche",
+            ),
+        ),
+    )
+
+    @Test
+    fun planIsResolvedButNothingIsSavedBeforeConfirming() = runTest {
+        withProfile()
+        answer = { planAnswer() }
+
+        service.send("Erstelle mir einen Plan", "de")
+
+        val answerMessage = chats.messages.value.last()
+        val plan = answerMessage.suggestions.single().change as SuggestionChange.CreatePlan
+        val new = plan.routines[0].exercises[1].exercise as PlanExerciseRef.New
+        assertEquals(crossover.catalogId, new.catalogId)
+        assertEquals(1, answerMessage.droppedSuggestions) // the unknown exercise id
+        assertEquals(1, routines.observeRoutines().first().size)
+        assertEquals(2, exercises.observeExercises(true).first().size)
+    }
+
+    @Test
+    fun applyingAPlanAddsRoutinesAndCreatesNewExercisesOnce() = runTest {
+        withProfile()
+        answer = { planAnswer() }
+        service.send("Erstelle mir einen Plan", "de")
+        val id = chats.messages.value.last().suggestions.single().id
+
+        assertEquals(2, service.applyPlan(id))
+
+        val all = routines.observeRoutinesWithExercises().first()
+        assertEquals(listOf("Push A", "Ganzkörper A", "Ganzkörper B"), all.map { it.routine.name })
+        val created = exercises.observeExercises(true).first().filter { it.name == "Kabelzug-Fliegende" }
+        assertEquals(1, created.size)
+        assertEquals(crossover.catalogId, created.single().catalogId)
+        assertEquals(listOf(bench.id, created.single().id), all[1].exercises.map { it.exerciseId })
+        assertEquals(2, all[2].exercises[1].targetSets)
+        assertEquals(SuggestionStatus.APPLIED, chats.messages.value.last().suggestions.single().status)
+
+        assertEquals("only once", 0, service.applyPlan(id))
+    }
+
+    @Test
+    fun switchedOffRoutinesAreNotSaved() = runTest {
+        withProfile()
+        answer = { planAnswer() }
+        service.send("Plan", "de")
+        val id = chats.messages.value.last().suggestions.single().id
+
+        assertEquals(1, service.applyPlan(id, excluded = setOf(0)))
+
+        assertEquals(listOf("Push A", "Ganzkörper B"), routines.observeRoutines().first().map { it.name })
+        assertEquals(0, service.applyPlan(id))
+    }
+
+    @Test
+    fun renameAndDeleteGoThroughTheReviewFlow() = runTest {
+        withProfile()
+        answer = {
+            GeneratedReply(
+                "Umbenennen.",
+                listOf(GeneratedSuggestion(SuggestionChange.RenameRoutine(1, "Push A", "Oberkörper A"), "klarer")),
+            )
+        }
+        service.send("Benenne Push A um", "de")
+        assertTrue(reviewService.apply(chats.messages.value.last().suggestions.single().id))
+        assertEquals("Oberkörper A", routines.getRoutine(1)!!.routine.name)
+
+        answer = { GeneratedReply("Weg damit.", listOf(GeneratedSuggestion(SuggestionChange.DeleteRoutine(1, "Oberkörper A"), "doppelt"))) }
+        service.send("Lösche die Routine", "de")
+        assertTrue(reviewService.apply(chats.messages.value.last().suggestions.single().id))
+        assertNull(routines.getRoutine(1))
     }
 }

@@ -288,7 +288,7 @@ internal fun SuggestionCard(item: SuggestionItem, onApply: () -> Unit, onDiscard
                 StatusLabel(status)
             }
             Text(text = stringResource(change.title()), style = MaterialTheme.typography.titleLarge)
-            DiffBox(change, item.exerciseName ?: "–")
+            DiffBox(change, item.exerciseName ?: "–", item.newExerciseName)
             Text(text = item.suggestion.rationale, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (status == SuggestionStatus.OPEN) {
                 if (!item.applicable) {
@@ -327,7 +327,7 @@ internal fun SuggestionCard(item: SuggestionItem, onApply: () -> Unit, onDiscard
 }
 
 @Composable
-private fun StatusLabel(status: SuggestionStatus) {
+internal fun StatusLabel(status: SuggestionStatus) {
     val text = when (status) {
         SuggestionStatus.OPEN -> return
         SuggestionStatus.APPLIED -> R.string.coach_status_applied
@@ -347,7 +347,7 @@ private fun StatusLabel(status: SuggestionStatus) {
 
 /** Grey box with "what → what", as in the mockup. */
 @Composable
-private fun DiffBox(change: SuggestionChange, exercise: String) {
+private fun DiffBox(change: SuggestionChange, exercise: String, newExercise: String?) {
     Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(horizontal = Spacing.s12, vertical = Spacing.s4)) {
             when (change) {
@@ -361,12 +361,22 @@ private fun DiffBox(change: SuggestionChange, exercise: String) {
                     BadgeRow(exercise, stringResource(R.string.coach_badge_new), stringResource(R.string.coach_sets_reps, change.sets, range(change.repMin, change.repMax)))
                 is SuggestionChange.RemoveExercise ->
                     BadgeRow(exercise, stringResource(R.string.coach_badge_removed), null)
+                is SuggestionChange.ReplaceExercise ->
+                    DiffRow(stringResource(R.string.coach_diff_exercise), exercise, newExercise ?: "–")
+                is SuggestionChange.MoveExercise ->
+                    DiffRow(stringResource(R.string.coach_diff_position, exercise), "${change.from + 1}", "${change.to + 1}")
+                is SuggestionChange.RenameRoutine ->
+                    DiffRow(stringResource(R.string.coach_diff_name), change.from, change.to)
+                is SuggestionChange.DeleteRoutine ->
+                    BadgeRow(change.name, stringResource(R.string.coach_badge_removed), null)
+                // Shown by PlanSuggestionCard.
+                is SuggestionChange.CreatePlan -> Unit
             }
         }
     }
 }
 
-private fun range(min: Int, max: Int): String = if (min == max) "$min" else "$min–$max"
+internal fun range(min: Int, max: Int): String = if (min == max) "$min" else "$min–$max"
 
 @Composable
 private fun DiffRow(label: String, from: String, to: String) {
@@ -387,7 +397,7 @@ private fun DiffRow(label: String, from: String, to: String) {
 }
 
 @Composable
-private fun BadgeRow(label: String, badge: String, value: String?) {
+internal fun BadgeRow(label: String, badge: String, value: String?) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.s10),
         verticalAlignment = Alignment.CenterVertically,
@@ -425,9 +435,12 @@ internal fun ErrorText(error: CoachError?) {
     )
 }
 
-private fun SuggestionChange.category(): Int = when (this) {
+internal fun SuggestionChange.category(): Int = when (this) {
     is SuggestionChange.SetCount, is SuggestionChange.AddExercise, is SuggestionChange.RemoveExercise -> R.string.coach_category_volume
-    is SuggestionChange.RepRange, is SuggestionChange.TargetRir -> R.string.coach_category_exercise
+    is SuggestionChange.RepRange, is SuggestionChange.TargetRir,
+    is SuggestionChange.ReplaceExercise, is SuggestionChange.MoveExercise -> R.string.coach_category_exercise
+    is SuggestionChange.RenameRoutine, is SuggestionChange.DeleteRoutine -> R.string.coach_category_routine
+    is SuggestionChange.CreatePlan -> R.string.coach_category_plan
 }
 
 private fun SuggestionChange.title(): Int = when (this) {
@@ -436,4 +449,9 @@ private fun SuggestionChange.title(): Int = when (this) {
     is SuggestionChange.TargetRir -> R.string.coach_title_rir
     is SuggestionChange.AddExercise -> R.string.coach_title_add
     is SuggestionChange.RemoveExercise -> R.string.coach_title_remove
+    is SuggestionChange.ReplaceExercise -> R.string.coach_title_replace
+    is SuggestionChange.MoveExercise -> R.string.coach_title_move
+    is SuggestionChange.RenameRoutine -> R.string.coach_title_rename
+    is SuggestionChange.DeleteRoutine -> R.string.coach_title_delete_routine
+    is SuggestionChange.CreatePlan -> R.string.coach_title_plan
 }

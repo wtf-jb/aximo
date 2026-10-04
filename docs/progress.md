@@ -144,6 +144,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Data: Tabelle `ai_chat_messages`, `ai_suggestions.reviewId` nullable + `chatMessageId` (DB v4, Auto-Migration, Migrationstest), `RoomAiChatRepository`; `chatNoticeAccepted` im DataStore
   - UI: Coach-Tab mit Umschalter „Wochen-Review | Chat“; Chat mit Blasen, Vorschlagskarten inline (Übernehmen/Verwerfen über `ReviewService`), „Coach denkt …“, Beispielfragen, Eingabefeld, Hinweis + „Daten ansehen“, „Neues Gespräch“ mit Rückfrage, eigener Datenschutz-Hinweis beim ersten Senden
   - Tests: Domain (Kontext, Kürzung, `applicable`), Prompt/Parser + MockEngine-Rundreise, Room (Repository, Migration 3→4, DataStore), `ChatService`, `ChatViewModel`
+  - Nachtrag (Feedback Jonas): Coach erstellt Pläne direkt aus dem Chat (Plan-Karte mit abwählbaren Routinen, „N Routinen speichern“; fehlende Übungen lokal aus dem Katalog zugeordnet und beim Speichern angelegt) und kann zusätzlich Übungen tauschen, Reihenfolge ändern, Routinen umbenennen und löschen. Prompt `chat-v2`
 
 ## Nächster Schritt
 - Feedback von Jonas zu B-05 abwarten (PR prüfen, auf dem Pixel testen). Danach B-07 Auto-Backup
@@ -172,6 +173,8 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - „Neues Gespräch“ → Rückfrage → Verlauf leer, übernommene Änderung bleibt in der Routine
   - Fehler: Flugmodus, falscher Key → Fehlermeldung, Frage steht wieder im Feld, erneut senden
   - Tastatur: Eingabefeld bleibt sichtbar, Verlauf scrollt; Wochen-Review weiterhin über den Umschalter, „Wochen-Review bereit“ auf Heute öffnet den Review
+  - Plan: „Erstelle mir einen Plan für 3 Tage, Gym“ → Plan-Karte; eine Routine abschalten, „N Routinen speichern“ → in „Pläne“ hinten angehängt, NEU-Übungen stehen in der Übungsliste (mit Anleitung, wenn aus dem Katalog). Ohne Angaben fragt der Coach nach Tagen/Equipment
+  - Anpassungen: „Tausche Bankdrücken gegen Kurzhantel-Bankdrücken“, „Setz Kniebeuge an den Anfang von Push A“, „Benenne Push A in Oberkörper A um“, „Lösch Routine X“ → Karten mit Diff, übernehmen, in „Pläne“ prüfen
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
 - Setup-Skript im Environment prüfen: Plattform-Paket heißt `platforms;android-37.0` (in `docs/cloud-environment.md` korrigiert)
 - Routine im claude.ai-UI anlegen (meine per Tool angelegte Routine hat kein Repo und keinen GitHub-Zugang und ist deaktiviert), Prompt siehe `docs/routine-prompt.md`

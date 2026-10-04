@@ -6,6 +6,7 @@ import io.github.wtfjb.aximo.domain.ai.AiRequest
 import io.github.wtfjb.aximo.domain.ai.ApiKeyChange
 import io.github.wtfjb.aximo.domain.chat.ChatHistory
 import io.github.wtfjb.aximo.domain.chat.ChatService
+import io.github.wtfjb.aximo.domain.plan.PlanService
 import io.github.wtfjb.aximo.domain.chat.GeneratedReply
 import io.github.wtfjb.aximo.domain.model.Equipment
 import io.github.wtfjb.aximo.domain.model.Exercise
@@ -14,6 +15,9 @@ import io.github.wtfjb.aximo.domain.model.Routine
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
 import io.github.wtfjb.aximo.domain.model.RoutineWithExercises
 import io.github.wtfjb.aximo.domain.review.GeneratedSuggestion
+import io.github.wtfjb.aximo.domain.review.PlanEntry
+import io.github.wtfjb.aximo.domain.review.PlanExerciseRef
+import io.github.wtfjb.aximo.domain.review.PlanRoutine
 import io.github.wtfjb.aximo.domain.review.ReviewException
 import io.github.wtfjb.aximo.domain.review.ReviewService
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
@@ -28,6 +32,7 @@ import io.github.wtfjb.aximo.ui.settings.FakeSettingsRepository
 import io.github.wtfjb.aximo.ui.workout.FakeWorkoutRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -75,7 +80,8 @@ class ChatViewModelTest {
             calls++
             answer()
         },
-        chats, TimeSource { now }, { TimeZone.UTC },
+        chats, { emptyList() }, reviews, PlanService(exercises, routines, profiles, provider, { _, _, _ -> error("not used") }),
+        TimeSource { now }, { TimeZone.UTC },
     )
     private val reviewService = ReviewService(
         workouts, routines, exercises, FakeSettingsRepository(), profiles, provider,
@@ -257,5 +263,42 @@ class ChatViewModelTest {
         vm.setDraft("x".repeat(ChatHistory.MAX_QUESTION_CHARS + 10))
 
         assertEquals(ChatHistory.MAX_QUESTION_CHARS, vm.uiState.value.draft.length)
+    }
+
+    @Test
+    fun planCardSavesTheRoutinesThatAreSwitchedOn() = runTest(UnconfinedTestDispatcher()) {
+        withProfile()
+        preferences.chatAccepted.value = true
+        answer = {
+            GeneratedReply(
+                "Plan.",
+                listOf(
+                    GeneratedSuggestion(
+                        SuggestionChange.CreatePlan(
+                            listOf(
+                                PlanRoutine("A", listOf(PlanEntry(PlanExerciseRef.Existing(bench.id), 3, 8, 12, 2))),
+                                PlanRoutine("B", listOf(PlanEntry(PlanExerciseRef.New("Neu", ExerciseType.STRENGTH, Equipment.OTHER), 3, 8, 12, null))),
+                            ),
+                        ),
+                        "2 Tage",
+                    ),
+                ),
+            )
+        }
+        vm.uiState.launchIn(backgroundScope)
+        vm.setDraft("Plan bitte")
+        vm.send()
+
+        val item = vm.uiState.value.entries.last().items.single()
+        assertEquals(listOf("A", "B"), item.plan!!.map { it.name })
+        assertEquals("Bankdrücken", item.plan!![0].exercises.single().name)
+        assertTrue(item.plan!![1].exercises.single().isNew)
+
+        vm.togglePlanRoutine(item.suggestion.id, 1)
+        assertEquals(setOf(1), vm.uiState.value.excluded[item.suggestion.id])
+        vm.applyPlan(item.suggestion.id)
+
+        assertEquals(listOf("Push A", "A"), routines.observeRoutines().first().map { it.name })
+        assertEquals(SuggestionStatus.APPLIED, vm.uiState.value.entries.last().items.single().suggestion.status)
     }
 }

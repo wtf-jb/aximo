@@ -71,7 +71,7 @@ class ChatPromptTest {
         val request = ChatPrompt.request(payload, "de")
 
         assertTrue(request.system!!.contains("in German"))
-        assertTrue(request.system!!.contains("\"prompt_version\":\"chat-v1\""))
+        assertTrue(request.system!!.contains("\"prompt_version\":\"${ChatPrompt.VERSION}\""))
         assertTrue(request.system!!.contains("\"routine_id\":7"))
         assertEquals(listOf(AiMessage.Role.USER, AiMessage.Role.ASSISTANT, AiMessage.Role.USER), request.messages.map { it.role })
         assertFalse(request.messages.any { it.text.contains("prompt_version") })

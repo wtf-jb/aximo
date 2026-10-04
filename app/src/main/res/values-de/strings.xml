@@ -599,6 +599,27 @@
     <string name="chat_clear_body">Der Verlauf und seine offenen Vorschläge werden gelöscht. Übernommene Änderungen bleiben in deinen Routinen.</string>
     <string name="chat_clear_confirm">Löschen und neu beginnen</string>
     <string name="chat_notice_body">Für den Chat geht deine Frage zusammen mit zusammengefassten Trainingsdaten an deinen KI-Provider: Routinen mit Zielen, Übungsnamen, Trends der letzten 6 Wochen (e1RM, Wdh., RIR), Sätze pro Muskelgruppe, Einheiten pro Woche und der Bestwert je Übung in 4-Wochen-Blöcken der letzten 6 Monate. Jede Nachricht sendet außerdem die letzten Nachrichten des Gesprächs erneut mit (bis zu 12). Keine einzelnen Sätze, keine Notizen, keine Cardio- oder Gesundheitsdaten. Änderungen an Routinen sind nur Vorschläge; nichts ändert sich, bevor du sie übernimmst.</string>
+    <string name="coach_category_routine">ROUTINE</string>
+    <string name="coach_category_plan">PLAN</string>
+    <string name="coach_title_replace">Übung tauschen</string>
+    <string name="coach_title_move">Reihenfolge ändern</string>
+    <string name="coach_title_rename">Routine umbenennen</string>
+    <string name="coach_title_delete_routine">Routine löschen</string>
+    <string name="coach_title_plan">Neuer Plan</string>
+    <string name="coach_diff_exercise">Übung</string>
+    <string name="coach_diff_position">%1$s · Position</string>
+    <string name="coach_diff_name">Name</string>
+    <plurals name="chat_plan_routines">
+        <item quantity="one">%1$d Routine</item>
+        <item quantity="other">%1$d Routinen</item>
+    </plurals>
+    <plurals name="chat_plan_save">
+        <item quantity="one">%1$d Routine speichern</item>
+        <item quantity="other">%1$d Routinen speichern</item>
+    </plurals>
+    <string name="chat_plan_new_hint">Mit NEU markierte Übungen werden beim Speichern zu deinen Übungen hinzugefügt.</string>
+    <string name="chat_plan_not_applicable">Eine Übung dieses Plans wurde inzwischen archiviert oder gelöscht.</string>
+    <string name="chat_plan_saved">Unter „Pläne“ gespeichert.</string>
     <string name="coach_error_no_profile">Kein KI-Profil. Lege eins in den Einstellungen an.</string>
     <string name="coach_error_no_data">In den letzten 6 Wochen gibt es kein beendetes Training. Ohne Daten kann der Coach nichts auswerten.</string>
     <plurals name="coach_suggestions">

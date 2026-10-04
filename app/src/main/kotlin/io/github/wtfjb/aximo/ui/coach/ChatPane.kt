@@ -65,11 +65,18 @@ internal fun ChatPane(state: ChatUiState, viewModel: ChatViewModel, modifier: Mo
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.s12)) {
                     Bubble(entry.message.text, entry.message.role)
                     entry.items.forEach { item ->
-                        SuggestionCard(
-                            item,
-                            onApply = { viewModel.apply(item.suggestion.id) },
-                            onDiscard = { viewModel.discard(item.suggestion.id) },
-                        )
+                        val id = item.suggestion.id
+                        if (item.plan != null) {
+                            PlanSuggestionCard(
+                                item,
+                                excluded = state.excluded[id].orEmpty(),
+                                onToggle = { index -> viewModel.togglePlanRoutine(id, index) },
+                                onApply = { viewModel.applyPlan(id) },
+                                onDiscard = { viewModel.discard(id) },
+                            )
+                        } else {
+                            SuggestionCard(item, onApply = { viewModel.apply(id) }, onDiscard = { viewModel.discard(id) })
+                        }
                     }
                 }
             }

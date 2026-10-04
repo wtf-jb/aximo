@@ -5,7 +5,12 @@ import io.github.wtfjb.aximo.data.repository.RoomAiReviewRepository
 import io.github.wtfjb.aximo.domain.chat.ChatMessage
 import io.github.wtfjb.aximo.domain.chat.ChatRole
 import io.github.wtfjb.aximo.domain.review.AiReview
+import io.github.wtfjb.aximo.domain.model.Equipment
+import io.github.wtfjb.aximo.domain.model.ExerciseType
 import io.github.wtfjb.aximo.domain.review.AiSuggestion
+import io.github.wtfjb.aximo.domain.review.PlanEntry
+import io.github.wtfjb.aximo.domain.review.PlanExerciseRef
+import io.github.wtfjb.aximo.domain.review.PlanRoutine
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import kotlinx.coroutines.flow.first
@@ -90,5 +95,30 @@ class AiChatRepositoryTest : DatabaseTest() {
         assertTrue(chats.observeMessages().first().isEmpty())
         assertNull(reviews.getSuggestion(chatSuggestion))
         assertEquals(1, reviews.observeLatest().first()!!.suggestions.size)
+    }
+
+    @Test
+    fun newChangeTypesAreStored() = runTest {
+        val changes = listOf(
+            SuggestionChange.ReplaceExercise(1, 2, 3),
+            SuggestionChange.MoveExercise(1, 2, 0, 1),
+            SuggestionChange.RenameRoutine(1, "Push A", "Oberkörper A"),
+            SuggestionChange.DeleteRoutine(1, "Push A"),
+            SuggestionChange.CreatePlan(
+                listOf(
+                    PlanRoutine(
+                        "Ganzkörper A",
+                        listOf(
+                            PlanEntry(PlanExerciseRef.Existing(2), 3, 8, 12, 2),
+                            PlanEntry(PlanExerciseRef.New("Kabelzug", ExerciseType.STRENGTH, Equipment.CABLE, "fed_Cable_Crossover", "Cable Crossover"), 3, 10, 15, null),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        chats.saveExchange(question(1, "Q"), answer(2, "A", *changes.toTypedArray()))
+
+        assertEquals(changes, chats.observeMessages().first()[1].suggestions.map { it.change })
     }
 }

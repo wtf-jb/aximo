@@ -14,7 +14,9 @@ import io.github.wtfjb.aximo.domain.review.AiSuggestion
 import io.github.wtfjb.aximo.domain.review.ReviewContext
 import io.github.wtfjb.aximo.domain.review.ReviewException
 import io.github.wtfjb.aximo.domain.review.ReviewService
+import io.github.wtfjb.aximo.domain.review.PlanExerciseRef
 import io.github.wtfjb.aximo.domain.review.SuggestionApplier
+import io.github.wtfjb.aximo.domain.review.SuggestionChange
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,16 +33,46 @@ data class SuggestionItem(
     val routineName: String?,
     val exerciseName: String?,
     val applicable: Boolean,
+    /** Target exercise of "Übung tauschen". */
+    val newExerciseName: String? = null,
+    /** Routines of a new plan (B-05), null for other changes. */
+    val plan: List<PlanRoutineItem>? = null,
 )
+
+data class PlanRoutineItem(val name: String, val exercises: List<PlanExerciseItem>)
+
+data class PlanExerciseItem(val name: String, val isNew: Boolean, val sets: Int, val repMin: Int, val repMax: Int, val targetRir: Int?)
 
 /** The card data for a suggestion of the review or the chat. */
 internal fun suggestionItem(suggestion: AiSuggestion, routines: List<RoutineWithExercises>, exercises: List<Exercise>): SuggestionItem {
-    val routine = routines.firstOrNull { it.routine.id == suggestion.change.routineId }
+    val change = suggestion.change
+    fun name(id: Long) = exercises.firstOrNull { it.id == id }?.name
+    val routine = (change as? SuggestionChange.RoutineChange)?.let { c -> routines.firstOrNull { it.routine.id == c.routineId } }
     return SuggestionItem(
         suggestion = suggestion,
-        routineName = routine?.routine?.name,
-        exerciseName = exercises.firstOrNull { it.id == suggestion.change.exerciseId }?.name,
-        applicable = SuggestionApplier.isApplicable(suggestion.change, routine, exercises),
+        routineName = routine?.routine?.name ?: (change as? SuggestionChange.DeleteRoutine)?.name,
+        exerciseName = (change as? SuggestionChange.ExerciseChange)?.let { name(it.exerciseId) },
+        applicable = SuggestionApplier.isApplicable(change, routines, exercises),
+        newExerciseName = (change as? SuggestionChange.ReplaceExercise)?.let { name(it.newExerciseId) },
+        plan = (change as? SuggestionChange.CreatePlan)?.routines?.map { r ->
+            PlanRoutineItem(
+                r.name,
+                r.exercises.map { e ->
+                    val ref = e.exercise
+                    PlanExerciseItem(
+                        name = when (ref) {
+                            is PlanExerciseRef.Existing -> name(ref.exerciseId) ?: "–"
+                            is PlanExerciseRef.New -> ref.name
+                        },
+                        isNew = ref is PlanExerciseRef.New,
+                        sets = e.sets,
+                        repMin = e.repMin,
+                        repMax = e.repMax,
+                        targetRir = e.targetRir,
+                    )
+                },
+            )
+        },
     )
 }
 

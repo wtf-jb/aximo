@@ -39,6 +39,8 @@ data class ChatUiState(
     val sentData: String? = null,
     /** "Neues Gespräch" asks first. */
     val confirmClear: Boolean = false,
+    /** Routines the user switched off, per plan suggestion id. */
+    val excluded: Map<Long, Set<Int>> = emptyMap(),
 ) {
     val sending: Boolean get() = pending != null
     val canSend: Boolean get() = draft.isNotBlank() && !sending
@@ -52,6 +54,7 @@ private data class ChatTransient(
     val showNotice: Boolean = false,
     val sentData: String? = null,
     val confirmClear: Boolean = false,
+    val excluded: Map<Long, Set<Int>> = emptyMap(),
 )
 
 /**
@@ -87,6 +90,7 @@ class ChatViewModel(
             showNotice = t.showNotice,
             sentData = t.sentData,
             confirmClear = t.confirmClear,
+            excluded = t.excluded,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ChatUiState())
 
@@ -123,6 +127,19 @@ class ChatViewModel(
 
     fun apply(suggestionId: Long) {
         viewModelScope.launch { review.apply(suggestionId) }
+    }
+
+    /** "N Routinen speichern" on a plan card: saves the routines that are still switched on. */
+    fun applyPlan(suggestionId: Long) {
+        val excluded = transient.value.excluded[suggestionId].orEmpty()
+        viewModelScope.launch { chat.applyPlan(suggestionId, excluded) }
+    }
+
+    /** Switches one routine of a plan card on or off. */
+    fun togglePlanRoutine(suggestionId: Long, index: Int) = transient.update { t ->
+        val current = t.excluded[suggestionId].orEmpty()
+        val next = if (index in current) current - index else current + index
+        t.copy(excluded = t.excluded + (suggestionId to next))
     }
 
     fun discard(suggestionId: Long) {
