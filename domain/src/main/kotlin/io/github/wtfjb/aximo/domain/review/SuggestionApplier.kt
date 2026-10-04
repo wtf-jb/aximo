@@ -41,6 +41,18 @@ object SuggestionApplier {
         }
     }
 
+    /** The suggestions that fit the current routines, without duplicates (review and chat). */
+    fun applicable(
+        suggestions: List<GeneratedSuggestion>,
+        routines: List<RoutineWithExercises>,
+        exercises: List<Exercise>,
+    ): List<GeneratedSuggestion> {
+        val byId = routines.associateBy { it.routine.id }
+        return suggestions
+            .filter { isApplicable(it.change, byId[it.change.routineId], exercises) }
+            .distinctBy { it.change }
+    }
+
     /**
      * The routine's exercises after [change]. Call only if [isApplicable].
      * A removed exercise also leaves its superset; a superset of one is dissolved.

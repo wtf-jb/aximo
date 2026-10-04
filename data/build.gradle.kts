@@ -30,6 +30,13 @@ kotlin {
     }
 }
 
+// Migration tests read the exported schemas as assets.
+androidComponents {
+    onVariants { variant ->
+        variant.hostTests.values.forEach { it.sources.assets?.addStaticSourceDirectory("$projectDir/schemas") }
+    }
+}
+
 room {
     // Schema JSON per version, checked in: needed to write and test migrations later.
     schemaDirectory("$projectDir/schemas")
@@ -46,5 +53,6 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
+    testImplementation(libs.room.testing)
     testImplementation(libs.kotlinx.coroutines.test)
 }

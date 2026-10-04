@@ -12,6 +12,14 @@ class FakeAiPreferences : AiPreferences {
         accepted.value = true
     }
 
+    val chatAccepted = MutableStateFlow(false)
+    override val chatNoticeAccepted = chatAccepted
+
+    override suspend fun acceptChatNotice() {
+        chatAccepted.value = true
+        accepted.value = true
+    }
+
     override val weeklyReview = MutableStateFlow(WeeklyReviewSetting())
 
     override suspend fun setWeeklyReview(setting: WeeklyReviewSetting) {

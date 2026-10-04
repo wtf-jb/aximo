@@ -10,6 +10,15 @@ interface AiPreferences {
 
     suspend fun acceptDataNotice()
 
+    /**
+     * The user has seen the chat's own notice (B-05): the chat also sends free
+     * text and the conversation, again with every message.
+     */
+    val chatNoticeAccepted: Flow<Boolean>
+
+    /** Accepts the chat notice; implies [acceptDataNotice]. */
+    suspend fun acceptChatNotice()
+
     /** Automatic weekly review (B-02). */
     val weeklyReview: Flow<WeeklyReviewSetting>
 

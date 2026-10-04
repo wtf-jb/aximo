@@ -33,7 +33,18 @@ data class SuggestionItem(
     val applicable: Boolean,
 )
 
-/** Why the last "Review erstellen" failed. */
+/** The card data for a suggestion of the review or the chat. */
+internal fun suggestionItem(suggestion: AiSuggestion, routines: List<RoutineWithExercises>, exercises: List<Exercise>): SuggestionItem {
+    val routine = routines.firstOrNull { it.routine.id == suggestion.change.routineId }
+    return SuggestionItem(
+        suggestion = suggestion,
+        routineName = routine?.routine?.name,
+        exerciseName = exercises.firstOrNull { it.id == suggestion.change.exerciseId }?.name,
+        applicable = SuggestionApplier.isApplicable(suggestion.change, routine, exercises),
+    )
+}
+
+/** Why the last "Review erstellen" or chat message failed. */
 sealed interface CoachError {
     data class Ai(val reason: AiException.Reason, val statusCode: Int?, val detail: String?) : CoachError
     data class Review(val reason: ReviewException.Reason) : CoachError
@@ -91,23 +102,13 @@ class CoachViewModel(
         CoachUiState(
             loading = false,
             review = review,
-            items = review?.suggestions.orEmpty().map { item(it, routineList, exerciseList) },
+            items = review?.suggestions.orEmpty().map { suggestionItem(it, routineList, exerciseList) },
             running = t.running,
             error = t.error,
             showNotice = t.showNotice,
             sentData = t.sentData,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CoachUiState())
-
-    private fun item(suggestion: AiSuggestion, routines: List<RoutineWithExercises>, exercises: List<Exercise>): SuggestionItem {
-        val routine = routines.firstOrNull { it.routine.id == suggestion.change.routineId }
-        return SuggestionItem(
-            suggestion = suggestion,
-            routineName = routine?.routine?.name,
-            exerciseName = exercises.firstOrNull { it.id == suggestion.change.exerciseId }?.name,
-            applicable = SuggestionApplier.isApplicable(suggestion.change, routine, exercises),
-        )
-    }
 
     /** "Review erstellen": first time the notice, afterwards straight to the AI. */
     fun requestReview() {

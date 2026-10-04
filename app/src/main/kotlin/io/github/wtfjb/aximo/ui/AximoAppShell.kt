@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.ui
 
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -99,7 +100,8 @@ fun AximoAppShell(
         NavHost(
             navController = navController,
             startDestination = TodayRoute,
-            modifier = Modifier.padding(innerPadding),
+            // Consumed, so imePadding() on a screen (coach chat) adds only what the keyboard covers beyond the bars.
+            modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
         ) {
             composable<TodayRoute> {
                 TodayScreen(

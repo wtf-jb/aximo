@@ -77,16 +77,16 @@ class ReviewService(
         val provider = factory.create(profile, profiles.apiKey(profile.id))
         val generated = generator.generate(provider, context, language)
 
-        val currentRoutines = routines.observeRoutinesWithExercises().first().associateBy { it.routine.id }
-        val allExercises = exercises.observeExercises(includeArchived = true).first()
-        val valid = generated.suggestions
-            .filter { SuggestionApplier.isApplicable(it.change, currentRoutines[it.change.routineId], allExercises) }
-            .distinctBy { it.change }
+        val valid = SuggestionApplier.applicable(
+            generated.suggestions,
+            routines.observeRoutinesWithExercises().first(),
+            exercises.observeExercises(includeArchived = true).first(),
+        )
         val review = AiReview(
             createdAt = time.now(),
             weeks = context.weeks,
             summary = generated.summary,
-            suggestions = valid.map { AiSuggestion(reviewId = 0, change = it.change, rationale = it.rationale) },
+            suggestions = valid.map { AiSuggestion(change = it.change, rationale = it.rationale) },
             droppedSuggestions = generated.dropped + (generated.suggestions.size - valid.size),
         )
         return reviews.saveReview(review)
@@ -98,7 +98,10 @@ class ReviewService(
         return SuggestionApplier.isApplicable(suggestion.change, routine, exercises.observeExercises(includeArchived = true).first())
     }
 
-    /** Applies an open suggestion after the user confirmed it. Returns false if it no longer fits. */
+    /**
+     * Applies an open suggestion after the user confirmed it. Works for review
+     * and chat suggestions alike (B-05). Returns false if it no longer fits.
+     */
     suspend fun apply(suggestionId: Long): Boolean {
         val suggestion = reviews.getSuggestion(suggestionId) ?: return false
         if (suggestion.status != SuggestionStatus.OPEN) return false

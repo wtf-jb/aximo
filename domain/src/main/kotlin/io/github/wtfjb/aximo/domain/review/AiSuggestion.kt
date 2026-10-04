@@ -39,10 +39,16 @@ sealed interface SuggestionChange {
 
 enum class SuggestionStatus { OPEN, APPLIED, DISCARDED }
 
-/** A stored suggestion. The AI never changes data itself; only [SuggestionApplier] does, after the user confirms. */
+/**
+ * A stored suggestion from a review or the coach chat (B-05). The AI never
+ * changes data itself; only [SuggestionApplier] does, after the user confirms.
+ */
 data class AiSuggestion(
     val id: Long = 0,
-    val reviewId: Long,
+    /** Set for suggestions of a weekly review. */
+    val reviewId: Long? = null,
+    /** Set for suggestions of a chat answer. */
+    val chatMessageId: Long? = null,
     val change: SuggestionChange,
     /** Why, in the app language, naming the numbers ("9 Sätze, Ziel 10–20"). */
     val rationale: String,

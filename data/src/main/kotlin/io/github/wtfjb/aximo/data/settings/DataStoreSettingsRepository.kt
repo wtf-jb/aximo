@@ -86,6 +86,15 @@ class DataStoreAiPreferences(context: Context) : AiPreferences {
         dataStore.edit { prefs -> prefs[AI_NOTICE_ACCEPTED] = true }
     }
 
+    override val chatNoticeAccepted: Flow<Boolean> = dataStore.data.map { prefs -> prefs[AI_CHAT_NOTICE_ACCEPTED] ?: false }
+
+    override suspend fun acceptChatNotice() {
+        dataStore.edit { prefs ->
+            prefs[AI_CHAT_NOTICE_ACCEPTED] = true
+            prefs[AI_NOTICE_ACCEPTED] = true
+        }
+    }
+
     override val weeklyReview: Flow<WeeklyReviewSetting> = dataStore.data.map { prefs ->
         val defaults = WeeklyReviewSetting()
         WeeklyReviewSetting(
@@ -105,6 +114,7 @@ class DataStoreAiPreferences(context: Context) : AiPreferences {
 
     private companion object {
         val AI_NOTICE_ACCEPTED = booleanPreferencesKey("ai_data_notice_accepted")
+        val AI_CHAT_NOTICE_ACCEPTED = booleanPreferencesKey("ai_chat_notice_accepted")
         val REVIEW_ENABLED = booleanPreferencesKey("ai_weekly_review_enabled")
         val REVIEW_DAY = stringPreferencesKey("ai_weekly_review_day")
         val REVIEW_HOUR = intPreferencesKey("ai_weekly_review_hour")

@@ -6,6 +6,7 @@ import io.github.wtfjb.aximo.domain.model.ExerciseType
 import io.github.wtfjb.aximo.domain.model.Routine
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
 import io.github.wtfjb.aximo.domain.model.RoutineWithExercises
+import io.github.wtfjb.aximo.domain.review.GeneratedSuggestion
 import io.github.wtfjb.aximo.domain.review.SuggestionApplier
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
 import org.junit.Assert.assertEquals
@@ -101,5 +102,22 @@ class SuggestionApplierTest {
     fun lastExerciseCannotBeRemoved() {
         val single = RoutineWithExercises(routine.routine, routine.exercises.take(1))
         assertFalse(SuggestionApplier.isApplicable(SuggestionChange.RemoveExercise(7, bench.id), single, exercises))
+    }
+
+    @Test
+    fun applicableFiltersAndRemovesDuplicates() {
+        val good = GeneratedSuggestion(SuggestionChange.SetCount(7, bench.id, 3, 4), "a")
+        val result = SuggestionApplier.applicable(
+            listOf(
+                good,
+                good.copy(rationale = "same change again"),
+                GeneratedSuggestion(SuggestionChange.SetCount(7, bench.id, 2, 4), "wrong from"),
+                GeneratedSuggestion(SuggestionChange.SetCount(99, bench.id, 3, 4), "unknown routine"),
+            ),
+            listOf(routine),
+            exercises,
+        )
+
+        assertEquals(listOf(good), result)
     }
 }

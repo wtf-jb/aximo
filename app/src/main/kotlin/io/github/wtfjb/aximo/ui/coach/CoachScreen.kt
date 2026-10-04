@@ -25,6 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -41,7 +44,9 @@ import io.github.wtfjb.aximo.domain.review.SuggestionChange
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import io.github.wtfjb.aximo.ui.ai.label
 import io.github.wtfjb.aximo.ui.components.InverseButton
+import io.github.wtfjb.aximo.ui.components.PillTextButton
 import io.github.wtfjb.aximo.ui.components.PrimaryButton
+import io.github.wtfjb.aximo.ui.components.SegmentedControl
 import io.github.wtfjb.aximo.ui.format.formatDayMonth
 import io.github.wtfjb.aximo.ui.icons.AppIcons
 import io.github.wtfjb.aximo.ui.screens.TabScreen
@@ -56,16 +61,62 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
-/** Coach tab (B-02, mockup Review.html): latest weekly review and its suggestions. Chat (B-05) follows later. */
+/**
+ * Coach tab: weekly review (B-02, mockup Review.html) and chat (B-05), switched
+ * with a segmented control. The review is the default, so "Wochen-Review bereit"
+ * on Heute lands on it.
+ */
 @Composable
-fun CoachScreen(viewModel: CoachViewModel = koinViewModel()) {
+fun CoachScreen(
+    viewModel: CoachViewModel = koinViewModel(),
+    chatViewModel: ChatViewModel = koinViewModel(),
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val chatState by chatViewModel.uiState.collectAsStateWithLifecycle()
     val review = state.review
+    var tab by rememberSaveable { mutableIntStateOf(TAB_REVIEW) }
 
     TabScreen(
-        title = stringResource(R.string.coach_title),
-        overline = review?.let { weekLabel(it) },
-        modifier = Modifier.verticalScroll(rememberScrollState()),
+        title = stringResource(R.string.nav_coach),
+        overline = if (tab == TAB_REVIEW) review?.let { weekLabel(it) } else null,
+        action = if (tab == TAB_CHAT && !chatState.isEmpty) {
+            { PillTextButton(text = stringResource(R.string.chat_new), onClick = chatViewModel::requestClear) }
+        } else {
+            null
+        },
+    ) {
+        SegmentedControl(
+            options = listOf(stringResource(R.string.coach_title), stringResource(R.string.chat_tab)),
+            selectedIndex = tab,
+            onSelect = { tab = it },
+        )
+        if (tab == TAB_REVIEW) {
+            ReviewPane(state, viewModel, Modifier.weight(1f))
+        } else {
+            ChatPane(chatState, chatViewModel, Modifier.weight(1f))
+        }
+    }
+
+    if (state.showNotice) {
+        NoticeDialog(
+            body = stringResource(R.string.coach_notice_body),
+            onAccept = viewModel::acceptNotice,
+            onShowData = viewModel::showSentData,
+            onDismiss = viewModel::dismissNotice,
+        )
+    }
+    state.sentData?.let { SentDataDialog(it, viewModel::dismissSentData) }
+}
+
+private const val TAB_REVIEW = 0
+private const val TAB_CHAT = 1
+
+@Composable
+private fun ReviewPane(state: CoachUiState, viewModel: CoachViewModel, modifier: Modifier = Modifier) {
+    val review = state.review
+    Column(
+        modifier = modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(Spacing.s18),
     ) {
         if (review == null && !state.loading) {
             Text(
@@ -107,14 +158,7 @@ fun CoachScreen(viewModel: CoachViewModel = koinViewModel()) {
 
         ErrorText(state.error)
         if (state.running) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.s12)) {
-                CircularProgressIndicator(modifier = Modifier.size(Sizes.icon), strokeWidth = Sizes.borderActive)
-                Text(
-                    text = stringResource(R.string.coach_running),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                )
-            }
+            ThinkingRow()
         } else {
             PrimaryButton(
                 text = stringResource(if (review == null) R.string.coach_create else R.string.coach_create_again),
@@ -127,41 +171,61 @@ fun CoachScreen(viewModel: CoachViewModel = koinViewModel()) {
         }
         Spacer(modifier = Modifier.height(Spacing.s16))
     }
+}
 
-    if (state.showNotice) {
-        AlertDialog(
-            onDismissRequest = viewModel::dismissNotice,
-            containerColor = MaterialTheme.colorScheme.surface,
-            title = { Text(text = stringResource(R.string.coach_notice_title), style = MaterialTheme.typography.titleMedium) },
-            text = { Text(text = stringResource(R.string.coach_notice_body), style = MaterialTheme.typography.bodyMedium) },
-            confirmButton = { InverseButton(text = stringResource(R.string.coach_notice_confirm), onClick = viewModel::acceptNotice) },
-            dismissButton = {
-                Row {
-                    TextButton(onClick = viewModel::showSentData) {
-                        Text(text = stringResource(R.string.coach_sent_data_short), style = MaterialTheme.typography.labelLarge)
-                    }
-                    CancelButton(viewModel::dismissNotice)
-                }
-            },
+/** Spinner with "Coach denkt …". */
+@Composable
+internal fun ThinkingRow() {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.s12)) {
+        CircularProgressIndicator(modifier = Modifier.size(Sizes.icon), strokeWidth = Sizes.borderActive)
+        Text(
+            text = stringResource(R.string.coach_running),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         )
     }
-    state.sentData?.let { data ->
-        AlertDialog(
-            onDismissRequest = viewModel::dismissSentData,
-            containerColor = MaterialTheme.colorScheme.surface,
-            title = { Text(text = stringResource(R.string.coach_sent_data), style = MaterialTheme.typography.titleMedium) },
-            text = {
-                SelectionContainer(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Text(text = data, style = MaterialTheme.typography.bodySmall)
+}
+
+/** What is sent and why, before the first AI call. */
+@Composable
+internal fun NoticeDialog(body: String, onAccept: () -> Unit, onShowData: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(text = stringResource(R.string.coach_notice_title), style = MaterialTheme.typography.titleMedium) },
+        text = {
+            Text(text = body, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.verticalScroll(rememberScrollState()))
+        },
+        confirmButton = { InverseButton(text = stringResource(R.string.coach_notice_confirm), onClick = onAccept) },
+        dismissButton = {
+            Row {
+                TextButton(onClick = onShowData) {
+                    Text(text = stringResource(R.string.coach_sent_data_short), style = MaterialTheme.typography.labelLarge)
                 }
-            },
-            confirmButton = {
-                TextButton(onClick = viewModel::dismissSentData) {
-                    Text(text = stringResource(R.string.coach_close), style = MaterialTheme.typography.labelLarge)
-                }
-            },
-        )
-    }
+                CancelButton(onDismiss)
+            }
+        },
+    )
+}
+
+/** "Gesendete Daten ansehen": the JSON exactly as sent, selectable. */
+@Composable
+internal fun SentDataDialog(data: String, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(text = stringResource(R.string.coach_sent_data), style = MaterialTheme.typography.titleMedium) },
+        text = {
+            SelectionContainer(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Text(text = data, style = MaterialTheme.typography.bodySmall)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.coach_close), style = MaterialTheme.typography.labelLarge)
+            }
+        },
+    )
 }
 
 /** "KW 40 · 28. Sep. – 4. Okt." for the week the review was made in. */
@@ -202,7 +266,7 @@ private fun SummaryCard(review: AiReview) {
 }
 
 @Composable
-private fun SuggestionCard(item: SuggestionItem, onApply: () -> Unit, onDiscard: () -> Unit) {
+internal fun SuggestionCard(item: SuggestionItem, onApply: () -> Unit, onDiscard: () -> Unit) {
     val change = item.suggestion.change
     val status = item.suggestion.status
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth()) {
@@ -338,7 +402,7 @@ private fun BadgeRow(label: String, badge: String, value: String?) {
 }
 
 @Composable
-private fun ErrorText(error: CoachError?) {
+internal fun ErrorText(error: CoachError?) {
     val text = when (error) {
         null -> return
         is CoachError.Ai -> {

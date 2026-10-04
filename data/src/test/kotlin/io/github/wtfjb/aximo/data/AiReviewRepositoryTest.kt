@@ -37,7 +37,7 @@ class AiReviewRepositoryTest : DatabaseTest() {
         createdAt = Instant.fromEpochSeconds(at),
         weeks = 6,
         summary = summary,
-        suggestions = changes.map { AiSuggestion(reviewId = 0, change = it, rationale = "r ${it::class.simpleName}") },
+        suggestions = changes.map { AiSuggestion(change = it, rationale = "r ${it::class.simpleName}") },
         droppedSuggestions = 1,
     )
 
