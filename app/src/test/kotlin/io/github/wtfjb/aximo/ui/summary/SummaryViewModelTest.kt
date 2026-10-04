@@ -63,8 +63,8 @@ class SummaryViewModelTest {
         val with = SummaryViewModel(workouts, FakeRoutineRepository(), progression, FakeSettingsRepository(TrainingSettings(bodyWeightKg = 80.0)), id)
 
         assertNull(without.uiState.value.kcal)
-        // 2.5 × 80 kg × 0.9 h = 180
-        assertEquals(180, with.uiState.value.kcal)
+        // Barbell bench: MET 5 × 3.5 × 80 / 200 × 54 min = 378
+        assertEquals(380, with.uiState.value.kcal)
     }
 
     @Test

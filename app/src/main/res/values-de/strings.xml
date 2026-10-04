@@ -225,7 +225,7 @@
     <string name="summary_working_sets">Arbeitssätze</string>
     <string name="summary_records">Bestwerte</string>
     <string name="calories_value">≈ %1$s kcal</string>
-    <string name="calories_estimated">Kalorien (geschätzt, netto)</string>
+    <string name="calories_estimated">Kalorien (geschätzt)</string>
     <string name="calories_no_body_weight">Kalorien: Körpergewicht in den Einstellungen eintragen</string>
     <string name="summary_new_records">Neue Bestwerte</string>
     <string name="summary_record_e1rm">%1$s · e1RM</string>

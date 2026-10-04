@@ -33,7 +33,7 @@ data class SummaryUiState(
     val durationSeconds: Long = 0,
     val volumeKg: Double = 0.0,
     val workingSets: Int = 0,
-    /** Estimated net kcal; null without a body weight in the settings. */
+    /** Estimated kcal; null without a body weight in the settings. */
     val kcal: Int? = null,
     /** Volume change against the previous workout of the same routine, e.g. 0.04 = +4 %. */
     val volumeChange: Double? = null,
@@ -92,7 +92,7 @@ class SummaryViewModel(
                 workout = detail,
                 routineName = detail.workout.routineId?.let { id -> routines.getRoutine(id)?.routine?.name },
                 durationSeconds = durationSeconds,
-                kcal = bodyWeightKg?.let { kg -> CalorieEstimate.strength(durationSeconds, kg) },
+                kcal = bodyWeightKg?.let { kg -> CalorieEstimate.strength(durationSeconds, detail.exercises, kg) },
                 volumeKg = Records.volume(allSets),
                 volumeChange = detail.workout.routineId?.let { routineId ->
                     WorkoutComparison.volumeChange(detail, workouts.previousOfRoutine(routineId, start))

@@ -49,8 +49,8 @@ class CardioViewModelTest {
         assertNull(with.uiState.value.kcal)
         with.onDurationChange("", "50", "")
         with.onDistanceChange("10")
-        // Running preselected: 0.9 × 80 kg × 10 km
-        assertEquals(720, with.uiState.value.kcal)
+        // Running preselected, 12 km/h: MET ≈ 11.44 × 3.5 × 80 / 200 × 50 min
+        assertEquals(800, with.uiState.value.kcal)
     }
 
     @Test

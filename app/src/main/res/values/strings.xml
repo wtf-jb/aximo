@@ -240,7 +240,7 @@
     <string name="summary_working_sets">Working sets</string>
     <string name="summary_records">Records</string>
     <string name="calories_value">≈ %1$s kcal</string>
-    <string name="calories_estimated">Calories (estimated, net)</string>
+    <string name="calories_estimated">Calories (estimated)</string>
     <string name="calories_no_body_weight">Calories: set body weight in settings</string>
     <string name="summary_new_records">New records</string>
     <string name="summary_record_e1rm">%1$s · e1RM</string>

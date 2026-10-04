@@ -2,27 +2,53 @@ package io.github.wtfjb.aximo.domain.calories
 
 import io.github.wtfjb.aximo.domain.cardio.CardioMath
 import io.github.wtfjb.aximo.domain.cardio.DefaultActivity
+import io.github.wtfjb.aximo.domain.model.Equipment
+import io.github.wtfjb.aximo.domain.model.Exercise
+import io.github.wtfjb.aximo.domain.model.ExerciseType
+import io.github.wtfjb.aximo.domain.model.MuscleGroup
+import io.github.wtfjb.aximo.domain.workout.WorkoutExerciseDetail
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
- * Conservative estimate of the calories a session burns on top of what the body
- * burns at rest anyway ("net" kcal). Deliberately low: fitness watches usually show
- * gross values that include the resting metabolism.
+ * Estimate of the calories a session burns, based on METs from the Compendium of
+ * Physical Activities: kcal/min = MET × 3.5 × body weight (kg) / 200.
  *
- * Time-based activities use METs from the Compendium of Physical Activities, at the
- * lower end of each range: net kcal = (MET − 1) × body weight (kg) × hours.
- * Running and walking with a distance use the energy cost per kilometre, which
- * barely depends on the speed. Elevation and heart rate are ignored on purpose.
- *
- * All results are rounded down to whole 10 kcal.
+ * Gross value (resting metabolism included), like fitness watches show it.
+ * Heart rate and elevation are ignored on purpose: for strength training the heart
+ * rate overestimates the oxygen uptake a lot. Results are rounded to whole 10 kcal.
  */
 object CalorieEstimate {
 
-    /** Strength training over the whole workout including rests (MET 3.5). */
-    fun strength(durationSec: Long, bodyWeightKg: Double): Int {
+    /**
+     * Strength training over the whole workout including rests. Without a set timer
+     * one MET for the whole session (rests are already part of it), averaged over the
+     * done sets by kind of exercise; see [strengthMet].
+     */
+    fun strength(durationSec: Long, exercises: List<WorkoutExerciseDetail>, bodyWeightKg: Double): Int {
         // A workout left running by mistake should not count for hours.
         val seconds = min(durationSec, MAX_STRENGTH_SECONDS).coerceAtLeast(0)
-        return netKcal(STRENGTH_MET, seconds, bodyWeightKg)
+        return kcal(strengthMet(exercises), seconds, bodyWeightKg)
+    }
+
+    /**
+     * Average MET of the done sets: 3.5 for bodyweight, machines, cables and bands,
+     * 6.0 for heavy barbell work on legs or lower back (squat, deadlift), 5.0 for
+     * other free weights. Without done sets the standard value 5.0.
+     */
+    fun strengthMet(exercises: List<WorkoutExerciseDetail>): Double {
+        val perSet = exercises.flatMap { detail ->
+            val met = setMet(detail.exercise)
+            detail.sets.filter { it.completedAt != null }.map { met }
+        }
+        return if (perSet.isEmpty()) STANDARD_STRENGTH_MET else perSet.average()
+    }
+
+    private fun setMet(exercise: Exercise): Double = when {
+        exercise.type == ExerciseType.BODYWEIGHT -> LIGHT_STRENGTH_MET
+        exercise.equipment in LIGHT_EQUIPMENT -> LIGHT_STRENGTH_MET
+        exercise.equipment == Equipment.BARBELL && exercise.primaryMuscles.any { it in HEAVY_MUSCLES } -> HEAVY_STRENGTH_MET
+        else -> STANDARD_STRENGTH_MET
     }
 
     /**
@@ -31,40 +57,42 @@ object CalorieEstimate {
      */
     fun cardio(activity: DefaultActivity?, durationSec: Int, distanceM: Double?, bodyWeightKg: Double): Int {
         val seconds = durationSec.toLong().coerceAtLeast(0)
-        val distance = distanceM?.takeIf { it > 0 }
-        return when (activity) {
-            DefaultActivity.RUNNING -> if (distance == null) {
-                netKcal(RUNNING_MET, seconds, bodyWeightKg)
-            } else {
-                running(seconds, distance, bodyWeightKg)
-            }
-            DefaultActivity.CYCLING -> netKcal(cyclingMet(seconds, distance), seconds, bodyWeightKg)
-            DefaultActivity.ROWING -> netKcal(rowingMet(seconds, distance), seconds, bodyWeightKg)
-            DefaultActivity.OTHER, null -> netKcal(OTHER_MET, seconds, bodyWeightKg)
+        val speed = distanceM?.takeIf { it > 0 }?.let { CardioMath.speedKmh(durationSec, it) }
+        val met = when (activity) {
+            DefaultActivity.RUNNING -> speed?.let(::runningMet) ?: RUNNING_DEFAULT_MET
+            DefaultActivity.CYCLING -> speed?.let(::cyclingMet) ?: CYCLING_DEFAULT_MET
+            DefaultActivity.ROWING -> rowingMet(durationSec, distanceM)
+            DefaultActivity.OTHER, null -> OTHER_MET
         }
+        return kcal(met, seconds, bodyWeightKg)
     }
 
-    /** Per kilometre; below [WALKING_MAX_KMH] it is walking, which costs about half. */
-    private fun running(seconds: Long, distanceM: Double, bodyWeightKg: Double): Int {
-        val speed = CardioMath.speedKmh(seconds.toInt(), distanceM) ?: 0.0
-        val perKgKm = if (speed < WALKING_MAX_KMH) WALKING_KCAL_PER_KG_KM else RUNNING_KCAL_PER_KG_KM
-        return roundDown(perKgKm * bodyWeightKg * distanceM / METERS_PER_KM)
+    /**
+     * Walking and running by speed, linearly interpolated between the Compendium
+     * values; below and above the table the first or last value.
+     */
+    fun runningMet(speedKmh: Double): Double {
+        val first = RUNNING_TABLE.first()
+        val last = RUNNING_TABLE.last()
+        if (speedKmh <= first.first) return first.second
+        if (speedKmh >= last.first) return last.second
+        val upperIndex = RUNNING_TABLE.indexOfFirst { it.first >= speedKmh }
+        val (lowSpeed, lowMet) = RUNNING_TABLE[upperIndex - 1]
+        val (highSpeed, highMet) = RUNNING_TABLE[upperIndex]
+        return lowMet + (highMet - lowMet) * (speedKmh - lowSpeed) / (highSpeed - lowSpeed)
     }
 
-    /** By average speed; without a distance (e.g. indoor bike) a moderate value. */
-    private fun cyclingMet(seconds: Long, distanceM: Double?): Double {
-        val speed = distanceM?.let { CardioMath.speedKmh(seconds.toInt(), it) } ?: return CYCLING_DEFAULT_MET
-        return when {
-            speed < 16 -> 4.0
-            speed < 19 -> 6.0
-            speed < 22.5 -> 7.5
-            else -> 9.0
-        }
+    private fun cyclingMet(speedKmh: Double): Double = when {
+        speedKmh < 16 -> 4.0
+        speedKmh < 19 -> 6.8
+        speedKmh < 22.5 -> 8.0
+        speedKmh < 25.7 -> 10.0
+        else -> 12.0
     }
 
     /** By pace per 500 m on the rowing machine; without a distance a moderate value. */
-    private fun rowingMet(seconds: Long, distanceM: Double?): Double {
-        val pace = distanceM?.let { CardioMath.paceSecondsPer500m(seconds.toInt(), it) } ?: return ROWING_DEFAULT_MET
+    private fun rowingMet(durationSec: Int, distanceM: Double?): Double {
+        val pace = distanceM?.let { CardioMath.paceSecondsPer500m(durationSec, it) } ?: return ROWING_DEFAULT_MET
         return when {
             pace > 150 -> 4.8
             pace > 125 -> 7.0
@@ -72,23 +100,49 @@ object CalorieEstimate {
         }
     }
 
-    private fun netKcal(met: Double, seconds: Long, bodyWeightKg: Double): Int =
-        roundDown((met - 1) * bodyWeightKg * seconds / SECONDS_PER_HOUR)
+    /** MET × 3.5 × kg / 200 per minute. */
+    private fun kcal(met: Double, seconds: Long, bodyWeightKg: Double): Int {
+        val minutes = seconds / SECONDS_PER_MINUTE
+        val total = met * OXYGEN_ML_PER_KG_MIN * bodyWeightKg / KCAL_DIVISOR * minutes
+        return (total.coerceAtLeast(0.0) / 10).roundToInt() * 10
+    }
 
-    private fun roundDown(kcal: Double): Int = (kcal.coerceAtLeast(0.0) / 10).toInt() * 10
+    private const val LIGHT_STRENGTH_MET = 3.5
+    private const val STANDARD_STRENGTH_MET = 5.0
+    private const val HEAVY_STRENGTH_MET = 6.0
+    private val LIGHT_EQUIPMENT = setOf(Equipment.MACHINE, Equipment.CABLE, Equipment.BAND, Equipment.BODYWEIGHT)
+    private val HEAVY_MUSCLES = setOf(
+        MuscleGroup.QUADS, MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES, MuscleGroup.LOWER_BACK,
+    )
 
-    private const val STRENGTH_MET = 3.5
-    private const val RUNNING_MET = 7.0
-    private const val CYCLING_DEFAULT_MET = 5.0
-    private const val ROWING_DEFAULT_MET = 6.0
+    /** Walking (up to 6.4 km/h) and running, km/h to MET (Compendium, mph converted). */
+    private val RUNNING_TABLE = listOf(
+        3.2 to 2.8,
+        4.0 to 3.0,
+        4.8 to 3.5,
+        5.6 to 4.3,
+        6.4 to 5.0,
+        8.0 to 8.3,
+        8.4 to 9.0,
+        9.7 to 9.8,
+        10.8 to 10.5,
+        11.3 to 11.0,
+        12.1 to 11.5,
+        12.9 to 11.8,
+        13.8 to 12.3,
+        14.5 to 12.8,
+        16.1 to 14.5,
+        17.7 to 16.0,
+        19.3 to 19.0,
+    )
+
+    private const val RUNNING_DEFAULT_MET = 8.3
+    private const val CYCLING_DEFAULT_MET = 6.8
+    private const val ROWING_DEFAULT_MET = 7.0
     private const val OTHER_MET = 4.0
 
-    /** Net cost of running and walking on flat ground, kcal per kg body weight and km. */
-    private const val RUNNING_KCAL_PER_KG_KM = 0.9
-    private const val WALKING_KCAL_PER_KG_KM = 0.5
-    private const val WALKING_MAX_KMH = 6.5
-
+    private const val OXYGEN_ML_PER_KG_MIN = 3.5
+    private const val KCAL_DIVISOR = 200.0
     private const val MAX_STRENGTH_SECONDS = 3 * 3600L
-    private const val SECONDS_PER_HOUR = 3600.0
-    private const val METERS_PER_KM = 1000.0
+    private const val SECONDS_PER_MINUTE = 60.0
 }

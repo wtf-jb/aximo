@@ -54,7 +54,7 @@ data class CardioUiState(
 
     val speedKmh: Double? get() = draft.durationSec?.let { CardioMath.speedKmh(it, draft.distanceM) }
 
-    /** Estimated net kcal; null without body weight or duration. */
+    /** Estimated kcal; null without body weight or duration. */
     val kcal: Int?
         get() {
             val weight = bodyWeightKg ?: return null
