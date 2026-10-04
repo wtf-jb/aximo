@@ -137,25 +137,33 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - `PlannedSet` um `rpe` und `completedAt` ergänzt (Standard `null`)
   - Tests: Matcher, Builder/Vorschau, Parser/Prompt, `LoggingService`, `LoggingViewModel` (inkl. Sprache mit Fake), `WorkoutViewModel` (Button nur mit Profil)
 
-## In Arbeit
-- B-05 Coach-Chat (Branch `claude/b05-coach-chat`, PR gegen main; danach Stopp und Feedback von Jonas abwarten):
+- B-05 Coach-Chat, PR #22 (gemergt):
   - Domain `chat`: `ChatContext` + `ChatContextBuilder` (Review-Kontext 6 Wochen + Bestwert je Übung in 6 × 4 Wochen, ohne Cardio), `ChatHistory` (letzte 12 Nachrichten, ~12 000 Zeichen, beginnt mit Frage), `ChatMessage`, `ChatPayload`, `ChatService` (senden, prüfen, speichern, „Neues Gespräch“), `AiChatRepository`; `SuggestionApplier.applicable` (auch vom Review genutzt); `AiSuggestion` hat `reviewId` oder `chatMessageId`
-  - `:ai`: `ChatPrompt` (`chat-v1`, Kontext im Systemprompt, Verlauf als Nachrichten, frühere Antworten im Antwortformat), `ChatParser` (`reply` + max. 3 Vorschläge, Text ohne JSON = Antwort ohne Vorschläge), `KtorChatGenerator`, `SuggestionJson` (gemeinsam mit `ReviewParser`). Kein Streaming
+  - `:ai`: `ChatPrompt` (`chat-v2`, Kontext im Systemprompt, Verlauf als Nachrichten, frühere Antworten im Antwortformat), `ChatParser` (`reply` + max. 3 Vorschläge, Text ohne JSON = Antwort ohne Vorschläge), `KtorChatGenerator`, `SuggestionJson` (gemeinsam mit `ReviewParser`). Kein Streaming
   - Data: Tabelle `ai_chat_messages`, `ai_suggestions.reviewId` nullable + `chatMessageId` (DB v4, Auto-Migration, Migrationstest), `RoomAiChatRepository`; `chatNoticeAccepted` im DataStore
   - UI: Coach-Tab mit Umschalter „Wochen-Review | Chat“; Chat mit Blasen, Vorschlagskarten inline (Übernehmen/Verwerfen über `ReviewService`), „Coach denkt …“, Beispielfragen, Eingabefeld, Hinweis + „Daten ansehen“, „Neues Gespräch“ mit Rückfrage, eigener Datenschutz-Hinweis beim ersten Senden
   - Tests: Domain (Kontext, Kürzung, `applicable`), Prompt/Parser + MockEngine-Rundreise, Room (Repository, Migration 3→4, DataStore), `ChatService`, `ChatViewModel`
   - Nachtrag (Feedback Jonas): Coach erstellt Pläne direkt aus dem Chat (Plan-Karte mit abwählbaren Routinen, „N Routinen speichern“; fehlende Übungen lokal aus dem Katalog zugeordnet und beim Speichern angelegt) und kann zusätzlich Übungen tauschen, Reihenfolge ändern, Routinen umbenennen und löschen. Prompt `chat-v2`
 
+- KI-Profil: Modellauswahl, PR #23 und #24 (gemergt):
+  - Domain: `AiModelLister`, `AiModels.clean`, `AiProfileDraft.canListModels` (gültige URL und Key)
+  - `:ai`: `KtorModelLister` (OpenAI-kompatibel `GET {base}/models`, Anthropic `GET /v1/models`), `getJson` in `AiHttp`
+  - UI: Formularreihenfolge Base-URL, Key, Modell; Dropdown-Pfeil und automatisches Laden (800 ms Debounce) erst mit URL und Key; Status „N Modelle verfügbar“ / Fehler mit „Erneut laden“; Freitext bleibt möglich
+  - Tests: MockEngine, Domain, ViewModel
+
+## In Arbeit
+- Nichts. Nächstes Inkrement siehe unten
+
 ## Nächster Schritt
-- Feedback von Jonas zu B-05 abwarten (PR prüfen, auf dem Pixel testen). Danach B-07 Auto-Backup
-- Periodisierung (Rest von B-02: Zyklen/Blöcke mit Deload-Woche, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review): **nach B-05 einplanen**, wenn Jonas ≥ 4–6 Wochen Daten mit der App hat (Review-Fenster = 6 Wochen; Deload-Regeln brauchen echte RIR-/Stagnations-Verläufe) und die ersten Reviews auf dem Pixel getestet sind. Sinnvoller Startpunkt: Montag nach einer Deload-Woche oder direkt nach einem mit B-03 erzeugten Plan (= „Block 1“). Vorher von Jonas festlegen: Blocklänge (z. B. 4 + 1 Deload), Deload-Art (Volumen −40 % oder Gewicht −10 %)
+- B-07 Auto-Backup (Periodischer JSON-Export in frei wählbaren Ordner, Intervall konfigurierbar, Rotation der letzten N Backups; Anforderung siehe `docs/requirements.md`)
+- Periodisierung (Rest von B-02: Zyklen/Blöcke mit Deload-Woche, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review): **nach B-07 einplanen**, wenn Jonas ≥ 4–6 Wochen Daten mit der App hat (Review-Fenster = 6 Wochen; Deload-Regeln brauchen echte RIR-/Stagnations-Verläufe) und die ersten Reviews auf dem Pixel getestet sind. Sinnvoller Startpunkt: Montag nach einer Deload-Woche oder direkt nach einem mit B-03 erzeugten Plan (= „Block 1“). Vorher von Jonas festlegen: Blocklänge (z. B. 4 + 1 Deload), Deload-Art (Volumen −40 % oder Gewicht −10 %)
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
-- Modellauswahl im KI-Profil testen (PR „Modellauswahl als Dropdown“): Einstellungen → KI-Coach → Profil. Nach Base-URL und Key erscheint „N Modelle verfügbar“, über den Pfeil auswählen; falscher Key → Fehlermeldung + „Erneut laden“; bestehendes Profil öffnen → Liste lädt mit gespeichertem Key; ohne Key keine Liste (auch Ollama im LAN: Modell tippen)
+- Modellauswahl im KI-Profil testen (APK von main): Einstellungen → KI-Coach → Profil. Nach Base-URL und Key erscheint „N Modelle verfügbar“, über den Pfeil auswählen; falscher Key → Fehlermeldung + „Erneut laden“; bestehendes Profil öffnen → Liste lädt mit gespeichertem Key; ohne Key keine Liste (auch Ollama im LAN: Modell tippen)
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
 - B-06 auf dem Pixel testen (APK von main): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung
 - B-04 auf dem Pixel testen (APK von main, braucht KI-Profil): Workout starten → „Per Text oder Sprache erfassen“
@@ -166,7 +174,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Mikrofon: erstes Tippen fragt die Berechtigung; Diktat landet im Feld und ist korrigierbar; Berechtigung ablehnen → Hinweis; Flugmodus (on-device-Erkennung geht ohne Netz, nur die KI-Auswertung nicht); fehlt das deutsche Sprachpaket → Hinweis. Ohne on-device-Erkenner ist das Mikrofon nicht sichtbar
   - Fehler: Netz aus, falscher Key, Text ohne Sätze („Hallo“)
 - B-03 auf dem Pixel testen (APK von main): Pläne → „Mit KI erstellen“, Plan erzeugen, Entwurf prüfen, speichern
-- B-05 auf dem Pixel testen (PR-APK, braucht KI-Profil): Coach-Tab → „Chat“
+- B-05 auf dem Pixel testen (APK von main, braucht KI-Profil): Coach-Tab → „Chat“
   - Beispielfrage antippen oder „Warum stagniert mein Bankdrücken?“ → beim ersten Mal Chat-Hinweis (auch wenn der Review-Hinweis schon bestätigt war), „Daten ansehen“ zeigt Kontext + Nachrichten
   - Antwort nennt Zahlen aus deinen Daten; „Coach denkt …“ während der Anfrage
   - „Was soll ich an Push A ändern?“ → Vorschlagskarten in der Antwort; eine übernehmen (Routine prüfen), eine verwerfen; Karte, die nach einer Routinen-Änderung nicht mehr passt, zeigt den Hinweis
