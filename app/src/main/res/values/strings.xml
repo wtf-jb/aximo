@@ -157,4 +157,19 @@
         <item quantity="one">Add %d exercise</item>
         <item quantity="other">Add %d exercises</item>
     </plurals>
+    <string name="rest_title">REST</string>
+    <string name="rest_next_label">Up next</string>
+    <string name="rest_next_set">Set %1$d · %2$s</string>
+    <string name="rest_next_warmup">Warm-up · %1$s</string>
+    <string name="rest_next_none">All sets done</string>
+    <string name="rest_extend">+15 s</string>
+    <string name="rest_extend_description">Add 15 seconds</string>
+    <string name="rest_skip">Skip rest</string>
+    <string name="rest_notification_title">Rest</string>
+    <string name="rest_notification_next">Up next: %1$s</string>
+    <string name="rest_finished_title">Rest is over</string>
+    <string name="rest_channel_running">Running rest</string>
+    <string name="rest_channel_running_description">Countdown while you rest between sets</string>
+    <string name="rest_channel_finished">Rest over</string>
+    <string name="rest_channel_finished_description">Sound and vibration when the rest is over</string>
 </resources>

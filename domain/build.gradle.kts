@@ -21,4 +21,5 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.datetime)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

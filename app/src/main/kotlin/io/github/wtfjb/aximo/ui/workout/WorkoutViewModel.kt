@@ -8,6 +8,9 @@ import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.domain.model.WorkoutExercise
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
+import io.github.wtfjb.aximo.domain.rest.NextSet
+import io.github.wtfjb.aximo.domain.rest.RestTimerController
+import io.github.wtfjb.aximo.domain.rest.RestTimerLogic
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
@@ -32,6 +35,14 @@ data class WorkoutGroupUi(
     val activeSetId: Long?,
 )
 
+/** The running rest as the timer bar shows it. */
+data class RestUi(
+    val remainingSeconds: Long,
+    /** 1 at the start of the rest, 0 at the end. */
+    val remainingFraction: Float,
+    val next: NextSet?,
+)
+
 data class WorkoutUiState(
     val loading: Boolean = true,
     /** Null once loaded means there is no running workout (finished or discarded): the screen closes. */
@@ -41,16 +52,19 @@ data class WorkoutUiState(
     /** Completed non-warm-up sets of the last session, per exercise id. */
     val lastPerformance: Map<Long, List<SetEntry>> = emptyMap(),
     val unit: WeightUnit = WeightUnit.KG,
+    /** Running rest (A-03), or null. */
+    val rest: RestUi? = null,
 )
 
 /** Which value of a set is being edited. */
 enum class SetField { WEIGHT, REPS, RIR }
 
-/** The running workout (A-02). */
+/** The running workout (A-02) with its rest timer (A-03). */
 class WorkoutViewModel(
     private val workouts: WorkoutRepository,
     private val exercises: ExerciseRepository,
     private val time: TimeSource,
+    private val restTimer: RestTimerController,
 ) : ViewModel() {
 
     /** Last session per exercise id, loaded once per exercise. */
@@ -67,7 +81,7 @@ class WorkoutViewModel(
         if (workout != null) loadMissingLastSessions(workout)
     }
 
-    val uiState: StateFlow<WorkoutUiState> = combine(active, lastSessions, ticker) { workout, last, now ->
+    val uiState: StateFlow<WorkoutUiState> = combine(active, lastSessions, ticker, restTimer.state) { workout, last, now, rest ->
         if (workout == null) {
             WorkoutUiState(loading = false)
         } else {
@@ -79,6 +93,11 @@ class WorkoutViewModel(
                 },
                 elapsedSeconds = (now - workout.workout.startedAt).inWholeSeconds,
                 lastPerformance = last.mapValues { WorkoutLogic.lastPerformance(it.value) },
+                // Fresh time instead of the last tick: a rest that just started shows its full length.
+                rest = rest?.let { timer ->
+                    val current = time.now()
+                    RestUi(timer.remainingSeconds(current), timer.remainingFraction(current), timer.next)
+                },
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), WorkoutUiState())
@@ -116,11 +135,27 @@ class WorkoutViewModel(
         }
     }
 
-    /** Check button: completes an open set with its current values, or reopens a done one. */
+    /**
+     * Check button: completes an open set with its current values, or reopens a done one.
+     * Completing starts the rest; in a superset only after the last exercise of the round.
+     */
     fun toggleSetDone(set: SetEntry) {
-        val completedAt = if (set.completedAt == null) time.now() else null
-        update(set.copy(completedAt = completedAt))
+        val completing = set.completedAt == null
+        update(set.copy(completedAt = if (completing) time.now() else null))
+        if (completing) startRest(set.id)
     }
+
+    private fun startRest(setId: Long) {
+        val workout = currentWorkout ?: return
+        val groups = WorkoutLogic.groups(workout.exercises)
+        val group = groups.firstOrNull { g -> g.any { exercise -> exercise.sets.any { it.id == setId } } } ?: return
+        val seconds = RestTimerLogic.restAfterCompleting(group, setId) ?: return
+        restTimer.start(seconds, RestTimerLogic.nextSetAfterCompleting(groups, setId))
+    }
+
+    fun extendRest() = restTimer.extend()
+
+    fun skipRest() = restTimer.stop()
 
     /** Applies a typed value. Invalid input is ignored; an empty RIR clears it. */
     fun editSet(set: SetEntry, field: SetField, text: String) {
@@ -152,11 +187,13 @@ class WorkoutViewModel(
 
     fun finish(note: String) {
         val workout = currentWorkout ?: return
+        restTimer.stop()
         viewModelScope.launch { workouts.finishWorkout(workout.workout.id, time.now(), note) }
     }
 
     fun discard() {
         val workout = currentWorkout ?: return
+        restTimer.stop()
         viewModelScope.launch { workouts.discardWorkout(workout.workout.id) }
     }
 

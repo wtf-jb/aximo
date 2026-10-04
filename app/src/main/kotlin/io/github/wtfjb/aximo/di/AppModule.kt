@@ -7,14 +7,19 @@ import io.github.wtfjb.aximo.data.repository.RoomRoutineRepository
 import io.github.wtfjb.aximo.data.repository.RoomWorkoutRepository
 import io.github.wtfjb.aximo.data.settings.DataStoreSettingsRepository
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
+import io.github.wtfjb.aximo.domain.rest.RestTimerController
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
 import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.time.TimeSource
+import io.github.wtfjb.aximo.rest.AndroidRestTimerEffects
 import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
 import io.github.wtfjb.aximo.ui.today.TodayViewModel
 import io.github.wtfjb.aximo.ui.workout.WorkoutViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -27,9 +32,17 @@ val appModule = module {
     single<RoutineRepository> { RoomRoutineRepository(get<AximoDatabase>().routineDao()) }
     single<WorkoutRepository> { RoomWorkoutRepository(get<AximoDatabase>().workoutDao()) }
     single { TimeSource.System }
+    // One rest timer for the whole app; its scope lives as long as the app.
+    single {
+        RestTimerController(
+            time = get(),
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            effects = AndroidRestTimerEffects(androidContext()),
+        )
+    }
     viewModel { MainViewModel(get()) }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), exerciseId) }
     viewModel { TodayViewModel(get(), get()) }
-    viewModel { WorkoutViewModel(get(), get(), get()) }
+    viewModel { WorkoutViewModel(get(), get(), get(), get()) }
 }
