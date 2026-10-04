@@ -41,7 +41,6 @@
     <string name="exercises_empty_body">Create your first exercise to log sets and build routines.</string>
     <string name="exercises_no_results">No exercise matches this filter.</string>
     <string name="exercises_create">Create exercise</string>
-    <string name="exercise_archived_badge">ARCHIVED</string>
 
     <string name="exercise_edit_title_new">New exercise</string>
     <string name="exercise_edit_title">Edit exercise</string>
@@ -101,4 +100,61 @@
     <string name="muscle_glutes">Glutes</string>
     <string name="muscle_calves">Calves</string>
     <string name="muscle_adductors">Adductors</string>
+
+    <!-- Workout logging (A-02) -->
+    <string name="today_start_workout">Start workout</string>
+    <string name="today_resume_workout">Resume workout</string>
+    <string name="workout_free">Free training</string>
+    <string name="workout_minimize">Minimize workout</string>
+    <string name="workout_finish">Finish</string>
+    <string name="workout_progress">%1$s · %2$d / %3$d</string>
+    <string name="workout_empty">Add the first exercise.</string>
+    <string name="workout_add_exercise">Add exercise</string>
+    <string name="workout_add_set">+ Set</string>
+    <string name="workout_meta">%1$s · %2$s</string>
+    <string name="workout_superset">SUPERSET %1$s</string>
+    <string name="workout_exercise_options">Options for %1$s</string>
+    <string name="workout_exercise_note">Note</string>
+    <string name="workout_exercise_remove">Remove</string>
+    <string name="workout_last">Last %1$s</string>
+    <string name="workout_meta_reps">Reps %1$d–%2$d</string>
+    <string name="workout_col_set">SET</string>
+    <string name="workout_col_kg">KG</string>
+    <string name="workout_col_lbs">LBS</string>
+    <string name="workout_col_added_kg">+KG</string>
+    <string name="workout_col_added_lbs">+LBS</string>
+    <string name="workout_col_reps">REPS</string>
+    <string name="workout_col_rir">RIR</string>
+    <string name="workout_set_badge_warmup">W</string>
+    <string name="workout_set_badge_drop">D</string>
+    <string name="workout_set_badge_failure">F</string>
+    <string name="workout_set_type_warmup">Warm-up</string>
+    <string name="workout_set_type_working">Working set</string>
+    <string name="workout_set_type_drop">Drop set</string>
+    <string name="workout_set_type_failure">Failure</string>
+    <string name="workout_set_delete">Delete set</string>
+    <string name="workout_set_menu">Set %1$s options</string>
+    <string name="workout_set_complete">Complete set %1$s</string>
+    <string name="workout_set_reopen">Reopen set %1$s</string>
+    <string name="workout_field_weight">Weight · set %1$s</string>
+    <string name="workout_field_reps">Reps · set %1$s</string>
+    <string name="workout_field_rir">RIR · set %1$s</string>
+    <string name="workout_value_decrease">Decrease</string>
+    <string name="workout_value_increase">Increase</string>
+    <string name="workout_apply">Apply</string>
+    <string name="workout_cancel">Cancel</string>
+    <string name="workout_finish_title">Finish workout?</string>
+    <string name="workout_finish_note">Workout note</string>
+    <string name="workout_continue">Keep training</string>
+    <string name="workout_discard">Discard</string>
+    <string name="workout_discard_title">Discard workout?</string>
+    <string name="workout_discard_body">All sets of this workout will be deleted.</string>
+    <string name="workout_save_note">Save</string>
+
+    <string name="picker_title">Add exercise</string>
+    <string name="picker_superset">As superset</string>
+    <plurals name="picker_add">
+        <item quantity="one">Add %d exercise</item>
+        <item quantity="other">Add %d exercises</item>
+    </plurals>
 </resources>

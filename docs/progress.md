@@ -2,7 +2,7 @@
 
 ## Erledigt
 - Requirements, Design-System, Mockups (siehe `docs/`)
-- Umgebung geprüft (04.10.): Cloud-Session hat JDK 21 und Gradle, aber **kein Android SDK und keinen Zugriff auf dl.google.com/maven.google.com** (siehe „Offen für Jonas“). Builds deshalb vorerst nur über GitHub Actions; `:domain`-Tests laufen lokal mit einem Hilfs-Setup nur aus Maven Central
+- Umgebung eingerichtet (04.10.): `dl.google.com` freigegeben, Android SDK unter `/opt/android-sdk`; lokal laufen `./gradlew test assembleDebug lintDebug`. Room-Schema v1 in `data/schemas` committet
 - Schritt 1 Projekt-Setup (`docs/prompts/01-setup.md`), PR #1 (CI grün, gemergt):
   - Gradle-Projekt `:app`, `:data`, `:domain`, Version Catalog, Wrapper 9.8.0
   - Schriften als Variable Fonts + OFL-Lizenzen (`licenses/`)
@@ -23,20 +23,21 @@
   - Tests: Domain (Filter, Formular), ViewModels mit Fake-Repository
 
 ## In Arbeit
-- –
+- Schritt 4 Workout-Logging (A-02), PR #4:
+  - Domain: `WorkoutLogic` (Vorbelegung, nächster Satz, aktiver Satz inkl. Supersatz-Runden, Gruppierung, Nummerierung, letzte Leistung), `WorkoutRepository`, `TimeSource`
+  - Data: Relationen Workout → Übungen → Sätze, laufendes Workout als Flow, letzte Session pro Übung, `RoomWorkoutRepository`
+  - UI: Heute „Workout starten/fortsetzen“; Workout-Screen mit Uhr, Karten, SetRow (erledigt/aktiv/offen), Werte-Dialog mit −/+, Satztyp-Menü, Übungs-Menü (Notiz, Entfernen), Beenden/Verwerfen; Auswahlmodus der Übungsliste mit „Als Supersatz“
+  - Tests: Domain, Room (Robolectric), ViewModels; Lint in CI
 
 ## Nächster Schritt
-- 4. Workout-Logging inkl. SetRow, Satztypen, Supersätze (A-02), dabei Auswahlmodus der Übungsliste
+- 5. Rest-Timer mit Notification (A-03)
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
-## Offen für Claude (nächste Session mit Android SDK)
-- Exportiertes Room-Schema `data/schemas/…/1.json` committen (entsteht beim Build, ging in dieser Session ohne SDK nicht)
-
 ## Offen für Jonas
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
-- Cloud-Environment einrichten (Netzwerk `dl.google.com`, `ANDROID_HOME`, Setup-Skript), siehe `docs/cloud-environment.md`. Bis dahin baut nur CI
+- Setup-Skript im Environment prüfen: Plattform-Paket heißt `platforms;android-37.0` (in `docs/cloud-environment.md` korrigiert)
 - Routine im claude.ai-UI anlegen (meine per Tool angelegte Routine hat kein Repo und keinen GitHub-Zugang und ist deaktiviert), Prompt siehe `docs/routine-prompt.md`
 - Lizenz: Arbeitsannahme GPLv3 (siehe `docs/decisions.md`)

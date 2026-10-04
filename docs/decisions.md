@@ -31,3 +31,12 @@
 | 2026-10-04 | Mehrfachauswahl | Auswahlmodus („N Übungen hinzufügen“, „Als Supersatz“) kommt mit Workout/Routine (Schritt 4/6) | Ohne Ziel wäre er toter Code |
 | 2026-10-04 | Formular | `ExerciseDraft` in `:domain` hält die Eingaben als Text und validiert sie; Fehler erscheinen erst nach dem ersten Speichern | Testbar ohne Android; keine roten Felder während des ersten Tippens |
 | 2026-10-04 | Startübungen | Keine vorbefüllten Übungen; leerer Zustand mit „Übung anlegen“ | Namen wären Nutzerdaten in einer festen Sprache. Der richtige Weg ist der Katalog (B-06) |
+| 2026-10-04 | Workout-Start | Freies Training über „Workout starten“ auf Heute; höchstens ein laufendes Workout, sonst „Workout fortsetzen“ | Routinen kommen in Schritt 6; ein Workout kann minimiert werden und läuft weiter |
+| 2026-10-04 | Vorbelegung | Neue Übung im Workout bekommt die Sätze der letzten Session (Typ, Gewicht, Wdh., RIR); ohne Historie 3 Arbeitssätze mit 0 kg und unterem Wdh.-Wert. „+ Satz“ kopiert den letzten Satz | Erfüllt „ein Satz mit max. 2 Taps“: Werte stehen, ein Tap auf den Haken loggt. Progressionsvorschläge ersetzen das in Schritt 7 |
+| 2026-10-04 | Werte eingeben | Tap auf einen Wert öffnet einen Dialog mit −/+ (Gewicht in Inkrement-Schritten, sonst 1) und Tastatur | Wie im Design-System beschrieben; ein Dialog statt Bottom Sheet hält es einfach |
+| 2026-10-04 | Satztyp | Tap auf die Satznummer öffnet ein Menü: Warm-up, Arbeitssatz, Drop, Failure, Löschen. Warm-ups zählen nicht in die Nummerierung | Kein Platz für eine eigene Spalte; das Menü bündelt alle Satz-Aktionen |
+| 2026-10-04 | Supersätze | Im Auswahlmodus der Übungsliste „Als Supersatz“ (ab 2 Übungen): gemeinsamer Buchstabe, eine Karte, Logging rundenweise (A1 Satz 1, A2 Satz 1, A1 Satz 2 …) | A-02; Zirkel sind dasselbe mit mehr Übungen |
+| 2026-10-04 | Cardio im Workout | Cardio-Übungen erscheinen nicht in der Workout-Auswahl | Cardio wird separat erfasst (A-04, Schritt 8) |
+| 2026-10-04 | Verwerfen | „Beenden“ bietet „Verwerfen“ mit zweiter Bestätigung; löscht das Workout samt Sätzen | Nicht rückgängig zu machen, daher doppelt abgesichert |
+| 2026-10-04 | Lint | `lintDebug` läuft in CI mit; Warnungen werden behoben, nicht unterdrückt | CLAUDE.md: Lint gehört ab jetzt zu „grün“ |
+| 2026-10-04 | AGP | 9.4.0 → 9.4.1 | Lint meldete neuere Patch-Version |

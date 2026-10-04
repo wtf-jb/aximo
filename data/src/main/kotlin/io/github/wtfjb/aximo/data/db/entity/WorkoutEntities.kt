@@ -130,3 +130,19 @@ data class ProgressionStateEntity(
     val nextRepTarget: Int,
     val reason: ProgressionReason,
 )
+
+/** A workout exercise with its exercise (incl. muscles) and its sets. */
+data class WorkoutExerciseWithDetails(
+    @androidx.room.Embedded val entry: WorkoutExerciseEntity,
+    @androidx.room.Relation(entity = ExerciseEntity::class, parentColumn = "exerciseId", entityColumn = "id")
+    val exercise: ExerciseWithMuscles,
+    @androidx.room.Relation(parentColumn = "id", entityColumn = "workoutExerciseId")
+    val sets: List<SetEntryEntity>,
+)
+
+/** A workout with all its exercises and sets, loaded in one go. */
+data class WorkoutWithDetails(
+    @androidx.room.Embedded val workout: WorkoutEntity,
+    @androidx.room.Relation(entity = WorkoutExerciseEntity::class, parentColumn = "id", entityColumn = "workoutId")
+    val exercises: List<WorkoutExerciseWithDetails>,
+)
