@@ -129,18 +129,6 @@ fun AiProfileEditScreen(
                     ),
                     error = stringResource(R.string.ai_profile_error_url).takeIf { AiProfileFieldError.URL_INVALID in errors },
                 )
-                ModelField(
-                    value = draft.model,
-                    onValueChange = viewModel::setModel,
-                    models = state.models,
-                    onReload = viewModel::reloadModels,
-                    placeholder = if (draft.kind == AiProviderKind.ANTHROPIC) {
-                        stringResource(R.string.ai_profile_model_placeholder_anthropic, AiProfiles.ANTHROPIC_MODEL_EXAMPLE)
-                    } else {
-                        stringResource(R.string.ai_profile_model_placeholder_openai)
-                    },
-                    error = stringResource(R.string.ai_profile_error_model).takeIf { AiProfileFieldError.MODEL_MISSING in errors },
-                )
                 LabeledTextField(
                     label = stringResource(R.string.ai_profile_key),
                     value = draft.apiKey,
@@ -164,6 +152,18 @@ fun AiProfileEditScreen(
                         )
                     }
                 }
+                ModelField(
+                    value = draft.model,
+                    onValueChange = viewModel::setModel,
+                    models = state.models,
+                    onReload = viewModel::reloadModels,
+                    placeholder = if (draft.kind == AiProviderKind.ANTHROPIC) {
+                        stringResource(R.string.ai_profile_model_placeholder_anthropic, AiProfiles.ANTHROPIC_MODEL_EXAMPLE)
+                    } else {
+                        stringResource(R.string.ai_profile_model_placeholder_openai)
+                    },
+                    error = stringResource(R.string.ai_profile_error_model).takeIf { AiProfileFieldError.MODEL_MISSING in errors },
+                )
             }
         }
         if (draft.isCleartext) {
@@ -204,8 +204,8 @@ fun AiProfileEditScreen(
 
 /**
  * Model as free text plus a dropdown with the models the provider reports.
- * The list loads by itself once URL (and for Anthropic a key) are filled in;
- * typing stays possible for providers without a model list.
+ * The list loads by itself once URL and key are filled in (the arrow only
+ * appears then); typing stays possible for providers without a model list.
  */
 @Composable
 private fun ModelField(

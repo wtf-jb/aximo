@@ -182,26 +182,30 @@ class AiProfileViewModelsTest {
     }
 
     @Test
-    fun modelsLoadOnceUrlIsThere() = runTest(UnconfinedTestDispatcher()) {
+    fun modelsLoadOnlyWithUrlAndKey() = runTest(UnconfinedTestDispatcher()) {
         val vm = editVm()
         vm.setModel("x")
         assertEquals(ModelListState.Idle, vm.uiState.value.models)
-        assertTrue(modelRequests.isEmpty())
 
         vm.setBaseUrl("https://api.mistral.ai/v1")
-
-        assertEquals(ModelListState.Loaded(listOf("mistral-large-latest", "mistral-small-latest")), vm.uiState.value.models)
-        assertEquals(Triple(AiProviderKind.OPENAI_COMPATIBLE, "https://api.mistral.ai/v1", null), modelRequests.single())
+        assertEquals(ModelListState.Idle, vm.uiState.value.models)
+        assertTrue(modelRequests.isEmpty())
 
         vm.setApiKey("sk")
-        assertEquals("sk", modelRequests.last().third)
+
+        assertEquals(ModelListState.Loaded(listOf("mistral-large-latest", "mistral-small-latest")), vm.uiState.value.models)
+        assertEquals(Triple(AiProviderKind.OPENAI_COMPATIBLE, "https://api.mistral.ai/v1", "sk"), modelRequests.single())
 
         vm.setBaseUrl("not a url")
+        assertEquals(ModelListState.Idle, vm.uiState.value.models)
+
+        vm.setBaseUrl("https://api.mistral.ai/v1")
+        vm.setApiKey("")
         assertEquals(ModelListState.Idle, vm.uiState.value.models)
     }
 
     @Test
-    fun anthropicNeedsAKeyBeforeLoading() = runTest(UnconfinedTestDispatcher()) {
+    fun anthropicLoadsOnceTheKeyIsThere() = runTest(UnconfinedTestDispatcher()) {
         val vm = editVm()
         vm.setKind(AiProviderKind.ANTHROPIC)
         assertEquals(ModelListState.Idle, vm.uiState.value.models)
@@ -226,6 +230,7 @@ class AiProfileViewModelsTest {
     fun pickingAModelOnlySetsTheField() = runTest(UnconfinedTestDispatcher()) {
         val vm = editVm()
         vm.setBaseUrl("https://api.mistral.ai/v1")
+        vm.setApiKey("sk")
 
         vm.setModel("mistral-small-latest")
 
@@ -238,6 +243,7 @@ class AiProfileViewModelsTest {
         models = { throw AiException(AiException.Reason.UNAUTHORIZED, 401, "bad key") }
         val vm = editVm()
         vm.setBaseUrl("https://api.mistral.ai/v1")
+        vm.setApiKey("bad")
         assertEquals(ModelListState.Failed(AiException.Reason.UNAUTHORIZED, 401, "bad key"), vm.uiState.value.models)
 
         models = { listOf("a") }
@@ -250,6 +256,7 @@ class AiProfileViewModelsTest {
     fun typingIsDebounced() = runTest {
         val vm = editVm(debounce = AiProfileEditViewModel.MODEL_DEBOUNCE_MILLIS)
 
+        vm.setApiKey("sk")
         vm.setBaseUrl("https://api.mistral.ai/v")
         advanceTimeBy(AiProfileEditViewModel.MODEL_DEBOUNCE_MILLIS / 2)
         vm.setBaseUrl("https://api.mistral.ai/v1")
