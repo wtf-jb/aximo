@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.model.ExerciseType
+import io.github.wtfjb.aximo.domain.model.RoutineExercise
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.domain.units.WeightUnit
@@ -57,6 +58,7 @@ class WorkoutActions(
 fun WorkoutGroupCard(
     group: WorkoutGroupUi,
     lastPerformance: Map<Long, List<SetEntry>>,
+    targets: Map<Long, RoutineExercise>,
     unit: WeightUnit,
     actions: WorkoutActions,
 ) {
@@ -75,6 +77,7 @@ fun WorkoutGroupCard(
                     tileLabel = group.supersetGroup?.let { "$it${index + 1}" },
                     activeSetId = group.activeSetId,
                     last = lastPerformance[detail.entry.exerciseId].orEmpty(),
+                    target = targets[detail.entry.exerciseId],
                     unit = unit,
                     actions = actions,
                 )
@@ -104,6 +107,7 @@ private fun ExerciseBlock(
     tileLabel: String?,
     activeSetId: Long?,
     last: List<SetEntry>,
+    target: RoutineExercise?,
     unit: WeightUnit,
     actions: WorkoutActions,
 ) {
@@ -134,7 +138,11 @@ private fun ExerciseBlock(
                     text = stringResource(
                         R.string.workout_meta,
                         stringResource(exercise.equipment.label()),
-                        stringResource(R.string.workout_meta_reps, exercise.repRangeMin, exercise.repRangeMax),
+                        if (target != null) {
+                            targetText(target)
+                        } else {
+                            stringResource(R.string.workout_meta_reps, exercise.repRangeMin, exercise.repRangeMax)
+                        },
                     ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -220,6 +228,13 @@ private fun ExerciseMenu(detail: WorkoutExerciseDetail, actions: WorkoutActions)
             )
         }
     }
+}
+
+/** "Ziel 3 × 6–8 · RIR 2" */
+@Composable
+private fun targetText(target: RoutineExercise): String {
+    val base = stringResource(R.string.workout_target, stringResource(R.string.routine_target, target.targetSets, target.repMin, target.repMax))
+    return target.targetRir?.let { stringResource(R.string.workout_meta, base, stringResource(R.string.routine_target_rir, it)) } ?: base
 }
 
 /** "80 × 8 · 8 · 8" when the weight stays the same, else "80 × 8 · 82,5 × 6". */

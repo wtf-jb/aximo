@@ -14,7 +14,7 @@ import io.github.wtfjb.aximo.ui.today.TodayViewModel
 import org.koin.androidx.compose.koinViewModel
 
 /**
- * "Heute" tab. For now: start a free workout or resume the running one.
+ * "Heute" tab. For now: resume the running workout, or start the next routine or a free workout.
  * Hero card, week bar and history follow with routines and statistics.
  * Debug builds also show the entry to the theme showcase.
  */
@@ -25,14 +25,33 @@ fun TodayScreen(
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = koinViewModel(),
 ) {
-    val hasActiveWorkout by viewModel.hasActiveWorkout.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val next = state.nextRoutine
 
     TabScreen(title = stringResource(R.string.nav_today), modifier = modifier) {
-        PrimaryButton(
-            text = stringResource(if (hasActiveWorkout) R.string.today_resume_workout else R.string.today_start_workout),
-            onClick = { viewModel.startOrResume(onOpenWorkout) },
-            modifier = Modifier.fillMaxWidth(),
-        )
+        when {
+            state.hasActiveWorkout -> PrimaryButton(
+                text = stringResource(R.string.today_resume_workout),
+                onClick = { viewModel.startOrResume(null, onOpenWorkout) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            next != null -> {
+                PrimaryButton(
+                    text = stringResource(R.string.today_start_routine, next.name),
+                    onClick = { viewModel.startOrResume(next.id, onOpenWorkout) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                SecondaryButton(
+                    text = stringResource(R.string.plans_free_training),
+                    onClick = { viewModel.startOrResume(null, onOpenWorkout) },
+                )
+            }
+            else -> PrimaryButton(
+                text = stringResource(R.string.today_start_workout),
+                onClick = { viewModel.startOrResume(null, onOpenWorkout) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         if (BuildConfig.DEBUG) {
             SecondaryButton(
                 text = stringResource(R.string.showcase_open),

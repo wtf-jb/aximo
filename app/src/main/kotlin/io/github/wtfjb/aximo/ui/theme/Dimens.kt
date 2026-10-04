@@ -63,6 +63,10 @@ object Sizes {
     /** Progress track of the rest timer bar (6, radius 3). */
     val restProgress = 6.dp
 
+    /** Dashed "add" button: corner radius (= radius-xl) and dash length. */
+    val dashRadius = 22.dp
+    val dashLength = 6.dp
+
     /** Color swatch in the theme showcase. */
     val swatch = 40.dp
 }

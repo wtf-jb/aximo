@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import io.github.wtfjb.aximo.data.db.entity.RoutineLastWorkout
 import io.github.wtfjb.aximo.data.db.entity.SetEntryEntity
 import io.github.wtfjb.aximo.data.db.entity.WorkoutEntity
 import io.github.wtfjb.aximo.data.db.entity.WorkoutExerciseEntity
@@ -16,6 +17,12 @@ import kotlinx.coroutines.flow.Flow
 interface WorkoutDao {
     @Query("SELECT * FROM workouts ORDER BY startedAt DESC")
     fun observeAll(): Flow<List<WorkoutEntity>>
+
+    @Query(
+        "SELECT routineId, MAX(startedAt) AS lastStartedAt FROM workouts " +
+            "WHERE endedAt IS NOT NULL AND routineId IS NOT NULL GROUP BY routineId",
+    )
+    fun observeLastPerRoutine(): Flow<List<RoutineLastWorkout>>
 
     /** The running workout. If there should ever be several, the newest wins. */
     @Transaction

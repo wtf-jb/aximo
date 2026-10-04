@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 
 /** Access to workouts and their sets. Implemented in :data. */
 interface WorkoutRepository {
+    /** Start time of the last finished workout per routine id. */
+    fun observeLastWorkoutPerRoutine(): Flow<Map<Long, Instant>>
+
     /** The running workout (no end time), or null. There is at most one. */
     fun observeActiveWorkout(): Flow<WorkoutDetail?>
 

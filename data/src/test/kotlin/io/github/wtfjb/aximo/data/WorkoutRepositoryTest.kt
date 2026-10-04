@@ -99,4 +99,18 @@ class WorkoutRepositoryTest : DatabaseTest() {
         assertEquals(emptyList<Any>(), workouts.observeActiveWorkout().first()!!.exercises)
         assertEquals(emptyList<Any>(), db.workoutDao().getSets(weId))
     }
+
+    @Test
+    fun lastWorkoutPerRoutineOnlyCountsFinishedWorkouts() = runTest {
+        val routineId = io.github.wtfjb.aximo.data.repository.RoomRoutineRepository(db.routineDao())
+            .saveRoutine(io.github.wtfjb.aximo.domain.model.Routine(name = "Push"), emptyList())
+        val first = workouts.startWorkout(t0, routineId)
+        workouts.finishWorkout(first, t0, "")
+        val later = t0.plus(kotlin.time.Duration.parse("1d"))
+        val second = workouts.startWorkout(later, routineId)
+        workouts.finishWorkout(second, later, "")
+        workouts.startWorkout(later.plus(kotlin.time.Duration.parse("1d")), routineId) // still running
+
+        assertEquals(mapOf(routineId to later), workouts.observeLastWorkoutPerRoutine().first())
+    }
 }

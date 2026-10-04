@@ -47,6 +47,16 @@ object AppIcons {
     val SkipForward by lazy { lineIcon("SkipForward", "M6 5l9 7-9 7z", "M18 5v14") }
     val Cardio by lazy { lineIcon("Cardio", "M3 12h4l3-8 4 16 3-8h4") }
 
+    /** Filled play triangle (design system: filled icons are only play, check circle and dots). */
+    val Play by lazy {
+        ImageVector.Builder(name = "Play", defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
+            .addPath(
+                pathData = addPathNodes("M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"),
+                fill = SolidColor(Color.Black),
+            )
+            .build()
+    }
+
     private fun lineIcon(name: String, vararg paths: String): ImageVector {
         val builder = ImageVector.Builder(
             name = name,

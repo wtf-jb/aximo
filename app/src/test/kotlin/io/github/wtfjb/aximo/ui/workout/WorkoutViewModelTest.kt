@@ -50,9 +50,10 @@ class WorkoutViewModelTest {
         override fun finished(next: NextSet?) = Unit
     }
     private lateinit var restTimer: RestTimerController
+    private val routines = io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository()
 
     // Lazy: viewModelScope must be created after MainDispatcherRule has replaced Dispatchers.Main.
-    private val vm by lazy { WorkoutViewModel(workouts, FakeExerciseRepository(listOf(bench, row)), time, restTimer) }
+    private val vm by lazy { WorkoutViewModel(workouts, FakeExerciseRepository(listOf(bench, row)), routines, time, restTimer) }
 
     private fun TestScope.started() {
         restTimer = RestTimerController(time, backgroundScope, noEffects)
@@ -217,5 +218,18 @@ class WorkoutViewModelTest {
         vm.finish("")
 
         assertNull(restTimer.state.value)
+    }
+
+    @Test
+    fun routineWorkoutShowsNameAndTargets() = runTest(UnconfinedTestDispatcher()) {
+        val routineId = routines.saveRoutine(
+            io.github.wtfjb.aximo.domain.model.Routine(name = "Push A"),
+            listOf(io.github.wtfjb.aximo.domain.model.RoutineExercise(exerciseId = 1, position = 0, targetSets = 3, repMin = 6, repMax = 8, targetRir = 2)),
+        )
+        workouts.startWorkout(start, routineId)
+        started()
+
+        assertEquals("Push A", vm.uiState.value.routineName)
+        assertEquals(3, vm.uiState.value.targets[1L]!!.targetSets)
     }
 }

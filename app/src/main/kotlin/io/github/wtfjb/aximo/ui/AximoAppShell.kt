@@ -24,6 +24,8 @@ import io.github.wtfjb.aximo.ui.navigation.CoachRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseEditRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseListRoute
 import io.github.wtfjb.aximo.ui.navigation.ExercisePickerRoute
+import io.github.wtfjb.aximo.ui.navigation.RoutineEditRoute
+import io.github.wtfjb.aximo.ui.routine.RoutineEditScreen
 import io.github.wtfjb.aximo.ui.navigation.WorkoutRoute
 import io.github.wtfjb.aximo.ui.workout.PickedExercises
 import io.github.wtfjb.aximo.ui.workout.WorkoutScreen
@@ -80,7 +82,12 @@ fun AximoAppShell(
                 )
             }
             composable<PlansRoute> {
-                PlansScreen(onOpenExercises = { navController.navigate(ExerciseListRoute) })
+                PlansScreen(
+                    onOpenWorkout = { navController.navigate(WorkoutRoute) { launchSingleTop = true } },
+                    onOpenExercises = { navController.navigate(ExerciseListRoute) },
+                    onOpenRoutine = { id -> navController.navigate(RoutineEditRoute(id)) },
+                    onNewRoutine = { navController.navigate(RoutineEditRoute()) },
+                )
             }
             composable<StatsRoute> {
                 PlaceholderTab(stringResource(R.string.nav_stats), stringResource(R.string.placeholder_body))
@@ -108,6 +115,21 @@ fun AximoAppShell(
                     },
                     onAddExercise = { navController.navigate(ExercisePickerRoute) },
                     onClose = { navController.popBackStack() },
+                )
+            }
+            composable<RoutineEditRoute> { entry ->
+                val handle = entry.savedStateHandle
+                val ids by handle.getStateFlow<LongArray?>(PICKED_IDS, null).collectAsStateWithLifecycle()
+                val superset by handle.getStateFlow(PICKED_SUPERSET, false).collectAsStateWithLifecycle()
+                RoutineEditScreen(
+                    routineId = entry.toRoute<RoutineEditRoute>().routineId,
+                    picked = ids?.let { PickedExercises(it.toList(), superset) },
+                    onPickedConsumed = {
+                        handle.remove<LongArray>(PICKED_IDS)
+                        handle.remove<Boolean>(PICKED_SUPERSET)
+                    },
+                    onAddExercise = { navController.navigate(ExercisePickerRoute) },
+                    onDone = { navController.popBackStack() },
                 )
             }
             composable<ExercisePickerRoute> {
