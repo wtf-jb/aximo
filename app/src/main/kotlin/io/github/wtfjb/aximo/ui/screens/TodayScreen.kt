@@ -16,6 +16,7 @@ import io.github.wtfjb.aximo.ui.components.PrimaryButton
 import io.github.wtfjb.aximo.ui.icons.AppIcons
 import io.github.wtfjb.aximo.ui.components.SecondaryButton
 import io.github.wtfjb.aximo.ui.format.formatLongDate
+import io.github.wtfjb.aximo.ui.coach.ReviewHintCard
 import io.github.wtfjb.aximo.ui.today.NextWorkoutCard
 import io.github.wtfjb.aximo.ui.today.RecentList
 import io.github.wtfjb.aximo.ui.today.WeekCard
@@ -38,6 +39,7 @@ fun TodayScreen(
     onOpenCardio: (Long) -> Unit,
     onOpenFinishedWorkout: (Long) -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenCoach: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = koinViewModel(),
 ) {
@@ -71,6 +73,7 @@ fun TodayScreen(
             )
         }
         state.week?.let { WeekCard(it, state.weeklyGoal) }
+        ReviewHintCard(onOpen = onOpenCoach)
         RecentList(items = state.recent, onOpenCardio = onOpenCardio, onOpenWorkout = onOpenFinishedWorkout)
         if (BuildConfig.DEBUG) {
             SecondaryButton(

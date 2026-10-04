@@ -9,7 +9,15 @@ import io.github.wtfjb.aximo.domain.backup.BackupException
 import io.github.wtfjb.aximo.domain.backup.SetsCsv
 import io.github.wtfjb.aximo.domain.exercise.CatalogExercise
 import io.github.wtfjb.aximo.domain.exercise.CatalogSeeder
+import io.github.wtfjb.aximo.ui.ai.FakeAiPreferences
 import io.github.wtfjb.aximo.ui.ai.FakeAiProfileRepository
+import io.github.wtfjb.aximo.ui.coach.FakeAiReviewRepository
+import io.github.wtfjb.aximo.domain.review.ReviewService
+import io.github.wtfjb.aximo.domain.review.WeeklyReviewSetting
+import io.github.wtfjb.aximo.domain.time.TimeSource
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.TimeZone
+import kotlin.time.Instant
 import io.github.wtfjb.aximo.ui.exercises.FakeExerciseRepository
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
 import io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository
@@ -38,7 +46,18 @@ class SettingsViewModelTest {
     private val workouts = FakeWorkoutRepository(emptyMap())
     private val exercises = FakeExerciseRepository()
     private val aiProfiles = FakeAiProfileRepository()
-    private val vm by lazy { SettingsViewModel(settings, backup, workouts, FakeRoutineRepository(), documents, CatalogSeeder(exercises, settings) { it.name }, aiProfiles) }
+    private val aiPreferences = FakeAiPreferences()
+    private val reviewService = ReviewService(
+        workouts, FakeRoutineRepository(), exercises, settings, aiProfiles,
+        { _, _ -> error("no AI call in settings") }, { _, _, _ -> error("no AI call in settings") },
+        FakeAiReviewRepository(), TimeSource { Instant.parse("2026-10-04T12:00:00Z") }, { TimeZone.UTC },
+    )
+    private val vm by lazy {
+        SettingsViewModel(
+            settings, backup, workouts, FakeRoutineRepository(), documents, CatalogSeeder(exercises, settings) { it.name },
+            aiProfiles, aiPreferences, reviewService, { "weeks=${it.weeks}" },
+        )
+    }
 
     @Test
     fun showsTheStoredSettings() = runTest(UnconfinedTestDispatcher()) {
@@ -60,6 +79,37 @@ class SettingsViewModelTest {
 
         aiProfiles.setActive(second)
         assertEquals("Claude", vm.uiState.value.aiProfile?.name)
+    }
+
+    @Test
+    fun weeklyReviewNeedsNoticeOnce() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.setWeeklyReviewEnabled(true)
+        assertTrue(vm.uiState.value.ai.showNotice)
+        assertFalse(aiPreferences.weeklyReview.value.enabled)
+
+        vm.acceptNotice()
+        assertFalse(vm.uiState.value.ai.showNotice)
+        assertTrue(vm.uiState.value.ai.weeklyReview.enabled)
+
+        vm.setWeeklyReviewEnabled(false)
+        vm.setWeeklyReviewEnabled(true)
+        assertFalse(vm.uiState.value.ai.showNotice)
+        assertTrue(aiPreferences.weeklyReview.value.enabled)
+    }
+
+    @Test
+    fun weeklyReviewTimeAndSentData() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.setWeeklyReviewTime(DayOfWeek.MONDAY, 7)
+        assertEquals(WeeklyReviewSetting(enabled = false, day = DayOfWeek.MONDAY, hour = 7), vm.uiState.value.ai.weeklyReview)
+
+        vm.showSentData()
+        assertEquals("weeks=6", vm.uiState.value.ai.sentData)
+        vm.dismissSentData()
+        assertEquals(null, vm.uiState.value.ai.sentData)
     }
 
     @Test

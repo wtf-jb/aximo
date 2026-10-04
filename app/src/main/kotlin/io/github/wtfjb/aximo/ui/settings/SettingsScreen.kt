@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
@@ -47,6 +49,7 @@ import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.SetRating
+import io.github.wtfjb.aximo.ui.components.AppSwitch
 import io.github.wtfjb.aximo.ui.components.CircleIconButton
 import io.github.wtfjb.aximo.ui.components.InverseButton
 import io.github.wtfjb.aximo.ui.components.LabeledTextField
@@ -59,9 +62,10 @@ import io.github.wtfjb.aximo.ui.theme.Sizes
 import io.github.wtfjb.aximo.ui.theme.Spacing
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
 
 /** Which dialog is open. */
-private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, IMPORT }
+private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, IMPORT, REVIEW_DAY, REVIEW_HOUR }
 
 /**
  * Settings (A-09, mockup Einstellungen.html) with export and import (A-08)
@@ -77,6 +81,8 @@ fun SettingsScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val training = state.training
     var dialog by remember { mutableStateOf<SettingsDialog?>(null) }
+    // Day picked in the first step of "Zeitpunkt", before the hour.
+    var reviewDay by remember { mutableStateOf(state.ai.weeklyReview.day) }
     val context = LocalContext.current
     val language = remember { if (AppLanguages.isSupported) AppLanguages.current(context) else AppLanguage.SYSTEM }
 
@@ -160,6 +166,25 @@ fun SettingsScreen(
         SectionLabel(stringResource(R.string.settings_section_ai))
         SettingsCard {
             AiProfileRow(state.aiProfile, onOpenAiProfiles)
+            if (state.aiProfile != null) {
+                val review = state.ai.weeklyReview
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                SwitchRow(
+                    label = stringResource(R.string.settings_weekly_review),
+                    detail = if (review.enabled) reviewTimeLabel(review.day, review.hour) else stringResource(R.string.settings_weekly_review_off),
+                    checked = review.enabled,
+                    onCheckedChange = viewModel::setWeeklyReviewEnabled,
+                )
+                if (review.enabled) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    ValueRow(stringResource(R.string.settings_weekly_review_time), reviewTimeLabel(review.day, review.hour), onClick = {
+                        reviewDay = review.day
+                        dialog = SettingsDialog.REVIEW_DAY
+                    })
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                ValueRow(stringResource(R.string.coach_sent_data), "", onClick = viewModel::showSentData)
+            }
         }
         Hint(stringResource(R.string.settings_ai_hint))
 
@@ -220,7 +245,89 @@ fun SettingsScreen(
             },
             onDismiss = { dialog = null },
         )
+        SettingsDialog.REVIEW_DAY -> {
+            val days = DayOfWeek.entries
+            ChoiceDialog(
+                title = stringResource(R.string.settings_weekly_review_day),
+                options = days.map { dayName(it) },
+                selectedIndex = days.indexOf(state.ai.weeklyReview.day),
+                onSelect = { index ->
+                    reviewDay = days[index]
+                    dialog = SettingsDialog.REVIEW_HOUR
+                },
+                onDismiss = { dialog = null },
+            )
+        }
+        SettingsDialog.REVIEW_HOUR -> ChoiceDialog(
+            title = stringResource(R.string.settings_weekly_review_hour),
+            options = (0..23).map { formatHour(it) },
+            selectedIndex = state.ai.weeklyReview.hour,
+            onSelect = { hour ->
+                dialog = null
+                viewModel.setWeeklyReviewTime(reviewDay, hour)
+            },
+            onDismiss = { dialog = null },
+        )
         null -> Unit
+    }
+
+    if (state.ai.showNotice) {
+        AlertDialog(
+            onDismissRequest = viewModel::dismissNotice,
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = { Text(text = stringResource(R.string.coach_notice_title), style = MaterialTheme.typography.titleMedium) },
+            text = { Text(text = stringResource(R.string.coach_notice_body), style = MaterialTheme.typography.bodyMedium) },
+            confirmButton = { InverseButton(text = stringResource(R.string.settings_weekly_review_confirm), onClick = viewModel::acceptNotice) },
+            dismissButton = { CancelButton(viewModel::dismissNotice) },
+        )
+    }
+    state.ai.sentData?.let { data ->
+        AlertDialog(
+            onDismissRequest = viewModel::dismissSentData,
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = { Text(text = stringResource(R.string.coach_sent_data), style = MaterialTheme.typography.titleMedium) },
+            text = {
+                SelectionContainer(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Text(text = data, style = MaterialTheme.typography.bodySmall)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = viewModel::dismissSentData) {
+                    Text(text = stringResource(R.string.coach_close), style = MaterialTheme.typography.labelLarge)
+                }
+            },
+        )
+    }
+}
+
+/** "Sonntag, 18:00". */
+@Composable
+private fun reviewTimeLabel(day: DayOfWeek, hour: Int): String = stringResource(R.string.settings_weekly_review_value, dayName(day), formatHour(hour))
+
+private fun dayName(day: DayOfWeek): String =
+    java.time.DayOfWeek.of(day.ordinal + 1).getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.getDefault())
+
+/** Whole hour in the device format, "18:00" / "6:00 PM". */
+private fun formatHour(hour: Int): String =
+    java.time.format.DateTimeFormatter.ofLocalizedTime(java.time.format.FormatStyle.SHORT).format(java.time.LocalTime.of(hour, 0))
+
+/** Label with state line and a switch; the whole row toggles (design system). */
+@Composable
+private fun SwitchRow(label: String, detail: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = Sizes.cta)
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+            .padding(vertical = Spacing.s12),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.s12),
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = label, style = MaterialTheme.typography.titleSmall)
+            Text(text = detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        AppSwitch(checked = checked, onCheckedChange = null)
     }
 }
 

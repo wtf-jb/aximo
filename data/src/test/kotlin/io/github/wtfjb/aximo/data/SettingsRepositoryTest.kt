@@ -7,7 +7,9 @@ import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.SetRating
+import io.github.wtfjb.aximo.domain.review.WeeklyReviewSetting
 import kotlinx.coroutines.flow.first
+import kotlinx.datetime.DayOfWeek
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -35,5 +37,16 @@ class SettingsRepositoryTest {
         preferences.acceptDataNotice()
 
         assertEquals(true, preferences.dataNoticeAccepted.first())
+    }
+
+    @Test
+    fun weeklyReviewSettingIsStored() = runTest {
+        val preferences = DataStoreAiPreferences(RuntimeEnvironment.getApplication())
+        assertEquals(WeeklyReviewSetting(), preferences.weeklyReview.first())
+
+        val setting = WeeklyReviewSetting(enabled = true, day = DayOfWeek.MONDAY, hour = 7)
+        preferences.setWeeklyReview(setting)
+
+        assertEquals(setting, preferences.weeklyReview.first())
     }
 }

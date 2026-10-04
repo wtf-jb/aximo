@@ -592,4 +592,24 @@
         <item quantity="one">%d Vorschlag</item>
         <item quantity="other">%d Vorschläge</item>
     </plurals>
+
+    <!-- Weekly review schedule (B-02) -->
+    <string name="settings_weekly_review">Wöchentlicher Review</string>
+    <string name="settings_weekly_review_off">Aus – nur von Hand im Coach-Tab</string>
+    <string name="settings_weekly_review_time">Zeitpunkt</string>
+    <string name="settings_weekly_review_day">Wochentag</string>
+    <string name="settings_weekly_review_hour">Uhrzeit</string>
+    <string name="settings_weekly_review_confirm">Einschalten</string>
+    <string name="review_channel">Wochen-Review</string>
+    <string name="review_channel_description">Meldet, wenn der wöchentliche KI-Review fertig ist</string>
+    <string name="review_notification_title">Wochen-Review bereit</string>
+    <string name="today_review_ready">Wochen-Review bereit</string>
+    <plurals name="review_notification_text">
+        <item quantity="one">%d Vorschlag wartet auf dich</item>
+        <item quantity="other">%d Vorschläge warten auf dich</item>
+    </plurals>
+    <plurals name="today_review_open">
+        <item quantity="one">%d offener Vorschlag</item>
+        <item quantity="other">%d offene Vorschläge</item>
+    </plurals>
 </resources>

@@ -1,7 +1,6 @@
 package io.github.wtfjb.aximo.ui.coach
 
 import io.github.wtfjb.aximo.domain.ai.AiException
-import io.github.wtfjb.aximo.domain.ai.AiPreferences
 import io.github.wtfjb.aximo.domain.ai.AiProvider
 import io.github.wtfjb.aximo.domain.ai.AiRequest
 import io.github.wtfjb.aximo.domain.ai.ApiKeyChange
@@ -23,6 +22,7 @@ import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
 import io.github.wtfjb.aximo.domain.workout.WorkoutExerciseDetail
+import io.github.wtfjb.aximo.ui.ai.FakeAiPreferences
 import io.github.wtfjb.aximo.ui.ai.FakeAiProfileRepository
 import io.github.wtfjb.aximo.ui.exercises.FakeExerciseRepository
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
@@ -30,7 +30,6 @@ import io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository
 import io.github.wtfjb.aximo.ui.settings.FakeSettingsRepository
 import io.github.wtfjb.aximo.ui.workout.FakeWorkoutRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -79,13 +78,7 @@ class CoachViewModelTest {
     }
     private val profiles = FakeAiProfileRepository()
     private val reviews = FakeAiReviewRepository()
-    private val preferences = object : AiPreferences {
-        val accepted = MutableStateFlow(false)
-        override val dataNoticeAccepted = accepted
-        override suspend fun acceptDataNotice() {
-            accepted.value = true
-        }
-    }
+    private val preferences = FakeAiPreferences()
 
     private var calls = 0
     private var answer: () -> GeneratedReview = {

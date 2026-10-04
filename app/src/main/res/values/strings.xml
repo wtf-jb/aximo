@@ -611,4 +611,25 @@
         <item quantity="one">%d suggestion</item>
         <item quantity="other">%d suggestions</item>
     </plurals>
+
+    <!-- Weekly review schedule (B-02) -->
+    <string name="settings_weekly_review">Weekly review</string>
+    <string name="settings_weekly_review_off">Off – only by hand in the Coach tab</string>
+    <string name="settings_weekly_review_time">Time</string>
+    <string name="settings_weekly_review_value" translatable="false">%1$s, %2$s</string>
+    <string name="settings_weekly_review_day">Day of week</string>
+    <string name="settings_weekly_review_hour">Time of day</string>
+    <string name="settings_weekly_review_confirm">Turn on</string>
+    <string name="review_channel">Weekly review</string>
+    <string name="review_channel_description">Tells you when the weekly AI review is ready</string>
+    <string name="review_notification_title">Weekly review ready</string>
+    <string name="today_review_ready">Weekly review ready</string>
+    <plurals name="review_notification_text">
+        <item quantity="one">%d suggestion is waiting for you</item>
+        <item quantity="other">%d suggestions are waiting for you</item>
+    </plurals>
+    <plurals name="today_review_open">
+        <item quantity="one">%d open suggestion</item>
+        <item quantity="other">%d open suggestions</item>
+    </plurals>
 </resources>
