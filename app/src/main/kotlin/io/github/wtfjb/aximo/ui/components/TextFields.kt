@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -66,7 +67,9 @@ fun SearchField(
 }
 
 /**
- * Labeled input on a surface-sunken pill, for forms inside cards.
+ * Labeled input on a surface-sunken pill, for forms inside cards. Directly on the
+ * screen background pass `containerColor = colorScheme.surface`, otherwise the pill
+ * has the background color in the light theme.
  * Shows [error] below the field in the accent-container text color.
  */
 @Composable
@@ -83,6 +86,7 @@ fun LabeledTextField(
     secret: Boolean = false,
     /** Optional control at the end of the field, e.g. a dropdown arrow. */
     trailing: (@Composable () -> Unit)? = null,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.s6)) {
         Text(
@@ -95,7 +99,7 @@ fun LabeledTextField(
                 .fillMaxWidth()
                 .heightIn(min = Sizes.input)
                 .clip(MaterialTheme.shapes.small)
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .background(containerColor)
                 .padding(start = Spacing.s14, end = if (trailing == null) Spacing.s14 else Spacing.s4),
             verticalAlignment = Alignment.CenterVertically,
         ) {

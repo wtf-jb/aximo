@@ -165,6 +165,7 @@ private fun ColumnScope.Input(state: LoggingUiState, viewModel: LoggingViewModel
             label = stringResource(R.string.logging_field),
             value = state.text,
             onValueChange = viewModel::setText,
+            containerColor = MaterialTheme.colorScheme.surface,
             singleLine = false,
             placeholder = stringResource(R.string.logging_placeholder),
             modifier = Modifier.weight(1f),

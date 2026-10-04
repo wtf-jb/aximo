@@ -132,6 +132,7 @@ fun SummaryScreen(
                 label = stringResource(R.string.workout_finish_note),
                 value = state.note,
                 onValueChange = viewModel::onNoteChange,
+                containerColor = MaterialTheme.colorScheme.surface,
                 singleLine = false,
             )
         }
