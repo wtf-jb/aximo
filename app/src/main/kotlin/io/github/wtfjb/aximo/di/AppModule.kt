@@ -80,6 +80,7 @@ import io.github.wtfjb.aximo.ui.routine.RoutineEditViewModel
 import io.github.wtfjb.aximo.ui.settings.ContentResolverDocumentStore
 import io.github.wtfjb.aximo.ui.settings.DocumentStore
 import io.github.wtfjb.aximo.ui.settings.SettingsViewModel
+import io.github.wtfjb.aximo.ui.calendar.CalendarViewModel
 import io.github.wtfjb.aximo.ui.stats.StatsViewModel
 import io.github.wtfjb.aximo.ui.summary.SummaryViewModel
 import io.github.wtfjb.aximo.ui.today.TodayViewModel
@@ -168,6 +169,7 @@ val appModule = module {
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), get(), exerciseId) }
     viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), get(), exerciseId) }
     viewModel { CatalogViewModel(get(), get(), get()) }
+    viewModel { CalendarViewModel(get(), get(), get(), get(), get()) }
     viewModel { TodayViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (entryId: Long) ->
         val context = androidContext()

@@ -1,5 +1,7 @@
 package io.github.wtfjb.aximo.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,6 +17,7 @@ import io.github.wtfjb.aximo.ui.components.PrimaryButton
 import io.github.wtfjb.aximo.ui.icons.AppIcons
 import io.github.wtfjb.aximo.ui.components.SecondaryButton
 import io.github.wtfjb.aximo.ui.format.formatLongDate
+import io.github.wtfjb.aximo.ui.theme.Spacing
 import io.github.wtfjb.aximo.ui.coach.ReviewHintCard
 import io.github.wtfjb.aximo.ui.today.NextWorkoutCard
 import io.github.wtfjb.aximo.ui.today.RecentList
@@ -37,6 +40,7 @@ fun TodayScreen(
     onOpenCardio: (Long) -> Unit,
     onOpenFinishedWorkout: (Long) -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenCalendar: () -> Unit,
     onOpenCoach: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = koinViewModel(),
@@ -49,7 +53,12 @@ fun TodayScreen(
         title = stringResource(R.string.nav_today),
         modifier = modifier.verticalScroll(rememberScrollState()),
         overline = formatLongDate(today),
-        action = { CircleIconButton(AppIcons.Settings, stringResource(R.string.settings_title), onOpenSettings) },
+        action = {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s8)) {
+                CircleIconButton(AppIcons.Calendar, stringResource(R.string.calendar_title), onOpenCalendar)
+                CircleIconButton(AppIcons.Settings, stringResource(R.string.settings_title), onOpenSettings)
+            }
+        },
     ) {
         when {
             state.hasActiveWorkout -> PrimaryButton(
