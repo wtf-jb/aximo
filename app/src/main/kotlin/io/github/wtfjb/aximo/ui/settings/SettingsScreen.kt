@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +41,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.R
+import io.github.wtfjb.aximo.domain.ai.AiProviderProfile
+import io.github.wtfjb.aximo.ui.ai.label
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.units.WeightUnit
@@ -61,12 +64,14 @@ import java.time.LocalDate
 private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, IMPORT }
 
 /**
- * Settings (A-09, mockup Einstellungen.html) with export and import (A-08).
- * AI coach (B) and Health Connect (C) are left out.
+ * Settings (A-09, mockup Einstellungen.html) with export and import (A-08)
+ * and the AI coach's provider profile (B-01). Weekly review and "sent data"
+ * follow with B-02; Health Connect (C) is left out.
  */
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
+    onOpenAiProfiles: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -151,6 +156,12 @@ fun SettingsScreen(
             }
         }
         Hint(stringResource(R.string.settings_add_catalog_hint))
+
+        SectionLabel(stringResource(R.string.settings_section_ai))
+        SettingsCard {
+            AiProfileRow(state.aiProfile, onOpenAiProfiles)
+        }
+        Hint(stringResource(R.string.settings_ai_hint))
 
         SectionLabel(stringResource(R.string.settings_section_data))
         BackupCard(
@@ -275,8 +286,50 @@ private fun ImportDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     )
 }
 
+/** Mockup row: accent icon tile, "Provider-Profil", active profile below. */
 @Composable
-private fun Hint(text: String) {
+private fun AiProfileRow(profile: AiProviderProfile?, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = Spacing.s12),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.s12),
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(Sizes.iconTile),
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(imageVector = AppIcons.Sparkle, contentDescription = null, modifier = Modifier.size(Sizes.iconSmall))
+            }
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = stringResource(R.string.settings_ai_profile), style = MaterialTheme.typography.titleSmall)
+            Text(
+                text = if (profile == null) {
+                    stringResource(R.string.settings_ai_profile_none)
+                } else {
+                    stringResource(R.string.ai_profile_summary, profile.name, stringResource(profile.kind.label()))
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            imageVector = AppIcons.ChevronRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(Sizes.iconSmall),
+        )
+    }
+}
+
+@Composable
+internal fun Hint(text: String) {
     Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
@@ -307,7 +360,7 @@ private fun stepsLabel(training: TrainingSettings): String = stringResource(
 )
 
 @Composable
-private fun SectionLabel(text: String) {
+internal fun SectionLabel(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.labelMedium,
@@ -317,7 +370,7 @@ private fun SectionLabel(text: String) {
 }
 
 @Composable
-private fun SettingsCard(content: @Composable () -> Unit) {
+internal fun SettingsCard(content: @Composable () -> Unit) {
     Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(horizontal = Spacing.s16, vertical = Spacing.s4)) {
             content()
@@ -421,7 +474,7 @@ private fun StepsDialog(training: TrainingSettings, onConfirm: (String, String) 
 }
 
 @Composable
-private fun CancelButton(onClick: () -> Unit) {
+internal fun CancelButton(onClick: () -> Unit) {
     TextButton(onClick = onClick) {
         Text(text = stringResource(R.string.workout_cancel), style = MaterialTheme.typography.labelLarge)
     }

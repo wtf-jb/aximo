@@ -54,6 +54,7 @@ object AppIcons {
         )
     }
     val ChevronRight by lazy { lineIcon("ChevronRight", "M9 6l6 6-6 6") }
+    val Sparkle by lazy { lineIcon("Sparkle", "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z") }
     val Note by lazy { lineIcon("Note", "M5 4h14v16H5z", "M9 9h6M9 13h6M9 17h3") }
 
     /** Filled play triangle (design system: filled icons are only play, check circle and dots). */

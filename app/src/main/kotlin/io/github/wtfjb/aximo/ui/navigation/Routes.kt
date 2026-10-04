@@ -18,6 +18,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object SettingsRoute
 
+/** AI provider profiles (B-01). */
+@Serializable data object AiProfilesRoute
+
+/** profileId = 0 creates a new profile. */
+@Serializable data class AiProfileEditRoute(val profileId: Long = 0)
+
 @Serializable data object ExerciseListRoute
 
 @Serializable data object WorkoutRoute

@@ -24,6 +24,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import io.github.wtfjb.aximo.ui.icons.AppIcons
 import io.github.wtfjb.aximo.ui.theme.Sizes
 import io.github.wtfjb.aximo.ui.theme.Spacing
@@ -76,6 +78,9 @@ fun LabeledTextField(
     error: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     singleLine: Boolean = true,
+    placeholder: String = "",
+    /** Hides the text and turns off suggestions (API keys). */
+    secret: Boolean = false,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.s6)) {
         Text(
@@ -95,11 +100,13 @@ fun LabeledTextField(
             InputText(
                 value = value,
                 onValueChange = onValueChange,
-                placeholder = "",
+                placeholder = placeholder,
                 singleLine = singleLine,
+                visualTransformation = if (secret) PasswordVisualTransformation() else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = keyboardType,
-                    capitalization = if (keyboardType == KeyboardType.Text) {
+                    keyboardType = if (secret) KeyboardType.Password else keyboardType,
+                    autoCorrectEnabled = !secret,
+                    capitalization = if (keyboardType == KeyboardType.Text && !secret) {
                         KeyboardCapitalization.Sentences
                     } else {
                         KeyboardCapitalization.None
@@ -127,6 +134,7 @@ private fun InputText(
     keyboardOptions: KeyboardOptions,
     modifier: Modifier = Modifier,
     singleLine: Boolean = true,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     val textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface)
     BasicTextField(
@@ -136,6 +144,7 @@ private fun InputText(
         textStyle = textStyle,
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         decorationBox = { inner ->
             Box(contentAlignment = Alignment.CenterStart) {

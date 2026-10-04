@@ -1,16 +1,19 @@
 package io.github.wtfjb.aximo.data.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import io.github.wtfjb.aximo.data.db.dao.AiProfileDao
 import io.github.wtfjb.aximo.data.db.dao.BackupDao
 import io.github.wtfjb.aximo.data.db.dao.CardioDao
 import io.github.wtfjb.aximo.data.db.dao.ExerciseDao
 import io.github.wtfjb.aximo.data.db.dao.ProgressionDao
 import io.github.wtfjb.aximo.data.db.dao.RoutineDao
 import io.github.wtfjb.aximo.data.db.dao.WorkoutDao
+import io.github.wtfjb.aximo.data.db.entity.AiProfileEntity
 import io.github.wtfjb.aximo.data.db.entity.BlockEntity
 import io.github.wtfjb.aximo.data.db.entity.CardioEntryEntity
 import io.github.wtfjb.aximo.data.db.entity.CycleEntity
@@ -40,8 +43,11 @@ import io.github.wtfjb.aximo.data.db.entity.WorkoutExerciseEntity
         SetEntryEntity::class,
         CardioEntryEntity::class,
         ProgressionStateEntity::class,
+        AiProfileEntity::class,
     ],
-    version = 1,
+    // 2: ai_profiles (B-01), a new table only, so Room migrates automatically.
+    version = 2,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -52,6 +58,7 @@ abstract class AximoDatabase : RoomDatabase() {
     abstract fun cardioDao(): CardioDao
     abstract fun progressionDao(): ProgressionDao
     abstract fun backupDao(): BackupDao
+    abstract fun aiProfileDao(): AiProfileDao
 
     companion object {
         private const val FILE_NAME = "aximo.db"

@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "aximo"
 
-include(":app", ":data", ":domain")
+include(":app", ":data", ":domain", ":ai")

@@ -9,6 +9,7 @@ import io.github.wtfjb.aximo.domain.backup.BackupException
 import io.github.wtfjb.aximo.domain.backup.SetsCsv
 import io.github.wtfjb.aximo.domain.exercise.CatalogExercise
 import io.github.wtfjb.aximo.domain.exercise.CatalogSeeder
+import io.github.wtfjb.aximo.ui.ai.FakeAiProfileRepository
 import io.github.wtfjb.aximo.ui.exercises.FakeExerciseRepository
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
 import io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository
@@ -36,7 +37,8 @@ class SettingsViewModelTest {
     private val documents = FakeDocumentStore()
     private val workouts = FakeWorkoutRepository(emptyMap())
     private val exercises = FakeExerciseRepository()
-    private val vm by lazy { SettingsViewModel(settings, backup, workouts, FakeRoutineRepository(), documents, CatalogSeeder(exercises, settings) { it.name }) }
+    private val aiProfiles = FakeAiProfileRepository()
+    private val vm by lazy { SettingsViewModel(settings, backup, workouts, FakeRoutineRepository(), documents, CatalogSeeder(exercises, settings) { it.name }, aiProfiles) }
 
     @Test
     fun showsTheStoredSettings() = runTest(UnconfinedTestDispatcher()) {
@@ -45,6 +47,19 @@ class SettingsViewModelTest {
 
         assertEquals(90, vm.uiState.value.training.restSeconds)
         assertEquals(ThemeMode.SYSTEM, vm.uiState.value.themeMode)
+    }
+
+    @Test
+    fun showsActiveAiProfile() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+        assertEquals(null, vm.uiState.value.aiProfile)
+
+        aiProfiles.saveProfile(FakeAiProfileRepository.profile("Ollama"), io.github.wtfjb.aximo.domain.ai.ApiKeyChange.Keep)
+        val second = aiProfiles.saveProfile(FakeAiProfileRepository.profile("Claude"), io.github.wtfjb.aximo.domain.ai.ApiKeyChange.Keep)
+        assertEquals("Ollama", vm.uiState.value.aiProfile?.name)
+
+        aiProfiles.setActive(second)
+        assertEquals("Claude", vm.uiState.value.aiProfile?.name)
     }
 
     @Test

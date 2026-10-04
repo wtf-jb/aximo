@@ -2,6 +2,9 @@ package io.github.wtfjb.aximo.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.ai.AiProfileRepository
+import io.github.wtfjb.aximo.domain.ai.AiProfiles
+import io.github.wtfjb.aximo.domain.ai.AiProviderProfile
 import io.github.wtfjb.aximo.domain.backup.BackupException
 import io.github.wtfjb.aximo.domain.backup.BackupRepository
 import io.github.wtfjb.aximo.domain.backup.SetsCsv
@@ -35,11 +38,14 @@ data class SettingsUiState(
     val backup: BackupState = BackupState(),
     /** How many standard exercises the last tap added, null before the first tap. */
     val catalogAdded: Int? = null,
+    /** The active AI provider profile, null without one (B-01). */
+    val aiProfile: AiProviderProfile? = null,
 )
 
 /**
  * Settings screen (A-09): unit, theme, default rest and weight steps. Language is
- * handled by Android. Also export and import of all data (A-08).
+ * handled by Android. Also export and import of all data (A-08) and the entry
+ * to the AI provider profiles (B-01).
  */
 class SettingsViewModel(
     private val settings: SettingsRepository,
@@ -48,13 +54,20 @@ class SettingsViewModel(
     private val routines: RoutineRepository,
     private val documents: DocumentStore,
     private val catalog: CatalogSeeder,
+    aiProfiles: AiProfileRepository,
 ) : ViewModel() {
 
     private val backup = MutableStateFlow(BackupState())
     private val catalogAdded = MutableStateFlow<Int?>(null)
 
-    val uiState: StateFlow<SettingsUiState> = combine(settings.themeMode, settings.training, backup, catalogAdded) { theme, training, backup, added ->
-        SettingsUiState(theme, training, backup, added)
+    val uiState: StateFlow<SettingsUiState> = combine(
+        settings.themeMode,
+        settings.training,
+        backup,
+        catalogAdded,
+        aiProfiles.observeProfiles(),
+    ) { theme, training, backup, added, profiles ->
+        SettingsUiState(theme, training, backup, added, AiProfiles.active(profiles))
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
     fun setThemeMode(mode: ThemeMode) {
