@@ -18,6 +18,7 @@ import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.PlannedSet
+import io.github.wtfjb.aximo.domain.workout.SetRating
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,7 +65,7 @@ class BackupRepositoryTest : DatabaseTest() {
         workouts.finishWorkout(workoutId, t0 + 1.hours, "gut")
         cardio.saveEntry(CardioEntry(exerciseId = runId, startedAt = t0 + 2.hours, durationSec = 1800, distanceM = 5000.0, note = "locker"))
         progression.save(ProgressionState(benchId, 85.0, 6, ProgressionReason.INCREASE_WEIGHT))
-        settings.setTraining(TrainingSettings(restSeconds = 150).withUnit(WeightUnit.LBS))
+        settings.setTraining(TrainingSettings(restSeconds = 150, rating = SetRating.RPE).withUnit(WeightUnit.LBS))
     }
 
     @Test
@@ -78,7 +79,7 @@ class BackupRepositoryTest : DatabaseTest() {
         backup.restoreJson(json)
 
         assertEquals(before, snapshot())
-        assertEquals(TrainingSettings(restSeconds = 150).withUnit(WeightUnit.LBS), settings.training.first())
+        assertEquals(TrainingSettings(restSeconds = 150, rating = SetRating.RPE).withUnit(WeightUnit.LBS), settings.training.first())
         // Exporting again gives the same file: nothing got lost on the way.
         assertEquals(json, backup.exportJson())
     }

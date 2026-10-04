@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import io.github.wtfjb.aximo.R
+import io.github.wtfjb.aximo.ui.routine.targetEffort
 import io.github.wtfjb.aximo.domain.model.ExerciseType
 import io.github.wtfjb.aximo.domain.model.ProgressionReason
 import io.github.wtfjb.aximo.domain.model.ProgressionState
@@ -267,7 +268,7 @@ private fun progressionHint(progression: ProgressionState?, last: List<SetEntry>
 @Composable
 private fun targetText(target: RoutineExercise): String {
     val base = stringResource(R.string.workout_target, stringResource(R.string.routine_target, target.targetSets, target.repMin, target.repMax))
-    return target.targetRir?.let { stringResource(R.string.workout_meta, base, stringResource(R.string.routine_target_rir, it)) } ?: base
+    return target.targetRir?.let { stringResource(R.string.workout_meta, base, targetEffort(it)) } ?: base
 }
 
 /** "80 × 8 · 8 · 8" when the weight stays the same, else "80 × 8 · 82,5 × 6". */

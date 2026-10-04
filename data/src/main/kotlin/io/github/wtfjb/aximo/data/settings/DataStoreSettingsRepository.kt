@@ -13,6 +13,7 @@ import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.SetRating
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -42,6 +43,7 @@ class DataStoreSettingsRepository(context: Context) : SettingsRepository {
             unit = unit,
             restSeconds = prefs[REST_SECONDS]?.takeIf { it >= 0 } ?: defaults.restSeconds,
             steps = WeightSteps(barbellKg = barbell, dumbbellKg = dumbbell),
+            rating = SetRating.entries.firstOrNull { it.name == prefs[SET_RATING] } ?: SetRating.RIR,
         )
     }
 
@@ -51,6 +53,7 @@ class DataStoreSettingsRepository(context: Context) : SettingsRepository {
             prefs[REST_SECONDS] = settings.restSeconds
             prefs[STEP_BARBELL_KG] = settings.steps.barbellKg
             prefs[STEP_DUMBBELL_KG] = settings.steps.dumbbellKg
+            prefs[SET_RATING] = settings.rating.name
         }
     }
 
@@ -60,5 +63,6 @@ class DataStoreSettingsRepository(context: Context) : SettingsRepository {
         val REST_SECONDS = intPreferencesKey("default_rest_seconds")
         val STEP_BARBELL_KG = doublePreferencesKey("step_barbell_kg")
         val STEP_DUMBBELL_KG = doublePreferencesKey("step_dumbbell_kg")
+        val SET_RATING = stringPreferencesKey("set_rating")
     }
 }

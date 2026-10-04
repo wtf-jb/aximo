@@ -42,6 +42,7 @@ import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.workout.SetRating
 import io.github.wtfjb.aximo.ui.components.CircleIconButton
 import io.github.wtfjb.aximo.ui.components.InverseButton
 import io.github.wtfjb.aximo.ui.components.LabeledTextField
@@ -122,6 +123,13 @@ fun SettingsScreen(
             ValueRow(stringResource(R.string.settings_rest), formatRest(training.restSeconds), onClick = { dialog = SettingsDialog.REST })
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             ValueRow(stringResource(R.string.settings_steps), stepsLabel(training), onClick = { dialog = SettingsDialog.STEPS })
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            SegmentRow(
+                label = stringResource(R.string.settings_rating),
+                options = listOf(stringResource(R.string.workout_col_rir), stringResource(R.string.workout_col_rpe)),
+                selectedIndex = training.rating.ordinal,
+                onSelect = { viewModel.setRating(SetRating.entries[it]) },
+            )
         }
         Hint(stringResource(R.string.settings_training_hint))
 

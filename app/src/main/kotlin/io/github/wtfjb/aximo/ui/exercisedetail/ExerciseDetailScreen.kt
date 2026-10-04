@@ -1,6 +1,10 @@
 package io.github.wtfjb.aximo.ui.exercisedetail
 
+import io.github.wtfjb.aximo.ui.format.LocalSetRating
 import io.github.wtfjb.aximo.ui.format.LocalWeightUnit
+import io.github.wtfjb.aximo.ui.format.formatRpe
+import io.github.wtfjb.aximo.domain.workout.Effort
+import io.github.wtfjb.aximo.domain.workout.SetRating
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -245,15 +249,18 @@ private fun SessionCard(session: ExerciseSession, routineName: String?, isRecord
     }
 }
 
-/** "82,5 × 8 · R2"; warm-ups tinted "W 40 × 10" (design system: set chip). */
+/** "82,5 × 8 · R2" (or "· @8" with RPE); warm-ups tinted "W 40 × 10" (design system: set chip). */
 @Composable
 private fun SetChip(set: SetEntry, unit: WeightUnit) {
     val weight = formatWeight(set.weightKg, unit)
     val warm = set.setType == SetType.WARM_UP
-    val rir = set.rir
+    val rpeScale = LocalSetRating.current == SetRating.RPE
+    val rir = Effort.rir(set)
+    val rpe = Effort.rpe(set)
     val text = when {
         warm -> stringResource(R.string.detail_set_chip_warmup, weight, set.reps)
-        rir != null -> stringResource(R.string.detail_set_chip_rir, weight, set.reps, rir)
+        rpeScale && rpe != null -> stringResource(R.string.detail_set_chip_rpe, weight, set.reps, formatRpe(rpe))
+        !rpeScale && rir != null -> stringResource(R.string.detail_set_chip_rir, weight, set.reps, rir)
         else -> stringResource(R.string.detail_set_chip, weight, set.reps)
     }
     Surface(

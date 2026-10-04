@@ -12,6 +12,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.ui.AximoAppShell
+import io.github.wtfjb.aximo.ui.format.LocalSetRating
 import io.github.wtfjb.aximo.ui.format.LocalWeightUnit
 import io.github.wtfjb.aximo.ui.theme.AximoTheme
 import org.koin.androidx.compose.koinViewModel
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
             val viewModel: MainViewModel = koinViewModel()
             val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
             val weightUnit by viewModel.weightUnit.collectAsStateWithLifecycle()
+            val setRating by viewModel.setRating.collectAsStateWithLifecycle()
             val darkTheme = themeMode.isDark(systemIsDark = isSystemInDarkTheme())
 
             // Status bar icons follow the app theme, not only the system setting.
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
             }
 
             AximoTheme(darkTheme = darkTheme) {
-                CompositionLocalProvider(LocalWeightUnit provides weightUnit) {
+                CompositionLocalProvider(LocalWeightUnit provides weightUnit, LocalSetRating provides setRating) {
                     AximoAppShell(
                         themeMode = themeMode,
                         onThemeModeChange = viewModel::setThemeMode,

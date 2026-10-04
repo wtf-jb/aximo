@@ -127,4 +127,11 @@ data class ProgressionRow(val exerciseId: Long, val nextWeightKg: Double, val ne
 
 /** Training settings (A-09); the theme stays a per-device choice and is not part of the backup. */
 @Serializable
-data class SettingsRow(val weightUnit: String, val restSeconds: Int, val stepBarbellKg: Double, val stepDumbbellKg: Double)
+data class SettingsRow(
+    val weightUnit: String,
+    val restSeconds: Int,
+    val stepBarbellKg: Double,
+    val stepDumbbellKg: Double,
+    // Added after the first release of schema 1; older files default to RIR.
+    val setRating: String = "RIR",
+)

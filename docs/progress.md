@@ -63,16 +63,21 @@
   - UI: „Daten & Backup“ in den Einstellungen: Export JSON, Export CSV, Import mit Bestätigung, über Androids Dateidialog
   - Tests: Domain, Room (Rundreise, Ersetzen, kaputte Dateien, neuere Version), ViewModel
 
-## In Arbeit
-- Schritt 11 „Heute“ vervollständigen, PR #12:
+- Schritt 11 „Heute“ vervollständigen, PR #12 (gemergt):
   - Domain: `NextWorkout` (Dauer-Schätzung, Progressions-Vorschau), `WeekBar` (Mo–So, Einheiten der Woche)
   - UI: Datum über dem Titel, Hero-Karte „Nächstes Workout“ (Routine, Übungen, ca. Dauer, bis zu 3 Änderungen aus der Progression, „Workout starten“), Karte „Diese Woche“
   - Coach-Tab aus der Navigation entfernt (Prio B, war nur Platzhalter)
   - Tests: Domain, ViewModel
 
+## In Arbeit
+- Schritt 12 RPE als Alternative zu RIR (A-02), PR #13:
+  - Domain: `SetRating` (RIR/RPE) in `TrainingSettings`, `Effort` (Umrechnung RIR = ⌊10 − RPE⌋, RPE-Eingabe in halben Punkten, nur eine Skala pro Satz gespeichert); Progression liest RPE als RIR
+  - Data: Einstellung im DataStore und im Backup (`setRating`, ältere Dateien = RIR)
+  - UI: Einstellung „Satzbewertung“; Workout-Spalte, Werte-Dialog, Satz-Chips und Routinen-Ziele zeigen die gewählte Skala (die andere wird umgerechnet)
+  - Tests: Domain, Data, ViewModels
+
 ## Nächster Schritt
-- 12. RPE als Alternative zu RIR (A-02 „optional RPE oder RIR“): Einstellung „Satzbewertung“ RIR/RPE, Satzzeile und Werte-Dialog zeigen die gewählte Skala; Progression rechnet RPE in RIR um (RIR = 10 − RPE)
-- Danach ist Prio A vollständig. Prio B (KI) erst nach Rückfrage bei Jonas: braucht die `INTERNET`-Permission (harte Regel)
+- Prio A ist damit vollständig. **Warten auf Jonas:** Prio B (KI-Provider, Wochen-Review, Coach) braucht die `INTERNET`-Permission, die laut harten Regeln erst mit Prio B kommt. Vorher bestätigen lassen. Ohne Freigabe: Feinschliff (Übungskatalog vorbelegen? Drag-and-drop in Routinen?) nur nach Rückfrage
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

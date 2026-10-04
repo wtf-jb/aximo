@@ -6,6 +6,7 @@ import io.github.wtfjb.aximo.domain.model.ProgressionReason
 import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
+import io.github.wtfjb.aximo.domain.workout.Effort
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
@@ -15,7 +16,7 @@ import kotlin.math.roundToLong
  * Rule-based progression (A-06), run locally after every workout.
  *
  * Double progression:
- * - All working sets reach the top of the rep range at RIR ≥ 1 (or no RIR logged)
+ * - All working sets reach the top of the rep range at RIR ≥ 1 / RPE ≤ 9 (or nothing logged)
  *   → next time the weight goes up by the increment.
  * - More than half of the working sets below the bottom of the range, two
  *   sessions in a row → suggest a lower weight (10 %, at least one increment).
@@ -60,7 +61,10 @@ object ProgressionRules {
         val weight = working.maxOf { it.weightKg }
         val fewestReps = working.minOf { it.reps }
 
-        val allAtTop = working.all { it.reps >= repMax && (it.rir == null || it.rir >= 1) }
+        val allAtTop = working.all { set ->
+            val rir = Effort.rir(set)
+            set.reps >= repMax && (rir == null || rir >= 1)
+        }
         val previousWorking = workingSets(previous)
         val belowTwice = isBelow(working, repMin) && previousWorking.isNotEmpty() && isBelow(previousWorking, repMin)
 
