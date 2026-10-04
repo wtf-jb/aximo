@@ -13,6 +13,16 @@ class RoomRoutineRepository(private val dao: RoutineDao) : RoutineRepository {
     override fun observeRoutines(): Flow<List<Routine>> =
         dao.observeAll().map { rows -> rows.map { it.toDomain() } }
 
+    override fun observeRoutinesWithExercises(): Flow<List<RoutineWithExercises>> =
+        dao.observeAllWithExercises().map { rows ->
+            rows.map { row ->
+                RoutineWithExercises(
+                    routine = row.routine.toDomain(),
+                    exercises = row.exercises.sortedBy { it.position }.map { it.toDomain() },
+                )
+            }
+        }
+
     override suspend fun getRoutine(id: Long): RoutineWithExercises? {
         val routine = dao.getById(id) ?: return null
         return RoutineWithExercises(

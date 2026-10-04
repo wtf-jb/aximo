@@ -117,7 +117,7 @@ fun WorkoutScreen(
                 CircleIconButton(AppIcons.Minimize, stringResource(R.string.workout_minimize), onClose)
                 Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = stringResource(R.string.workout_progress, stringResource(R.string.workout_free), done, total),
+                        text = stringResource(R.string.workout_progress, state.routineName ?: stringResource(R.string.workout_free), done, total),
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -148,7 +148,13 @@ fun WorkoutScreen(
                     verticalArrangement = Arrangement.spacedBy(Spacing.s12),
                 ) {
                     items(state.groups, key = { group -> group.exercises.first().entry.id }) { group ->
-                        WorkoutGroupCard(group = group, lastPerformance = state.lastPerformance, unit = state.unit, actions = actions)
+                        WorkoutGroupCard(
+                            group = group,
+                            lastPerformance = state.lastPerformance,
+                            targets = state.targets,
+                            unit = state.unit,
+                            actions = actions,
+                        )
                     }
                     item {
                         SecondaryButton(

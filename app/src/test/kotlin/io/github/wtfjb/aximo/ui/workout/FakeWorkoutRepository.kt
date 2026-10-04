@@ -23,6 +23,11 @@ class FakeWorkoutRepository(
     var finishedNote: String? = null
     val current: WorkoutDetail? get() = active.value
 
+    /** Last finished workout per routine; tests set it directly. */
+    val lastPerRoutine = MutableStateFlow<Map<Long, Instant>>(emptyMap())
+
+    override fun observeLastWorkoutPerRoutine(): Flow<Map<Long, Instant>> = lastPerRoutine
+
     override fun observeActiveWorkout(): Flow<WorkoutDetail?> = active
 
     override suspend fun startWorkout(startedAt: Instant, routineId: Long?): Long {

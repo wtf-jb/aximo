@@ -82,4 +82,15 @@ class RoutineRepositoryTest : DatabaseTest() {
         assertNull(routines.getRoutine(id))
         assertEquals(emptyList<Any>(), db.routineDao().getExercises(id))
     }
+
+    @Test
+    fun routinesWithExercisesAreObservedInOrder() = runTest {
+        routines.saveRoutine(Routine(name = "Pull", position = 1), listOf(target(pullUpId, 0)))
+        routines.saveRoutine(Routine(name = "Push", position = 0), listOf(target(pullUpId, 1), target(benchId, 0)))
+
+        val list = routines.observeRoutinesWithExercises().first()
+
+        assertEquals(listOf("Push", "Pull"), list.map { it.routine.name })
+        assertEquals(listOf(benchId, pullUpId), list[0].exercises.map { it.exerciseId })
+    }
 }

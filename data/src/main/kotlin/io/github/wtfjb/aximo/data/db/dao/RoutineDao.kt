@@ -7,12 +7,17 @@ import androidx.room.Transaction
 import androidx.room.Update
 import io.github.wtfjb.aximo.data.db.entity.RoutineEntity
 import io.github.wtfjb.aximo.data.db.entity.RoutineExerciseEntity
+import io.github.wtfjb.aximo.data.db.entity.RoutineWithExerciseRows
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RoutineDao {
     @Query("SELECT * FROM routines ORDER BY position, name COLLATE NOCASE")
     fun observeAll(): Flow<List<RoutineEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM routines ORDER BY position, name COLLATE NOCASE")
+    fun observeAllWithExercises(): Flow<List<RoutineWithExerciseRows>>
 
     @Query("SELECT * FROM routines WHERE id = :id")
     suspend fun getById(id: Long): RoutineEntity?

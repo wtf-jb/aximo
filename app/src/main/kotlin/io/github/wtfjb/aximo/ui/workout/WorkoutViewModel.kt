@@ -3,10 +3,13 @@ package io.github.wtfjb.aximo.ui.workout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
+import io.github.wtfjb.aximo.domain.model.RoutineExercise
+import io.github.wtfjb.aximo.domain.model.RoutineWithExercises
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.domain.model.WorkoutExercise
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
+import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
 import io.github.wtfjb.aximo.domain.rest.NextSet
 import io.github.wtfjb.aximo.domain.rest.RestTimerController
@@ -54,6 +57,10 @@ data class WorkoutUiState(
     val unit: WeightUnit = WeightUnit.KG,
     /** Running rest (A-03), or null. */
     val rest: RestUi? = null,
+    /** Name of the routine the workout was started from, or null for a free workout. */
+    val routineName: String? = null,
+    /** Routine targets per exercise id (A-05), empty for a free workout. */
+    val targets: Map<Long, RoutineExercise> = emptyMap(),
 )
 
 /** Which value of a set is being edited. */
@@ -63,6 +70,7 @@ enum class SetField { WEIGHT, REPS, RIR }
 class WorkoutViewModel(
     private val workouts: WorkoutRepository,
     private val exercises: ExerciseRepository,
+    private val routines: RoutineRepository,
     private val time: TimeSource,
     private val restTimer: RestTimerController,
 ) : ViewModel() {
@@ -77,11 +85,17 @@ class WorkoutViewModel(
         }
     }
 
+    /** The routine of the running workout, loaded once. */
+    private val routine = MutableStateFlow<RoutineWithExercises?>(null)
+
     private val active = workouts.observeActiveWorkout().onEach { workout ->
-        if (workout != null) loadMissingLastSessions(workout)
+        if (workout != null) {
+            loadMissingLastSessions(workout)
+            loadRoutine(workout.workout.routineId)
+        }
     }
 
-    val uiState: StateFlow<WorkoutUiState> = combine(active, lastSessions, ticker, restTimer.state) { workout, last, now, rest ->
+    val uiState: StateFlow<WorkoutUiState> = combine(active, lastSessions, ticker, restTimer.state, routine) { workout, last, now, rest, routine ->
         if (workout == null) {
             WorkoutUiState(loading = false)
         } else {
@@ -98,11 +112,18 @@ class WorkoutViewModel(
                     val current = time.now()
                     RestUi(timer.remainingSeconds(current), timer.remainingFraction(current), timer.next)
                 },
+                routineName = routine?.routine?.name,
+                targets = routine?.exercises.orEmpty().reversed().associateBy { it.exerciseId },
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), WorkoutUiState())
 
     private val currentWorkout: WorkoutDetail? get() = uiState.value.workout
+
+    private suspend fun loadRoutine(routineId: Long?) {
+        if (routineId == null || routine.value?.routine?.id == routineId) return
+        routine.value = routines.getRoutine(routineId)
+    }
 
     private suspend fun loadMissingLastSessions(workout: WorkoutDetail) {
         val missing = workout.exercises.map { it.entry.exerciseId }.distinct().filter { it !in lastSessions.value }

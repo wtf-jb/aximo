@@ -146,3 +146,9 @@ data class WorkoutWithDetails(
     @androidx.room.Relation(entity = WorkoutExerciseEntity::class, parentColumn = "id", entityColumn = "workoutId")
     val exercises: List<WorkoutExerciseWithDetails>,
 )
+
+/** Result row: when a routine was last trained. */
+data class RoutineLastWorkout(
+    val routineId: Long,
+    val lastStartedAt: Instant,
+)

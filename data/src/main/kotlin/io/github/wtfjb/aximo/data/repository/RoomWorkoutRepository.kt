@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.map
 
 class RoomWorkoutRepository(private val dao: WorkoutDao) : WorkoutRepository {
 
+    override fun observeLastWorkoutPerRoutine(): Flow<Map<Long, Instant>> =
+        dao.observeLastPerRoutine().map { rows -> rows.associate { it.routineId to it.lastStartedAt } }
+
     override fun observeActiveWorkout(): Flow<WorkoutDetail?> =
         dao.observeActive().map { it?.toDomain() }
 

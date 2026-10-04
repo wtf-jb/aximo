@@ -84,3 +84,10 @@ data class RoutineExerciseEntity(
     val targetRir: Int?,
     val supersetGroup: String?,
 )
+
+/** A routine with its exercise rows, loaded by Room in one go. */
+data class RoutineWithExerciseRows(
+    @androidx.room.Embedded val routine: RoutineEntity,
+    @androidx.room.Relation(parentColumn = "id", entityColumn = "routineId")
+    val exercises: List<RoutineExerciseEntity>,
+)

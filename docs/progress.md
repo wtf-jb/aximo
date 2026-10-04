@@ -21,16 +21,26 @@
   - UI: Übungsliste (Suche, Region-Chips, Archiv, leerer Zustand), Formular Neu/Bearbeiten/Archivieren; Einstieg über „Pläne“ → „Übungen“
   - Komponenten: `ChoiceChip`, `SearchField`, `LabeledTextField`, `CircleIconButton`, `PillTextButton`
   - Tests: Domain (Filter, Formular), ViewModels mit Fake-Repository
-
-## In Arbeit
-- Schritt 5 Rest-Timer (A-03), PR #5:
+- Schritt 4 Workout-Logging (A-02), PR #4 (gemergt):
+  - Domain: `WorkoutLogic` (Vorbelegung, nächster Satz, aktiver Satz inkl. Supersatz-Runden, Gruppierung, Nummerierung, letzte Leistung), `WorkoutRepository`, `TimeSource`
+  - Data: Relationen Workout → Übungen → Sätze, laufendes Workout als Flow, letzte Session pro Übung
+  - UI: Workout-Screen mit Uhr, SetRow (erledigt/aktiv/offen), Werte-Dialog mit −/+, Satztyp-Menü, Notizen, Beenden/Verwerfen; Auswahlmodus der Übungsliste mit „Als Supersatz“
+  - Tests: Domain, Room, ViewModels; Lint in CI
+- Schritt 5 Rest-Timer (A-03), PR #5 (gemergt):
   - Domain: `RestTimer` (Restzeit aufgerundet, Fortschritt, +15 s), `RestTimerLogic` (Start nach Satz, Supersatz erst nach der Runde mit längster Pause, nächster Satz), `RestTimerController` (Zustand, Ablauf, Effekte als Interface)
   - App: `RestTimerService` (Foreground `specialUse`, Wakelock während der Pause), `RestNotifications` (laufend mit Countdown, „+15 s“, „Überspringen“; „Pause vorbei“ mit Ton + Vibration, Fallback-Vibration ohne Notification-Recht)
   - UI: `RestTimerBar` schwebend im Workout-Screen; Notification-Berechtigung beim Öffnen des Workouts
   - Tests: Domain (Timer, Logik, Controller mit virtueller Zeit), ViewModel
 
+## In Arbeit
+- Schritt 6 Routinen und Pläne (A-05), PR #6:
+  - Domain: `RoutineLogic` (nächste Routine reihum, Sätze aus Zielen + letzter Session), `RoutineDraft` (Bearbeiten, Reihenfolge, Supersätze aufräumen), `WorkoutStarter` (frei oder aus Routine, nie zwei laufende)
+  - Data: Routinen mit Übungen als Flow, letzte Einheit pro Routine
+  - UI: Pläne-Tab (Freies Training, Übungen, Routinenliste mit „Als Nächstes“ und Start-Button), Routine bearbeiten (Name, Ziele-Dialog, Menü mit Verschieben/Supersatz lösen/Entfernen, Übung hinzufügen, Löschen), Workout zeigt Routinenname und Ziele, Heute „Push A starten“
+  - Tests: Domain, Room, ViewModels
+
 ## Nächster Schritt
-- 6. Routinen und Pläne (A-05)
+- 7. Regelbasierte Progression (A-06), Workout-Abschluss (`Abschluss.html`)
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

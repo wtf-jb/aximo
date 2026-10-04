@@ -165,4 +165,52 @@
     <string name="rest_channel_running_description">Countdown während der Pause zwischen den Sätzen</string>
     <string name="rest_channel_finished">Pause vorbei</string>
     <string name="rest_channel_finished_description">Ton und Vibration, wenn die Pause vorbei ist</string>
+
+    <string name="plans_new_routine">Neue Routine</string>
+    <string name="plans_free_training">Freies Training</string>
+    <string name="plans_routines">Routinen</string>
+    <string name="plans_next">ALS NÄCHSTES</string>
+    <string name="plans_empty">Noch keine Routinen. Leg eine an, um Workouts mit Zielen zu starten.</string>
+    <string name="plans_create_routine">Routine anlegen</string>
+    <string name="plans_start_routine">%1$s starten</string>
+    <string name="plans_last_trained">zuletzt %1$s</string>
+    <plurals name="plans_exercise_count">
+        <item quantity="one">%d Übung</item>
+        <item quantity="other">%d Übungen</item>
+    </plurals>
+    <string name="today_start_routine">%1$s starten</string>
+
+    <string name="routine_edit_title">Routine bearbeiten</string>
+    <string name="routine_new_title">Neue Routine</string>
+    <string name="routine_save">Speichern</string>
+    <string name="routine_name_placeholder">Name der Routine</string>
+    <string name="routine_name_missing">Gib einen Namen ein.</string>
+    <plurals name="routine_working_sets">
+        <item quantity="one">%d Arbeitssatz</item>
+        <item quantity="other">%d Arbeitssätze</item>
+    </plurals>
+    <string name="routine_target">%1$d × %2$d–%3$d</string>
+    <string name="routine_target_rir">RIR %1$d</string>
+    <string name="routine_rest">Pause %1$s</string>
+    <string name="routine_superset_rest">Pause nach der Runde</string>
+    <string name="routine_add_exercise">Übung hinzufügen</string>
+    <string name="routine_entry_options">Optionen %1$s</string>
+    <string name="routine_edit_targets">Ziele bearbeiten</string>
+    <string name="routine_move_up">Nach oben</string>
+    <string name="routine_move_down">Nach unten</string>
+    <string name="routine_ungroup">Aus Supersatz lösen</string>
+    <string name="routine_remove">Entfernen</string>
+    <string name="routine_delete">Routine löschen</string>
+    <string name="routine_delete_title">Routine löschen?</string>
+    <string name="routine_delete_body">Vergangene Workouts bleiben erhalten, sie verlieren nur die Verknüpfung zur Routine.</string>
+    <string name="routine_targets_title">Ziele · %1$s</string>
+    <string name="routine_field_sets">Sätze</string>
+    <string name="routine_field_rep_min">Wdh. von</string>
+    <string name="routine_field_rep_max">Wdh. bis</string>
+    <string name="routine_field_rir">Ziel-RIR</string>
+    <string name="routine_targets_invalid">Sätze ab 1, Wdh. ab 1 und von ≤ bis, RIR leer oder ab 0.</string>
+    <string name="routine_cancel">Abbrechen</string>
+    <string name="routine_apply">Übernehmen</string>
+    <string name="routine_superset_entry">%1$s · %2$s</string>
+    <string name="workout_target">Ziel %1$s</string>
 </resources>

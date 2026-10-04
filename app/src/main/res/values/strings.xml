@@ -172,4 +172,53 @@
     <string name="rest_channel_running_description">Countdown while you rest between sets</string>
     <string name="rest_channel_finished">Rest over</string>
     <string name="rest_channel_finished_description">Sound and vibration when the rest is over</string>
+
+    <!-- Routines and plans (A-05) -->
+    <string name="plans_new_routine">New routine</string>
+    <string name="plans_free_training">Free training</string>
+    <string name="plans_routines">Routines</string>
+    <string name="plans_next">UP NEXT</string>
+    <string name="plans_empty">No routines yet. Create one to start workouts with targets.</string>
+    <string name="plans_create_routine">Create routine</string>
+    <string name="plans_start_routine">Start %1$s</string>
+    <string name="plans_last_trained">last %1$s</string>
+    <plurals name="plans_exercise_count">
+        <item quantity="one">%d exercise</item>
+        <item quantity="other">%d exercises</item>
+    </plurals>
+    <string name="today_start_routine">Start %1$s</string>
+
+    <string name="routine_edit_title">Edit routine</string>
+    <string name="routine_new_title">New routine</string>
+    <string name="routine_save">Save</string>
+    <string name="routine_name_placeholder">Name of the routine</string>
+    <string name="routine_name_missing">Enter a name.</string>
+    <plurals name="routine_working_sets">
+        <item quantity="one">%d working set</item>
+        <item quantity="other">%d working sets</item>
+    </plurals>
+    <string name="routine_target">%1$d × %2$d–%3$d</string>
+    <string name="routine_target_rir">RIR %1$d</string>
+    <string name="routine_rest">Rest %1$s</string>
+    <string name="routine_superset_rest">Rest after the round</string>
+    <string name="routine_add_exercise">Add exercise</string>
+    <string name="routine_entry_options">Options for %1$s</string>
+    <string name="routine_edit_targets">Edit targets</string>
+    <string name="routine_move_up">Move up</string>
+    <string name="routine_move_down">Move down</string>
+    <string name="routine_ungroup">Remove from superset</string>
+    <string name="routine_remove">Remove</string>
+    <string name="routine_delete">Delete routine</string>
+    <string name="routine_delete_title">Delete routine?</string>
+    <string name="routine_delete_body">Past workouts are kept, they just lose the link to this routine.</string>
+    <string name="routine_targets_title">Targets · %1$s</string>
+    <string name="routine_field_sets">Sets</string>
+    <string name="routine_field_rep_min">Reps from</string>
+    <string name="routine_field_rep_max">Reps to</string>
+    <string name="routine_field_rir">Target RIR</string>
+    <string name="routine_targets_invalid">Sets at least 1, reps from 1 and from ≤ to, RIR empty or 0 or more.</string>
+    <string name="routine_cancel">Cancel</string>
+    <string name="routine_apply">Apply</string>
+    <string name="routine_superset_entry">%1$s · %2$s</string>
+    <string name="workout_target">Target %1$s</string>
 </resources>

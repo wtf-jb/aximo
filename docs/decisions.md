@@ -46,3 +46,10 @@
 | 2026-10-04 | Rest-Timer: Ablauf | Eigener Kanal „Pause vorbei“ (hohe Priorität, Ton + Vibration, verschwindet nach 60 s). Sind Notifications aus, vibriert die App direkt | Design-System: nicht nur visuell. Ton/Vibration lassen sich in den Android-Kanaleinstellungen ändern, bis A-09 eigene Einstellungen bringt |
 | 2026-10-04 | Notification-Berechtigung | Wird beim Öffnen des Workout-Screens angefragt (Android 13+) | Dort wird sie gebraucht; ohne sie läuft die Leiste in der App trotzdem |
 | 2026-10-04 | Notification-Tap | Öffnet die App, nicht direkt das Workout | Einfach; „Workout fortsetzen“ ist ein Tap auf Heute. Deep-Link später, falls störend |
+| 2026-10-04 | Nächste Routine | Reihum nach Listenreihenfolge: die Routine nach der zuletzt beendeten; nie trainiert → die erste | Einfachste Regel für Push/Pull/Legs-Splits; Zyklen/Blöcke (Prio B) können das später übersteuern |
+| 2026-10-04 | Workout aus Routine | Satzzahl aus dem Ziel, Gewicht und Wdh. aus den Arbeitssätzen der letzten Session (sonst 0 kg, unteres Wdh.-Ziel), RIR = Ziel-RIR, Supersätze übernommen | Ein Tap pro Satz bleibt möglich; Progressionsvorschläge ersetzen die Gewichte in Schritt 7 |
+| 2026-10-04 | Laufendes Workout | Start einer Routine während ein Workout läuft öffnet das laufende statt ein zweites zu starten | Es gibt höchstens ein laufendes Workout (Schritt 4) |
+| 2026-10-04 | Standardziele | Neue Routinen-Übung: 3 Sätze, Wdh.-Bereich der Übung, Ziel-RIR 2 | Werte aus den Mockups; im Ziele-Dialog änderbar, RIR auch leer |
+| 2026-10-04 | Reihenfolge | Verschieben über das ⋯-Menü (Nach oben/unten) statt Drag-and-drop | Drag-and-drop braucht in Compose eigene Gesten-Logik; das Menü ist robust und barrierefrei. Drag kann später nachrüsten |
+| 2026-10-04 | Pläne-Tab | Block-Karte und „Mit KI erstellen“ weggelassen (Prio B); statt „Cardio erfassen“ vorerst „Übungen“ | Elemente späterer Prios werden weggelassen; Cardio kommt in Schritt 8 |
+| 2026-10-04 | Routine löschen | Mit Bestätigung; vergangene Workouts bleiben, `routineId` wird null | Historie bleibt vollständig |

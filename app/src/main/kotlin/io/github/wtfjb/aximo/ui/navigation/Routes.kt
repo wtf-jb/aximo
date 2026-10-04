@@ -22,7 +22,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object WorkoutRoute
 
-/** Exercise list in selection mode, returns the picked ids to the workout. */
+/** routineId = 0 creates a new routine. */
+@Serializable data class RoutineEditRoute(val routineId: Long = 0)
+
+/** Exercise list in selection mode, returns the picked ids to the screen that opened it. */
 @Serializable data object ExercisePickerRoute
 
 /** exerciseId = 0 creates a new exercise. */

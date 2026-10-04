@@ -10,6 +10,9 @@ interface RoutineRepository {
     /** All routines ordered by position. */
     fun observeRoutines(): Flow<List<Routine>>
 
+    /** All routines with their exercises, ordered by position (for the Pläne list). */
+    fun observeRoutinesWithExercises(): Flow<List<RoutineWithExercises>>
+
     suspend fun getRoutine(id: Long): RoutineWithExercises?
 
     /**
