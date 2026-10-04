@@ -13,11 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.github.wtfjb.aximo.ui.theme.Spacing
 
-/** Layout of a main tab: screen title in display-l (optionally with an action on the right), then the content. */
+/** Layout of a main tab: optional overline (e.g. the date), screen title in display-l, optional action on the right, then the content. */
 @Composable
 fun TabScreen(
     title: String,
     modifier: Modifier = Modifier,
+    overline: String? = null,
     action: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
@@ -28,21 +29,14 @@ fun TabScreen(
         verticalArrangement = Arrangement.spacedBy(Spacing.s18),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = title, style = MaterialTheme.typography.displayMedium, modifier = Modifier.weight(1f))
+            Column(modifier = Modifier.weight(1f)) {
+                if (overline != null) {
+                    Text(text = overline, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Text(text = title, style = MaterialTheme.typography.displayMedium)
+            }
             action?.invoke()
         }
         content()
-    }
-}
-
-/** Placeholder for tabs that are built in later steps. */
-@Composable
-fun PlaceholderTab(title: String, body: String, modifier: Modifier = Modifier) {
-    TabScreen(title = title, modifier = modifier) {
-        Text(
-            text = body,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }

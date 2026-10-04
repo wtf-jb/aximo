@@ -57,15 +57,22 @@
   - UI: Einstellungen nach `Einstellungen.html` (Sprache ab Android 13, Gewichtseinheit, Darstellung, Standard-Pause, Gewichtsschritte), Einstieg über das Regler-Icon auf „Heute“; Einheit app-weit über `LocalWeightUnit`
   - Tests: Domain, DataStore, ViewModels
 
-## In Arbeit
-- Schritt 10b Export/Import (A-08), PR #11:
+- Schritt 10b Export/Import (A-08), PR #11 (gemergt):
   - Domain: `BackupRepository`, `BackupException` (ungültig / neuere Version), `SetsCsv` (eine Zeile pro Satz)
   - Data: `BackupFile` (JSON, `schemaVersion` 1, Tabellen 1:1 mit IDs, Trainings-Einstellungen), `BackupDao`, `RoomBackupRepository` (Export in einer Transaktion; Restore prüft Domain-Regeln und ersetzt alles in einer Transaktion, bei Fehler bleibt alles wie es war)
   - UI: „Daten & Backup“ in den Einstellungen: Export JSON, Export CSV, Import mit Bestätigung, über Androids Dateidialog
   - Tests: Domain, Room (Rundreise, Ersetzen, kaputte Dateien, neuere Version), ViewModel
 
+## In Arbeit
+- Schritt 11 „Heute“ vervollständigen, PR #12:
+  - Domain: `NextWorkout` (Dauer-Schätzung, Progressions-Vorschau), `WeekBar` (Mo–So, Einheiten der Woche)
+  - UI: Datum über dem Titel, Hero-Karte „Nächstes Workout“ (Routine, Übungen, ca. Dauer, bis zu 3 Änderungen aus der Progression, „Workout starten“), Karte „Diese Woche“
+  - Coach-Tab aus der Navigation entfernt (Prio B, war nur Platzhalter)
+  - Tests: Domain, ViewModel
+
 ## Nächster Schritt
-- Prio A ist damit komplett. Danach: Prio-A-Lücken prüfen (Hero-Karte und Wochenleiste auf „Heute“, Übungskatalog vorbelegen?), dann Prio B (KI) nach Rückfrage, weil dafür die `INTERNET`-Permission dazukommt
+- 12. RPE als Alternative zu RIR (A-02 „optional RPE oder RIR“): Einstellung „Satzbewertung“ RIR/RPE, Satzzeile und Werte-Dialog zeigen die gewählte Skala; Progression rechnet RPE in RIR um (RIR = 10 − RPE)
+- Danach ist Prio A vollständig. Prio B (KI) erst nach Rückfrage bei Jonas: braucht die `INTERNET`-Permission (harte Regel)
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

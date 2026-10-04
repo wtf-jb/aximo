@@ -16,7 +16,7 @@ import io.github.wtfjb.aximo.ui.theme.AppTextStyles
 import io.github.wtfjb.aximo.ui.theme.Elevation
 import io.github.wtfjb.aximo.ui.theme.Sizes
 
-/** Bottom navigation: Heute · Pläne · Statistik · Coach. */
+/** Bottom navigation: Heute · Pläne · Statistik (Coach follows with Prio B). */
 @Composable
 fun AppNavigationBar(
     selected: TopLevelDestination?,

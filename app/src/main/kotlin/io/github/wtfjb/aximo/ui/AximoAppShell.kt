@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -15,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.ui.navigation.AppNavigationBar
 import io.github.wtfjb.aximo.ui.exercisedetail.ExerciseDetailScreen
@@ -23,7 +21,6 @@ import io.github.wtfjb.aximo.ui.exercises.ExerciseEditScreen
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListScreen
 import io.github.wtfjb.aximo.ui.cardio.CardioScreen
 import io.github.wtfjb.aximo.ui.navigation.CardioRoute
-import io.github.wtfjb.aximo.ui.navigation.CoachRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseEditRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseListRoute
 import io.github.wtfjb.aximo.ui.navigation.ExercisePickerRoute
@@ -41,7 +38,6 @@ import io.github.wtfjb.aximo.ui.navigation.StatsRoute
 import io.github.wtfjb.aximo.ui.navigation.ThemeShowcaseRoute
 import io.github.wtfjb.aximo.ui.navigation.TodayRoute
 import io.github.wtfjb.aximo.ui.navigation.TopLevelDestination
-import io.github.wtfjb.aximo.ui.screens.PlaceholderTab
 import io.github.wtfjb.aximo.ui.screens.PlansScreen
 import io.github.wtfjb.aximo.ui.screens.ThemeShowcaseScreen
 import io.github.wtfjb.aximo.ui.screens.TodayScreen
@@ -111,9 +107,6 @@ fun AximoAppShell(
                     onBack = { navController.popBackStack() },
                     onEdit = { id -> navController.navigate(ExerciseEditRoute(id)) },
                 )
-            }
-            composable<CoachRoute> {
-                PlaceholderTab(stringResource(R.string.nav_coach), stringResource(R.string.placeholder_body))
             }
             composable<ExerciseListRoute> {
                 ExerciseListScreen(

@@ -91,6 +91,10 @@ object Sizes {
     /** Set chip in the exercise history ("82,5 × 8 · R2"). */
     val setChip = 34.dp
 
+    /** Day circle in the week bar on "Heute" (mockup: 36, today ring 2.5). */
+    val weekDay = 36.dp
+    val todayRing = 2.5.dp
+
     /** Color swatch in the theme showcase. */
     val swatch = 40.dp
 }
