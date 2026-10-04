@@ -87,3 +87,9 @@ fun formatDayMonth(date: kotlinx.datetime.LocalDate, locale: Locale = Locale.get
     val javaDate = java.time.LocalDate.of(date.year, date.month.ordinal + 1, date.day)
     return java.time.format.DateTimeFormatter.ofPattern(pattern, locale).format(javaDate)
 }
+
+/** Month and year in the device locale, e.g. "Oktober 2026" / "October 2026". */
+fun formatMonthYear(month: io.github.wtfjb.aximo.domain.calendar.CalendarMonth, locale: Locale = Locale.getDefault()): String {
+    val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "LLLLy")
+    return java.time.format.DateTimeFormatter.ofPattern(pattern, locale).format(java.time.YearMonth.of(month.year, month.month))
+}

@@ -38,14 +38,20 @@ fun RecentList(items: List<RecentItem>, onOpenCardio: (Long) -> Unit, onOpenWork
     if (items.isEmpty()) return
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s10)) {
         Text(text = stringResource(R.string.today_recent), style = MaterialTheme.typography.titleSmall)
-        Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(horizontal = Spacing.s16, vertical = Spacing.s6)) {
-                items.forEachIndexed { index, item ->
-                    if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    when (item) {
-                        is RecentItem.WorkoutItem -> WorkoutRow(item, onClick = { onOpenWorkout(item.workoutId) })
-                        is RecentItem.CardioItem -> CardioRow(item, onClick = { onOpenCardio(item.entry.id) })
-                    }
+        RecentCard(items, onOpenCardio, onOpenWorkout)
+    }
+}
+
+/** The card with the rows, also used by the calendar for the selected day. */
+@Composable
+fun RecentCard(items: List<RecentItem>, onOpenCardio: (Long) -> Unit, onOpenWorkout: (Long) -> Unit) {
+    Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(horizontal = Spacing.s16, vertical = Spacing.s6)) {
+            items.forEachIndexed { index, item ->
+                if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                when (item) {
+                    is RecentItem.WorkoutItem -> WorkoutRow(item, onClick = { onOpenWorkout(item.workoutId) })
+                    is RecentItem.CardioItem -> CardioRow(item, onClick = { onOpenCardio(item.entry.id) })
                 }
             }
         }
