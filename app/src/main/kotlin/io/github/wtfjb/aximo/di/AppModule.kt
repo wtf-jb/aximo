@@ -3,6 +3,11 @@ package io.github.wtfjb.aximo.di
 import io.github.wtfjb.aximo.MainViewModel
 import io.github.wtfjb.aximo.ai.AiHttp
 import io.github.wtfjb.aximo.ai.KtorAiProviderFactory
+import io.github.wtfjb.aximo.ai.KtorReviewGenerator
+import io.github.wtfjb.aximo.data.repository.RoomAiReviewRepository
+import io.github.wtfjb.aximo.domain.review.AiReviewRepository
+import io.github.wtfjb.aximo.domain.review.ReviewGenerator
+import io.github.wtfjb.aximo.domain.review.ReviewService
 import io.github.wtfjb.aximo.data.ai.KeystoreAiKeyStore
 import io.github.wtfjb.aximo.data.repository.RoomAiProfileRepository
 import io.github.wtfjb.aximo.domain.ai.AiConnectionTester
@@ -71,6 +76,9 @@ val appModule = module {
     single { AiHttp.client(OkHttp.create()) }
     single<AiProviderFactory> { KtorAiProviderFactory(get()) }
     single { AiConnectionTester(get()) }
+    single<AiReviewRepository> { RoomAiReviewRepository(get<AximoDatabase>().aiReviewDao()) }
+    single<ReviewGenerator> { KtorReviewGenerator() }
+    single { ReviewService(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
     single {
