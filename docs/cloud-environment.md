@@ -20,7 +20,7 @@ cd /tmp && curl -sSLo clt.zip https://dl.google.com/android/repository/commandli
 unzip -q clt.zip -d $ANDROID_HOME/cmdline-tools && mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
 yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null
 $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
-$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
+$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-37" "build-tools;36.0.0"
 echo "export ANDROID_HOME=$ANDROID_HOME" >> /etc/profile.d/android.sh
 ```
 
