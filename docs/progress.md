@@ -152,6 +152,9 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: MockEngine, Domain, ViewModel
 
 ## In Arbeit
+- Kalender (Branch `claude/untitled-session-70idaq`): Kalender-Icon auf „Heute“ neben Einstellungen → Monatsansicht, Krafttage dunkel, Cardio-Tage getönt, heute mit Ring; Tippen auf einen Tag zeigt Workouts/Cardio darunter, Tippen auf eine Zeile öffnet Abschluss-Screen bzw. Cardio-Eintrag. Blättern bis zum ältesten Training.
+  - Domain `calendar`: `TrainingCalendar` (Wochenraster Mo–So, Einträge pro Tag, Monatsgrenzen), `CalendarMonth`
+  - Tests: Domain, `CalendarViewModel`
 - Entwickler-Werkzeuge (Branch `claude/untitled-session-70idaq`, PR gegen main):
   - Theme-Showcase von „Heute“ nach Einstellungen → Entwickler (nur Debug) verschoben
   - „Testdaten laden“ (`TestDataGenerator`, `RoomDevDataRepository`, `DevDataRepository`): ~3 Jahre Training, Cardio, Routinen, Progression; ersetzt alle Daten, nach Rückfrage
@@ -167,6 +170,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
+- Kalender testen (APK vom PR): „Heute“ → Kalender-Icon; Tage mit Training markiert, Tag antippen, Zeile öffnen, Monate zurückblättern
 - Entwickler-Werkzeuge testen (APK vom PR): Einstellungen ganz unten → „Testdaten laden“ (Rückfrage), danach Statistik, Pläne, Verlauf und Coach durchklicken; „Alle Daten löschen“ leert alles, die Standardübungen sind wieder da; „Theme-Showcase“ öffnet sich dort, auf „Heute“ ist der Button weg
 - Modellauswahl im KI-Profil testen (APK von main): Einstellungen → KI-Coach → Profil. Nach Base-URL und Key erscheint „N Modelle verfügbar“, über den Pfeil auswählen; falscher Key → Fehlermeldung + „Erneut laden“; bestehendes Profil öffnen → Liste lädt mit gespeichertem Key; ohne Key keine Liste (auch Ollama im LAN: Modell tippen)
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen

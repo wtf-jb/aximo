@@ -12,6 +12,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object PlansRoute
 
+/** Calendar of training days, opened from "Heute". */
+@Serializable data object CalendarRoute
+
 @Serializable data object StatsRoute
 
 /** Coach tab (B-02), only shown with an AI provider profile. */

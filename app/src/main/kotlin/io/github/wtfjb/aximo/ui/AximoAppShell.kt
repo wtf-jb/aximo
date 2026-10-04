@@ -29,6 +29,8 @@ import io.github.wtfjb.aximo.ui.navigation.RoutineEditRoute
 import io.github.wtfjb.aximo.ui.navigation.AiProfileEditRoute
 import io.github.wtfjb.aximo.ui.navigation.AiProfilesRoute
 import io.github.wtfjb.aximo.ui.navigation.SettingsRoute
+import io.github.wtfjb.aximo.ui.navigation.CalendarRoute
+import io.github.wtfjb.aximo.ui.calendar.CalendarScreen
 import io.github.wtfjb.aximo.ui.navigation.SummaryRoute
 import io.github.wtfjb.aximo.ui.ai.AiProfileEditScreen
 import io.github.wtfjb.aximo.ui.ai.AiProfilesScreen
@@ -109,7 +111,15 @@ fun AximoAppShell(
                     onOpenCardio = { id -> navController.navigate(CardioRoute(id)) },
                     onOpenFinishedWorkout = { id -> navController.navigate(SummaryRoute(id)) },
                     onOpenSettings = { navController.navigate(SettingsRoute) },
+                    onOpenCalendar = { navController.navigate(CalendarRoute) },
                     onOpenCoach = { navController.navigateToTab(TopLevelDestination.COACH) },
+                )
+            }
+            composable<CalendarRoute> {
+                CalendarScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenCardio = { id -> navController.navigate(CardioRoute(id)) },
+                    onOpenWorkout = { id -> navController.navigate(SummaryRoute(id)) },
                 )
             }
             composable<PlansRoute> {

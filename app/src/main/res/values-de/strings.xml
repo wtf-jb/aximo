@@ -290,6 +290,12 @@
     <string name="cardio_error_duration">Gib die Dauer ein.</string>
     <string name="cardio_recent_title">%1$s · %2$s km</string>
 
+    <!-- Kalender -->
+    <string name="calendar_title">Kalender</string>
+    <string name="calendar_previous">Vorheriger Monat</string>
+    <string name="calendar_next">Nächster Monat</string>
+    <string name="calendar_rest_day">Kein Training an diesem Tag.</string>
+
     <!-- Heute: Zuletzt -->
     <string name="today_recent">Zuletzt</string>
     <string name="today_recent_free">Freies Training</string>

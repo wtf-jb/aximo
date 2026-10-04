@@ -27,6 +27,12 @@
 
     <string name="action_back">Back</string>
 
+    <!-- Calendar -->
+    <string name="calendar_title">Calendar</string>
+    <string name="calendar_previous">Previous month</string>
+    <string name="calendar_next">Next month</string>
+    <string name="calendar_rest_day">No training on this day.</string>
+
     <!-- Exercises (A-01) -->
     <string name="exercises_title">Exercises</string>
     <string name="exercises_open">Exercises</string>

@@ -53,6 +53,7 @@ object AppIcons {
             "M16 18a2 2 0 1 0 4 0a2 2 0 1 0-4 0",
         )
     }
+    val ChevronLeft by lazy { lineIcon("ChevronLeft", "M15 6l-6 6 6 6") }
     val ChevronRight by lazy { lineIcon("ChevronRight", "M9 6l6 6-6 6") }
     val Coach by lazy {
         lineIcon(
