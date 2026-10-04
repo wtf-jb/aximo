@@ -16,6 +16,7 @@ import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
 import io.github.wtfjb.aximo.domain.rest.NextSet
 import io.github.wtfjb.aximo.domain.rest.RestTimerController
 import io.github.wtfjb.aximo.domain.rest.RestTimerLogic
+import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -94,6 +96,7 @@ class WorkoutViewModel(
     private val finisher: WorkoutFinisher,
     private val time: TimeSource,
     private val restTimer: RestTimerController,
+    settings: SettingsRepository,
 ) : ViewModel() {
 
     /** Last session and progression per exercise id, loaded once per exercise. */
@@ -112,6 +115,9 @@ class WorkoutViewModel(
     /** The routine of the running workout, loaded once. */
     private val routine = MutableStateFlow<RoutineWithExercises?>(null)
 
+    /** Routine and display unit together, because combine takes at most five flows. */
+    private val routineAndUnit = combine(routine, settings.training.map { it.unit }) { routine, unit -> routine to unit }
+
     private val active = workouts.observeActiveWorkout().onEach { workout ->
         if (workout != null) {
             loadMissingLastSessions(workout)
@@ -119,7 +125,7 @@ class WorkoutViewModel(
         }
     }
 
-    val uiState: StateFlow<WorkoutUiState> = combine(active, history, ticker, restTimer.state, routine) { workout, history, now, rest, routine ->
+    val uiState: StateFlow<WorkoutUiState> = combine(active, history, ticker, restTimer.state, routineAndUnit) { workout, history, now, rest, (routine, unit) ->
         if (workout == null) {
             WorkoutUiState(loading = false)
         } else {
@@ -138,6 +144,7 @@ class WorkoutViewModel(
                     RestUi(timer.remainingSeconds(current), timer.remainingFraction(current), timer.next)
                 },
                 routineName = routine?.routine?.name,
+                unit = unit,
                 targets = routine?.exercises.orEmpty().reversed().associateBy { it.exerciseId },
             )
         }

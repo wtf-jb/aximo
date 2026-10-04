@@ -408,4 +408,19 @@
     <string name="detail_info_note">Note</string>
     <string name="detail_none">–</string>
     <string name="summary_volume_change">%1$s%% vs. last %2$s</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_general">GENERAL</string>
+    <string name="settings_section_training">TRAINING</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System language</string>
+    <string name="settings_language_german" translatable="false">Deutsch</string>
+    <string name="settings_language_english" translatable="false">English</string>
+    <string name="settings_unit">Weight unit</string>
+    <string name="settings_theme">Appearance</string>
+    <string name="settings_rest">Default rest</string>
+    <string name="settings_steps">Weight steps</string>
+    <string name="settings_steps_value">%1$s %3$s · DB %2$s %3$s</string>
+    <string name="settings_steps_barbell">Barbell and other (%1$s)</string>
+    <string name="settings_steps_dumbbell">Dumbbells (%1$s)</string>
+    <string name="settings_training_hint">Default rest and weight steps apply to new exercises. Progression suggestions are rounded to the weight steps.</string>
 </resources>

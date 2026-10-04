@@ -28,7 +28,9 @@ import io.github.wtfjb.aximo.ui.navigation.ExerciseEditRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseListRoute
 import io.github.wtfjb.aximo.ui.navigation.ExercisePickerRoute
 import io.github.wtfjb.aximo.ui.navigation.RoutineEditRoute
+import io.github.wtfjb.aximo.ui.navigation.SettingsRoute
 import io.github.wtfjb.aximo.ui.navigation.SummaryRoute
+import io.github.wtfjb.aximo.ui.settings.SettingsScreen
 import io.github.wtfjb.aximo.ui.summary.SummaryScreen
 import io.github.wtfjb.aximo.ui.routine.RoutineEditScreen
 import io.github.wtfjb.aximo.ui.navigation.WorkoutRoute
@@ -88,6 +90,7 @@ fun AximoAppShell(
                     onOpenThemeShowcase = { navController.navigate(ThemeShowcaseRoute) },
                     onOpenCardio = { id -> navController.navigate(CardioRoute(id)) },
                     onOpenFinishedWorkout = { id -> navController.navigate(SummaryRoute(id)) },
+                    onOpenSettings = { navController.navigate(SettingsRoute) },
                 )
             }
             composable<PlansRoute> {
@@ -186,6 +189,9 @@ fun AximoAppShell(
                     exerciseId = entry.toRoute<ExerciseEditRoute>().exerciseId,
                     onDone = { navController.popBackStack() },
                 )
+            }
+            composable<SettingsRoute> {
+                SettingsScreen(onBack = { navController.popBackStack() })
             }
             composable<ThemeShowcaseRoute> {
                 ThemeShowcaseScreen(

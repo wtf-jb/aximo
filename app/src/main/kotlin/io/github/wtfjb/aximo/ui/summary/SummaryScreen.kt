@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.ui.summary
 
+import io.github.wtfjb.aximo.ui.format.LocalWeightUnit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,7 +57,7 @@ fun SummaryScreen(
     viewModel: SummaryViewModel = koinViewModel { parametersOf(workoutId) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val unit = WeightUnit.KG
+    val unit = LocalWeightUnit.current
 
     LaunchedEffect(state.done, state.loading, state.workout) {
         if (state.done || (!state.loading && state.workout == null)) onDone()

@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.ui.exercisedetail
 
+import io.github.wtfjb.aximo.ui.format.LocalWeightUnit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -57,7 +58,7 @@ fun ExerciseDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val exercise = state.exercise
-    val unit = WeightUnit.KG
+    val unit = LocalWeightUnit.current
     val unitLabel = stringResource(unit.label())
 
     LazyColumn(
