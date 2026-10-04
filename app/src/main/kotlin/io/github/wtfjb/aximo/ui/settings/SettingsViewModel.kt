@@ -2,10 +2,14 @@ package io.github.wtfjb.aximo.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.ai.AiPreferences
 import io.github.wtfjb.aximo.domain.ai.AiProfileRepository
 import io.github.wtfjb.aximo.domain.ai.AiProfiles
 import io.github.wtfjb.aximo.domain.ai.AiProviderProfile
 import io.github.wtfjb.aximo.domain.backup.BackupException
+import io.github.wtfjb.aximo.domain.review.ReviewContext
+import io.github.wtfjb.aximo.domain.review.ReviewService
+import io.github.wtfjb.aximo.domain.review.WeeklyReviewSetting
 import io.github.wtfjb.aximo.domain.backup.BackupRepository
 import io.github.wtfjb.aximo.domain.backup.SetsCsv
 import io.github.wtfjb.aximo.domain.exercise.CatalogSeeder
@@ -24,6 +28,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.datetime.DayOfWeek
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -40,6 +46,16 @@ data class SettingsUiState(
     val catalogAdded: Int? = null,
     /** The active AI provider profile, null without one (B-01). */
     val aiProfile: AiProviderProfile? = null,
+    val ai: AiSettingsState = AiSettingsState(),
+)
+
+/** Weekly review settings and their dialogs (B-02). */
+data class AiSettingsState(
+    val weeklyReview: WeeklyReviewSetting = WeeklyReviewSetting(),
+    /** Turning the weekly review on first needs the data notice. */
+    val showNotice: Boolean = false,
+    /** Pretty JSON of what a review sends, while the dialog is open. */
+    val sentData: String? = null,
 )
 
 /**
@@ -55,7 +71,14 @@ class SettingsViewModel(
     private val documents: DocumentStore,
     private val catalog: CatalogSeeder,
     aiProfiles: AiProfileRepository,
+    private val aiPreferences: AiPreferences,
+    private val reviewService: ReviewService,
+    /** Renders the review context as sent (pretty JSON). */
+    private val formatContext: (ReviewContext) -> String,
 ) : ViewModel() {
+
+    private val aiDialogs = MutableStateFlow(AiSettingsState())
+    private val ai = combine(aiPreferences.weeklyReview, aiDialogs) { setting, dialogs -> dialogs.copy(weeklyReview = setting) }
 
     private val backup = MutableStateFlow(BackupState())
     private val catalogAdded = MutableStateFlow<Int?>(null)
@@ -65,9 +88,9 @@ class SettingsViewModel(
         settings.training,
         backup,
         catalogAdded,
-        aiProfiles.observeProfiles(),
-    ) { theme, training, backup, added, profiles ->
-        SettingsUiState(theme, training, backup, added, AiProfiles.active(profiles))
+        combine(aiProfiles.observeProfiles(), ai) { profiles, ai -> AiProfiles.active(profiles) to ai },
+    ) { theme, training, backup, added, (profile, ai) ->
+        SettingsUiState(theme, training, backup, added, profile, ai)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
     fun setThemeMode(mode: ThemeMode) {
@@ -95,6 +118,40 @@ class SettingsViewModel(
         updateTraining { it.copy(steps = steps) }
         return true
     }
+
+    /** Switch "Wöchentlicher Review". Turning it on the first time shows the data notice. */
+    fun setWeeklyReviewEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            if (enabled && !aiPreferences.dataNoticeAccepted.first()) {
+                aiDialogs.update { it.copy(showNotice = true) }
+            } else {
+                aiPreferences.setWeeklyReview(aiPreferences.weeklyReview.first().copy(enabled = enabled))
+            }
+        }
+    }
+
+    fun acceptNotice() {
+        aiDialogs.update { it.copy(showNotice = false) }
+        viewModelScope.launch {
+            aiPreferences.acceptDataNotice()
+            aiPreferences.setWeeklyReview(aiPreferences.weeklyReview.first().copy(enabled = true))
+        }
+    }
+
+    fun dismissNotice() = aiDialogs.update { it.copy(showNotice = false) }
+
+    fun setWeeklyReviewTime(day: DayOfWeek, hour: Int) {
+        viewModelScope.launch { aiPreferences.setWeeklyReview(aiPreferences.weeklyReview.first().copy(day = day, hour = hour)) }
+    }
+
+    fun showSentData() {
+        viewModelScope.launch {
+            val text = formatContext(reviewService.context())
+            aiDialogs.update { it.copy(sentData = text) }
+        }
+    }
+
+    fun dismissSentData() = aiDialogs.update { it.copy(sentData = null) }
 
     /** Adds the catalog exercises that are missing (A-01). */
     fun addStandardExercises() {

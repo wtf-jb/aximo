@@ -52,6 +52,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":ai"))
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.androidx.work.runtime)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

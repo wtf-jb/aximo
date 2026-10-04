@@ -42,6 +42,7 @@ import io.github.wtfjb.aximo.ui.navigation.StatsRoute
 import io.github.wtfjb.aximo.ui.navigation.CoachRoute
 import io.github.wtfjb.aximo.ui.coach.CoachScreen
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavController
 import io.github.wtfjb.aximo.ui.navigation.ThemeShowcaseRoute
 import io.github.wtfjb.aximo.ui.navigation.TodayRoute
 import io.github.wtfjb.aximo.ui.navigation.TopLevelDestination
@@ -84,13 +85,7 @@ fun AximoAppShell(
                 AppNavigationBar(
                     destinations = tabs,
                     selected = currentTab,
-                    onSelect = { tab ->
-                        navController.navigate(tab.route) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
+                    onSelect = { tab -> navController.navigateToTab(tab) },
                 )
             }
         },
@@ -107,6 +102,7 @@ fun AximoAppShell(
                     onOpenCardio = { id -> navController.navigate(CardioRoute(id)) },
                     onOpenFinishedWorkout = { id -> navController.navigate(SummaryRoute(id)) },
                     onOpenSettings = { navController.navigate(SettingsRoute) },
+                    onOpenCoach = { navController.navigateToTab(TopLevelDestination.COACH) },
                 )
             }
             composable<PlansRoute> {
@@ -237,3 +233,12 @@ fun AximoAppShell(
 
 private const val PICKED_IDS = "picked_ids"
 private const val PICKED_SUPERSET = "picked_superset"
+
+/** Switches tabs like the bottom navigation: one copy per tab, state kept. */
+private fun NavController.navigateToTab(tab: TopLevelDestination) {
+    navigate(tab.route) {
+        popUpTo(graph.findStartDestination().id) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
+    }
+}

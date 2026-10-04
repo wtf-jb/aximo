@@ -103,17 +103,24 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Data: Tabellen `ai_reviews`, `ai_suggestions` (DB v3, Auto-Migration), Payload als JSON
   - Tests: Domain, Parser/Prompt, Room, `ReviewService` mit Fakes
 
-## In Arbeit
-- B-02b Coach-Tab mit Wochen-Review (`Review.html`):
+- B-02b Coach-Tab mit Wochen-Review (`Review.html`), PR #18 (gemergt):
   - Coach-Tab wieder in der Navigation, aber nur mit KI-Profil (`MainViewModel.aiAvailable`); verschwindet das letzte Profil, springt die App auf Heute
   - `CoachScreen`: KW + Zeitraum, dunkle Zusammenfassungskarte, „N Vorschläge“ + „Alle übernehmen“, Karten mit Kategorie, Routine, Titel, Diff (alt durchgestrichen → neu, NEU/RAUS-Badge), Begründung, Verwerfen/Übernehmen; Status „Übernommen“/„Verworfen“; „Passt nicht mehr zur Routine“, wenn sie inzwischen geändert wurde
   - „Review erstellen“ mit Datenschutz-Hinweis beim ersten Mal (`AiPreferences`, DataStore), Fehleranzeige, „Gesendete Daten ansehen“ (exakt das gesendete JSON)
   - Tests: `CoachViewModel`
 - Nicht enthalten: Coach-Chat-Composer (B-05), „Rückgängig“ (siehe decisions.md)
 
+## In Arbeit
+- B-02c Wöchentlicher Review automatisch, PR #19 (offen; nächste Session: CI prüfen, per Squash mergen, Branch neu von main):
+  - Domain: `WeeklyReviewSetting` (an/aus, Wochentag, Stunde; Standard aus, So 18:00), `WeeklySchedule.nextRun` (Zeitzone, Sommerzeit), `AiPreferences` erweitert
+  - App: `WeeklyReviewWorker` (WorkManager, alle 7 Tage, nur mit Netz und Zustimmung, Wiederholung bei Netz-/Server-Fehlern), `WeeklyReviewScheduler` (hält den Job passend zur Einstellung, ohne Profil aus), Notification „Wochen-Review bereit“
+  - Einstellungen KI-Coach: „Wöchentlicher Review“ (Schalter, erstes Einschalten mit Datenschutz-Hinweis), „Zeitpunkt“ (Tag, dann Uhrzeit), „Gesendete Daten ansehen“
+  - Heute: Karte „Wochen-Review bereit“ mit Zahl offener Vorschläge, öffnet den Coach-Tab
+  - Tests: Zeitplan, DataStore, Settings-ViewModel
+
 ## Nächster Schritt
-- B-02c: wöchentlicher Trigger (WorkManager, Wochentag/Uhrzeit, Notification), Zeilen „Wöchentlicher Review“ und „Gesendete Daten ansehen“ in den Einstellungen, Hinweis „Wochen-Review bereit“ auf Heute
-- Danach Periodisierung (Deload/Blöcke, B-02 Rest), B-03 Plan-Generierung …
+- Periodisierung (Rest von B-02): Zyklen/Blöcke mit Deload-Woche anlegen, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review
+- B-03 Plan-Generierung („Mit KI erstellen“ auf Pläne)
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

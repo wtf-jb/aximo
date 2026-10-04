@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import io.github.wtfjb.aximo.domain.ai.AiPreferences
+import io.github.wtfjb.aximo.domain.review.WeeklyReviewSetting
 import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
@@ -18,6 +19,7 @@ import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.SetRating
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.DayOfWeek
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -84,7 +86,27 @@ class DataStoreAiPreferences(context: Context) : AiPreferences {
         dataStore.edit { prefs -> prefs[AI_NOTICE_ACCEPTED] = true }
     }
 
+    override val weeklyReview: Flow<WeeklyReviewSetting> = dataStore.data.map { prefs ->
+        val defaults = WeeklyReviewSetting()
+        WeeklyReviewSetting(
+            enabled = prefs[REVIEW_ENABLED] ?: defaults.enabled,
+            day = DayOfWeek.entries.firstOrNull { it.name == prefs[REVIEW_DAY] } ?: defaults.day,
+            hour = prefs[REVIEW_HOUR]?.takeIf { it in 0..23 } ?: defaults.hour,
+        )
+    }
+
+    override suspend fun setWeeklyReview(setting: WeeklyReviewSetting) {
+        dataStore.edit { prefs ->
+            prefs[REVIEW_ENABLED] = setting.enabled
+            prefs[REVIEW_DAY] = setting.day.name
+            prefs[REVIEW_HOUR] = setting.hour
+        }
+    }
+
     private companion object {
         val AI_NOTICE_ACCEPTED = booleanPreferencesKey("ai_data_notice_accepted")
+        val REVIEW_ENABLED = booleanPreferencesKey("ai_weekly_review_enabled")
+        val REVIEW_DAY = stringPreferencesKey("ai_weekly_review_day")
+        val REVIEW_HOUR = intPreferencesKey("ai_weekly_review_hour")
     }
 }

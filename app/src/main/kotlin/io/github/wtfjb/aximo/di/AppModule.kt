@@ -8,6 +8,7 @@ import io.github.wtfjb.aximo.ai.ReviewPrompt
 import io.github.wtfjb.aximo.data.settings.DataStoreAiPreferences
 import io.github.wtfjb.aximo.domain.ai.AiPreferences
 import io.github.wtfjb.aximo.ui.coach.CoachViewModel
+import io.github.wtfjb.aximo.ui.coach.ReviewHintViewModel
 import io.github.wtfjb.aximo.data.repository.RoomAiReviewRepository
 import io.github.wtfjb.aximo.domain.review.AiReviewRepository
 import io.github.wtfjb.aximo.domain.review.ReviewGenerator
@@ -100,6 +101,7 @@ val appModule = module {
         )
     }
     viewModel { MainViewModel(get(), get()) }
+    viewModel { ReviewHintViewModel(get(), get()) }
     viewModel {
         val context = androidContext()
         CoachViewModel(
@@ -125,7 +127,7 @@ val appModule = module {
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
     viewModel { StatsViewModel(get(), get(), get(), get()) }
-    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) { ReviewPrompt.prettyContext(it) } }
     viewModel { AiProfilesViewModel(get()) }
     viewModel { (profileId: Long) -> AiProfileEditViewModel(get(), get(), profileId) }
 }
