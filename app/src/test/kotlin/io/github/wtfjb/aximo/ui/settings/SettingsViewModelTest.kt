@@ -7,6 +7,9 @@ import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.SetRating
 import io.github.wtfjb.aximo.domain.backup.BackupException
 import io.github.wtfjb.aximo.domain.backup.SetsCsv
+import io.github.wtfjb.aximo.domain.exercise.CatalogExercise
+import io.github.wtfjb.aximo.domain.exercise.CatalogSeeder
+import io.github.wtfjb.aximo.ui.exercises.FakeExerciseRepository
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
 import io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository
 import io.github.wtfjb.aximo.ui.workout.FakeWorkoutRepository
@@ -32,7 +35,8 @@ class SettingsViewModelTest {
     private val backup = FakeBackupRepository()
     private val documents = FakeDocumentStore()
     private val workouts = FakeWorkoutRepository(emptyMap())
-    private val vm by lazy { SettingsViewModel(settings, backup, workouts, FakeRoutineRepository(), documents) }
+    private val exercises = FakeExerciseRepository()
+    private val vm by lazy { SettingsViewModel(settings, backup, workouts, FakeRoutineRepository(), documents, CatalogSeeder(exercises, settings) { it.name }) }
 
     @Test
     fun showsTheStoredSettings() = runTest(UnconfinedTestDispatcher()) {
@@ -134,5 +138,16 @@ class SettingsViewModelTest {
         vm.restore("content://missing.json")
         assertEquals(BackupMessage.FAILED, vm.uiState.value.backup.message)
         assertEquals(null, backup.restored)
+    }
+
+    @Test
+    fun addingStandardExercisesReportsTheCount() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.addStandardExercises()
+        assertEquals(CatalogExercise.entries.size, vm.uiState.value.catalogAdded)
+
+        vm.addStandardExercises()
+        assertEquals(0, vm.uiState.value.catalogAdded)
     }
 }

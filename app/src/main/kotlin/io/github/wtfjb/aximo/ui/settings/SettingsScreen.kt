@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -132,6 +133,22 @@ fun SettingsScreen(
             )
         }
         Hint(stringResource(R.string.settings_training_hint))
+
+        SettingsCard {
+            ValueRow(stringResource(R.string.settings_add_catalog), "", onClick = viewModel::addStandardExercises)
+            state.catalogAdded?.let { added ->
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Text(
+                    text = pluralStringResource(R.plurals.settings_catalog_added, added, added),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .padding(vertical = Spacing.s12)
+                        .semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+        }
+        Hint(stringResource(R.string.settings_add_catalog_hint))
 
         SectionLabel(stringResource(R.string.settings_section_data))
         BackupCard(
