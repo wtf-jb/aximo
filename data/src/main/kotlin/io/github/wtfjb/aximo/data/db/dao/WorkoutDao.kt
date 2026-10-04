@@ -32,6 +32,24 @@ interface WorkoutDao {
     @Query("SELECT * FROM workouts WHERE id = :id")
     suspend fun getById(id: Long): WorkoutEntity?
 
+    @Transaction
+    @Query("SELECT * FROM workouts WHERE id = :id")
+    suspend fun getWithDetails(id: Long): WorkoutWithDetails?
+
+    @Query("UPDATE workouts SET rating = :rating, note = :note WHERE id = :id")
+    suspend fun rate(id: Long, rating: Int?, note: String)
+
+    @Query(
+        """
+        SELECT s.* FROM set_entries s
+        JOIN workout_exercises we ON s.workoutExerciseId = we.id
+        JOIN workouts w ON we.workoutId = w.id
+        WHERE we.exerciseId = :exerciseId AND w.endedAt IS NOT NULL AND w.startedAt < :before
+        ORDER BY w.startedAt, we.position, s.position
+        """,
+    )
+    suspend fun setsBefore(exerciseId: Long, before: Instant): List<SetEntryEntity>
+
     @Insert
     suspend fun insert(workout: WorkoutEntity): Long
 

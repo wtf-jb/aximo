@@ -133,4 +133,16 @@ class WorkoutLogicTest {
         assertEquals("38:12", WorkoutLogic.formatElapsed(38 * 60 + 12))
         assertEquals("1:02:03", WorkoutLogic.formatElapsed(3723))
     }
+
+    @Test
+    fun progressionReplacesWorkingSetValuesButKeepsWarmUps() {
+        val last = listOf(set(1, 40.0, 10, SetType.WARM_UP), set(2, 80.0, 8), set(3, 80.0, 8))
+        val state = io.github.wtfjb.aximo.domain.model.ProgressionState(
+            exerciseId = 1, nextWeightKg = 82.5, nextRepTarget = 6,
+            reason = io.github.wtfjb.aximo.domain.model.ProgressionReason.INCREASE_WEIGHT,
+        )
+        val sets = WorkoutLogic.initialSets(bench, last, state)
+        assertEquals(listOf(40.0, 82.5, 82.5), sets.map { it.weightKg })
+        assertEquals(listOf(10, 6, 6), sets.map { it.reps })
+    }
 }

@@ -32,15 +32,21 @@
   - UI: `RestTimerBar` schwebend im Workout-Screen; Notification-Berechtigung beim Öffnen des Workouts
   - Tests: Domain (Timer, Logik, Controller mit virtueller Zeit), ViewModel
 
-## In Arbeit
-- Schritt 6 Routinen und Pläne (A-05), PR #6:
+- Schritt 6 Routinen und Pläne (A-05), PR #6 (gemergt):
   - Domain: `RoutineLogic` (nächste Routine reihum, Sätze aus Zielen + letzter Session), `RoutineDraft` (Bearbeiten, Reihenfolge, Supersätze aufräumen), `WorkoutStarter` (frei oder aus Routine, nie zwei laufende)
   - Data: Routinen mit Übungen als Flow, letzte Einheit pro Routine
   - UI: Pläne-Tab (Freies Training, Übungen, Routinenliste mit „Als Nächstes“ und Start-Button), Routine bearbeiten (Name, Ziele-Dialog, Menü mit Verschieben/Supersatz lösen/Entfernen, Übung hinzufügen, Löschen), Workout zeigt Routinenname und Ziele, Heute „Push A starten“
   - Tests: Domain, Room, ViewModels
 
+## In Arbeit
+- Schritt 7 Progression (A-06) und Workout-Abschluss, PR #7:
+  - Domain: `ProgressionRules` (Double Progression, Reduktion nach 2× unter Untergrenze, Bodyweight Wdh. → Gewicht, Rundung auf Scheibenschritte), `Records` (e1RM Epley ≤ 12 Wdh., Volumen, neue Bestwerte), `WorkoutFinisher` (beendet und rechnet Progression), Vorschläge fließen in `initialSets`/`plannedSets`
+  - Data: `ProgressionRepository`, Workout per Id, Bewertung, Sätze vor einem Zeitpunkt
+  - UI: Hinweis-Chip „Progression: 82,5 kg (+2,5)“ im Workout; Abschluss-Screen mit Bilanz (Dauer, Volumen, Arbeitssätze, Bestwerte), „Neue Bestwerte“, „Fürs nächste Mal“, „Wie lief's?“ 1–5, Notiz
+  - Tests: Domain (Regeln, Records), Room, ViewModels
+
 ## Nächster Schritt
-- 7. Regelbasierte Progression (A-06), Workout-Abschluss (`Abschluss.html`)
+- 8. Cardio manuell (A-04), `Cardio.html`
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

@@ -22,3 +22,13 @@ fun formatShortDate(instant: kotlin.time.Instant, locale: Locale = Locale.getDef
     val date = java.time.Instant.ofEpochMilli(instant.toEpochMilliseconds()).atZone(java.time.ZoneId.systemDefault())
     return java.time.format.DateTimeFormatter.ofPattern(pattern, locale).format(date)
 }
+
+/** Time of day in the device format, e.g. "09:02" / "9:02 AM". */
+fun formatTime(instant: kotlin.time.Instant, locale: Locale = Locale.getDefault()): String {
+    val time = java.time.Instant.ofEpochMilli(instant.toEpochMilliseconds()).atZone(java.time.ZoneId.systemDefault())
+    return java.time.format.DateTimeFormatter.ofLocalizedTime(java.time.format.FormatStyle.SHORT).withLocale(locale).format(time)
+}
+
+/** Whole number with the locale's grouping, e.g. 9420 → "9.420" in German. */
+fun formatInteger(value: Double, locale: Locale = Locale.getDefault()): String =
+    java.text.NumberFormat.getIntegerInstance(locale).format(Math.round(value))

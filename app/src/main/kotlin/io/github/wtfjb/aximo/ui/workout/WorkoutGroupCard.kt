@@ -24,15 +24,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.model.ExerciseType
+import io.github.wtfjb.aximo.domain.model.ProgressionReason
+import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.WorkoutExerciseDetail
 import io.github.wtfjb.aximo.domain.workout.WorkoutLogic
+import io.github.wtfjb.aximo.ui.components.HintChip
 import io.github.wtfjb.aximo.ui.components.SecondaryButton
 import io.github.wtfjb.aximo.ui.exercises.icon
 import io.github.wtfjb.aximo.ui.exercises.label
@@ -59,6 +63,7 @@ fun WorkoutGroupCard(
     group: WorkoutGroupUi,
     lastPerformance: Map<Long, List<SetEntry>>,
     targets: Map<Long, RoutineExercise>,
+    progression: Map<Long, ProgressionState>,
     unit: WeightUnit,
     actions: WorkoutActions,
 ) {
@@ -78,6 +83,7 @@ fun WorkoutGroupCard(
                     activeSetId = group.activeSetId,
                     last = lastPerformance[detail.entry.exerciseId].orEmpty(),
                     target = targets[detail.entry.exerciseId],
+                    progression = progression[detail.entry.exerciseId],
                     unit = unit,
                     actions = actions,
                 )
@@ -108,6 +114,7 @@ private fun ExerciseBlock(
     activeSetId: Long?,
     last: List<SetEntry>,
     target: RoutineExercise?,
+    progression: ProgressionState?,
     unit: WeightUnit,
     actions: WorkoutActions,
 ) {
@@ -151,6 +158,7 @@ private fun ExerciseBlock(
             ExerciseMenu(detail = detail, actions = actions)
         }
 
+        progressionHint(progression, last, unit)?.let { HintChip(text = it) }
         if (last.isNotEmpty()) {
             Text(
                 text = stringResource(R.string.workout_last, lastSummary(last, unit)),
@@ -227,6 +235,31 @@ private fun ExerciseMenu(detail: WorkoutExerciseDetail, actions: WorkoutActions)
                 },
             )
         }
+    }
+}
+
+/**
+ * Hint chip text for the suggestion of the progression rules (A-06):
+ * "Progression: 82,5 kg (+2,5)" or "Progression: 9 Wdh."; nothing when the weight just stays.
+ */
+@Composable
+private fun progressionHint(progression: ProgressionState?, last: List<SetEntry>, unit: WeightUnit): String? {
+    progression ?: return null
+    val unitLabel = stringResource(unit.label())
+    return when (progression.reason) {
+        ProgressionReason.INCREASE_WEIGHT, ProgressionReason.DECREASE_WEIGHT -> {
+            val weight = formatWeight(progression.nextWeightKg, unit)
+            val lastTop = last.maxOfOrNull { it.weightKg }
+            if (lastTop == null) {
+                stringResource(R.string.workout_progression_weight, weight, unitLabel)
+            } else {
+                val delta = progression.nextWeightKg - lastTop
+                val sign = if (delta >= 0) "+" else "−"
+                stringResource(R.string.workout_progression_weight_delta, weight, unitLabel, sign + formatWeight(kotlin.math.abs(delta), unit))
+            }
+        }
+        ProgressionReason.INCREASE_REPS -> pluralStringResource(R.plurals.workout_progression_reps, progression.nextRepTarget, progression.nextRepTarget)
+        ProgressionReason.HOLD -> null
     }
 }
 

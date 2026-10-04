@@ -53,7 +53,11 @@ class WorkoutViewModelTest {
     private val routines = io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository()
 
     // Lazy: viewModelScope must be created after MainDispatcherRule has replaced Dispatchers.Main.
-    private val vm by lazy { WorkoutViewModel(workouts, FakeExerciseRepository(listOf(bench, row)), routines, time, restTimer) }
+    private val progression = FakeProgressionRepository()
+    private val finisher by lazy { io.github.wtfjb.aximo.domain.workout.WorkoutFinisher(workouts, routines, progression, time) }
+    private val vm by lazy {
+        WorkoutViewModel(workouts, FakeExerciseRepository(listOf(bench, row)), routines, progression, finisher, time, restTimer)
+    }
 
     private fun TestScope.started() {
         restTimer = RestTimerController(time, backgroundScope, noEffects)
@@ -151,11 +155,43 @@ class WorkoutViewModelTest {
         workouts.startWorkout(start)
         started()
 
-        vm.finish("stark")
+        vm.finish()
 
-        assertEquals("stark", workouts.finishedNote)
+        assertEquals(FinishState.Done(1L), vm.finishState.value)
         assertNull(vm.uiState.value.workout)
         assertTrue(!vm.uiState.value.loading)
+    }
+
+    @Test
+    fun finishingRunsTheProgressionRules() = runTest(UnconfinedTestDispatcher()) {
+        workouts.startWorkout(start)
+        started()
+        vm.addExercises(listOf(1L), superset = false) // 80 × 8, 80 × 7 from history; range 6–8
+        val sets = vm.uiState.value.workout!!.exercises.single().sets
+        vm.editSet(sets[1], SetField.REPS, "8")
+        vm.uiState.value.workout!!.exercises.single().sets.forEach { vm.toggleSetDone(it) }
+
+        vm.finish()
+
+        val state = progression.states.getValue(1L)
+        assertEquals(io.github.wtfjb.aximo.domain.model.ProgressionReason.INCREASE_WEIGHT, state.reason)
+        assertEquals(82.5, state.nextWeightKg, 0.0)
+    }
+
+    @Test
+    fun addedExerciseUsesTheProgressionSuggestion() = runTest(UnconfinedTestDispatcher()) {
+        progression.save(
+            io.github.wtfjb.aximo.domain.model.ProgressionState(1, 82.5, 6, io.github.wtfjb.aximo.domain.model.ProgressionReason.INCREASE_WEIGHT),
+        )
+        workouts.startWorkout(start)
+        started()
+
+        vm.addExercises(listOf(1L), superset = false)
+
+        val sets = vm.uiState.value.workout!!.exercises.single().sets
+        assertEquals(listOf(82.5, 82.5), sets.map { it.weightKg })
+        assertEquals(listOf(6, 6), sets.map { it.reps })
+        assertEquals(82.5, vm.uiState.value.progression.getValue(1L).nextWeightKg, 0.0)
     }
 
     @Test
@@ -215,7 +251,7 @@ class WorkoutViewModelTest {
         vm.addExercises(listOf(1L), superset = false)
         vm.toggleSetDone(vm.uiState.value.workout!!.exercises.single().sets[0])
 
-        vm.finish("")
+        vm.finish()
 
         assertNull(restTimer.state.value)
     }

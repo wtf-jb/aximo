@@ -53,3 +53,11 @@
 | 2026-10-04 | Reihenfolge | Verschieben über das ⋯-Menü (Nach oben/unten) statt Drag-and-drop | Drag-and-drop braucht in Compose eigene Gesten-Logik; das Menü ist robust und barrierefrei. Drag kann später nachrüsten |
 | 2026-10-04 | Pläne-Tab | Block-Karte und „Mit KI erstellen“ weggelassen (Prio B); statt „Cardio erfassen“ vorerst „Übungen“ | Elemente späterer Prios werden weggelassen; Cardio kommt in Schritt 8 |
 | 2026-10-04 | Routine löschen | Mit Bestätigung; vergangene Workouts bleiben, `routineId` wird null | Historie bleibt vollständig |
+| 2026-10-04 | Progression: zählende Sätze | Abgeschlossene Arbeits- und Failure-Sätze; Warm-up und Drop zählen nicht | Drop-Sätze sind absichtlich leichter und würden die Regel verfälschen |
+| 2026-10-04 | Progression: RIR | Ohne erfassten RIR gilt die Bedingung „RIR ≥ 1“ als erfüllt | Wer keinen RIR loggt, soll trotzdem Progression bekommen |
+| 2026-10-04 | Progression: „unter der Untergrenze“ | Mehr als die Hälfte der Arbeitssätze unter dem unteren Wdh.-Ziel, zwei Sessions in Folge → 10 % weniger, mindestens ein Inkrement, gerundet | Ein einzelner müder letzter Satz soll keine Reduktion auslösen |
+| 2026-10-04 | Progression: sonst | Gewicht bleibt, Wdh.-Ziel = schwächster Satz + 1 (im Bereich); Bodyweight: erst Wdh., dann Zusatzgewicht (Assistenz wird kleiner) | Double Progression laut A-06 |
+| 2026-10-04 | Progression: Bereich und Rundung | Wdh.-Bereich aus dem Routinen-Ziel, sonst aus der Übung; Rundung auf 2,5 kg bzw. `roundingStepKg` der Übung; 5 lbs folgen mit der Einheiten-Einstellung (A-09) | A-06; Einheit kommt in Schritt 10 |
+| 2026-10-04 | Vorschlag anzeigen | Vorschlag steht direkt in den Satzwerten und als Hinweis-Chip; bei „Gewicht bleibt“ kein Chip | Überschreibbar durch Antippen wie jeder Wert; keine Koralle-Flut ohne Änderung |
+| 2026-10-04 | Bestwerte | Pro Übung höchstens ein neuer Bestwert, Priorität e1RM → Gewicht → Wdh. bei Gewicht → Volumen; erste Session ohne Bestwerte | Kurze, aussagekräftige Liste wie im Mockup |
+| 2026-10-04 | Abschluss | „Beenden“ fragt nur noch Beenden/Verwerfen; Bewertung 1–5 und Notiz auf dem Abschluss-Screen; „+4 % ggü. letzter Push A“ fehlt noch | Bilanz-Vergleich passt besser zu den Auswertungen (Schritt 9) |

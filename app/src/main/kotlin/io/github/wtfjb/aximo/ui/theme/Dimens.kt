@@ -67,6 +67,9 @@ object Sizes {
     val dashRadius = 22.dp
     val dashLength = 6.dp
 
+    /** Mood tile on the finish screen (mockup: 64). */
+    val moodTile = 64.dp
+
     /** Color swatch in the theme showcase. */
     val swatch = 40.dp
 }

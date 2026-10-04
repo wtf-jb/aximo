@@ -65,10 +65,23 @@ class FakeWorkoutRepository(
     override suspend fun deleteSet(setId: Long) =
         edit { w -> w.copy(exercises = w.exercises.map { d -> d.copy(sets = d.sets.filter { it.id != setId }) }) }
 
+    /** Finished workouts by id. */
+    val finished = mutableMapOf<Long, WorkoutDetail>()
+
     override suspend fun finishWorkout(workoutId: Long, endedAt: Instant, note: String) {
         finishedNote = note
+        active.value?.let { finished[workoutId] = it.copy(workout = it.workout.copy(endedAt = endedAt, note = note)) }
         active.value = null
     }
+
+    override suspend fun getWorkout(workoutId: Long): WorkoutDetail? =
+        active.value?.takeIf { it.workout.id == workoutId } ?: finished[workoutId]
+
+    override suspend fun rateWorkout(workoutId: Long, rating: Int?, note: String) {
+        finished[workoutId]?.let { finished[workoutId] = it.copy(workout = it.workout.copy(rating = rating, note = note)) }
+    }
+
+    override suspend fun setsBefore(exerciseId: Long, before: Instant): List<SetEntry> = history[exerciseId].orEmpty()
 
     override suspend fun discardWorkout(workoutId: Long) {
         active.value = null

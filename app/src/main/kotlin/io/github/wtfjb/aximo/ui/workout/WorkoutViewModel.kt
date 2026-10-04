@@ -3,12 +3,14 @@ package io.github.wtfjb.aximo.ui.workout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
+import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
 import io.github.wtfjb.aximo.domain.model.RoutineWithExercises
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.domain.model.WorkoutExercise
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
+import io.github.wtfjb.aximo.domain.repository.ProgressionRepository
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
 import io.github.wtfjb.aximo.domain.rest.NextSet
@@ -18,11 +20,13 @@ import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
 import io.github.wtfjb.aximo.domain.workout.WorkoutExerciseDetail
+import io.github.wtfjb.aximo.domain.workout.WorkoutFinisher
 import io.github.wtfjb.aximo.domain.workout.WorkoutLogic
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
@@ -61,6 +65,21 @@ data class WorkoutUiState(
     val routineName: String? = null,
     /** Routine targets per exercise id (A-05), empty for a free workout. */
     val targets: Map<Long, RoutineExercise> = emptyMap(),
+    /** Progression suggestions per exercise id (A-06). */
+    val progression: Map<Long, ProgressionState> = emptyMap(),
+)
+
+/** Finishing a workout: nothing yet, running (progression is calculated), done (open the summary). */
+sealed interface FinishState {
+    data object Idle : FinishState
+    data object InProgress : FinishState
+    data class Done(val workoutId: Long) : FinishState
+}
+
+/** What is loaded once per exercise: last session and progression suggestion. */
+private data class ExerciseHistory(
+    val lastSessions: Map<Long, List<SetEntry>> = emptyMap(),
+    val progression: Map<Long, ProgressionState> = emptyMap(),
 )
 
 /** Which value of a set is being edited. */
@@ -71,12 +90,17 @@ class WorkoutViewModel(
     private val workouts: WorkoutRepository,
     private val exercises: ExerciseRepository,
     private val routines: RoutineRepository,
+    private val progressionRepository: ProgressionRepository,
+    private val finisher: WorkoutFinisher,
     private val time: TimeSource,
     private val restTimer: RestTimerController,
 ) : ViewModel() {
 
-    /** Last session per exercise id, loaded once per exercise. */
-    private val lastSessions = MutableStateFlow<Map<Long, List<SetEntry>>>(emptyMap())
+    /** Last session and progression per exercise id, loaded once per exercise. */
+    private val history = MutableStateFlow(ExerciseHistory())
+
+    private val _finishState = MutableStateFlow<FinishState>(FinishState.Idle)
+    val finishState: StateFlow<FinishState> = _finishState.asStateFlow()
 
     private val ticker = flow {
         while (true) {
@@ -95,7 +119,7 @@ class WorkoutViewModel(
         }
     }
 
-    val uiState: StateFlow<WorkoutUiState> = combine(active, lastSessions, ticker, restTimer.state, routine) { workout, last, now, rest, routine ->
+    val uiState: StateFlow<WorkoutUiState> = combine(active, history, ticker, restTimer.state, routine) { workout, history, now, rest, routine ->
         if (workout == null) {
             WorkoutUiState(loading = false)
         } else {
@@ -106,7 +130,8 @@ class WorkoutViewModel(
                     WorkoutGroupUi(group.first().entry.supersetGroup, group, WorkoutLogic.activeSetId(group))
                 },
                 elapsedSeconds = (now - workout.workout.startedAt).inWholeSeconds,
-                lastPerformance = last.mapValues { WorkoutLogic.lastPerformance(it.value) },
+                lastPerformance = history.lastSessions.mapValues { WorkoutLogic.lastPerformance(it.value) },
+                progression = history.progression,
                 // Fresh time instead of the last tick: a rest that just started shows its full length.
                 rest = rest?.let { timer ->
                     val current = time.now()
@@ -126,10 +151,11 @@ class WorkoutViewModel(
     }
 
     private suspend fun loadMissingLastSessions(workout: WorkoutDetail) {
-        val missing = workout.exercises.map { it.entry.exerciseId }.distinct().filter { it !in lastSessions.value }
+        val missing = workout.exercises.map { it.entry.exerciseId }.distinct().filter { it !in history.value.lastSessions }
         if (missing.isEmpty()) return
-        val loaded = missing.associateWith { workouts.lastSessionSets(it, workout.workout.id) }
-        lastSessions.update { it + loaded }
+        val sessions = missing.associateWith { workouts.lastSessionSets(it, workout.workout.id) }
+        val suggestions = missing.mapNotNull { progressionRepository.get(it) }.associateBy { it.exerciseId }
+        history.update { it.copy(lastSessions = it.lastSessions + sessions, progression = it.progression + suggestions) }
     }
 
     /** Adds the picked exercises; with [superset] (and at least two) they share a new superset letter. */
@@ -144,14 +170,15 @@ class WorkoutViewModel(
             for (id in exerciseIds) {
                 val exercise = exercises.getExercise(id) ?: continue
                 val last = workouts.lastSessionSets(id, workout.workout.id)
-                workouts.addExercise(workout.workout.id, id, group, WorkoutLogic.initialSets(exercise, last))
+                val sets = WorkoutLogic.initialSets(exercise, last, progressionRepository.get(id))
+                workouts.addExercise(workout.workout.id, id, group, sets)
             }
         }
     }
 
     fun addSet(detail: WorkoutExerciseDetail) {
         viewModelScope.launch {
-            val last = lastSessions.value[detail.entry.exerciseId].orEmpty()
+            val last = history.value.lastSessions[detail.entry.exerciseId].orEmpty()
             workouts.addSet(detail.entry.id, WorkoutLogic.nextSet(detail.exercise, detail.sets, last))
         }
     }
@@ -206,10 +233,16 @@ class WorkoutViewModel(
         viewModelScope.launch { workouts.setExerciseNote(entry.id, note) }
     }
 
-    fun finish(note: String) {
+    /** Ends the workout, runs the progression rules and then reports [FinishState.Done]. */
+    fun finish() {
         val workout = currentWorkout ?: return
+        if (_finishState.value != FinishState.Idle) return
         restTimer.stop()
-        viewModelScope.launch { workouts.finishWorkout(workout.workout.id, time.now(), note) }
+        _finishState.value = FinishState.InProgress
+        viewModelScope.launch {
+            finisher.finish(workout.workout.id, workout.workout.note)
+            _finishState.value = FinishState.Done(workout.workout.id)
+        }
     }
 
     fun discard() {

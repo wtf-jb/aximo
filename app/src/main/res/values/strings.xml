@@ -221,4 +221,39 @@
     <string name="routine_apply">Apply</string>
     <string name="routine_superset_entry">%1$s · %2$s</string>
     <string name="workout_target">Target %1$s</string>
+
+    <!-- Progression (A-06) and workout summary -->
+    <string name="workout_progression_weight">Progression: %1$s %2$s</string>
+    <string name="workout_progression_weight_delta">Progression: %1$s %2$s (%3$s)</string>
+    <plurals name="workout_progression_reps">
+        <item quantity="one">Progression: %d rep</item>
+        <item quantity="other">Progression: %d reps</item>
+    </plurals>
+    <string name="summary_done">%1$s done</string>
+    <string name="summary_done_free">Workout done</string>
+    <string name="summary_when">%1$s · %2$s–%3$s</string>
+    <string name="summary_duration">Duration</string>
+    <string name="summary_volume">Volume (%1$s)</string>
+    <string name="summary_working_sets">Working sets</string>
+    <string name="summary_records">Records</string>
+    <string name="summary_new_records">New records</string>
+    <string name="summary_record_e1rm">%1$s · e1RM</string>
+    <string name="summary_record_weight">%1$s · weight</string>
+    <string name="summary_record_reps">%1$s · reps at weight</string>
+    <string name="summary_record_volume">%1$s · volume</string>
+    <string name="summary_reps_at_weight">%1$s × %2$s</string>
+    <string name="summary_next_time">Next time</string>
+    <string name="summary_stays">stays %1$s</string>
+    <plurals name="summary_reps_target">
+        <item quantity="one">%d rep</item>
+        <item quantity="other">%d reps</item>
+    </plurals>
+    <string name="summary_how">How did it go?</string>
+    <string name="summary_mood_1">Tough</string>
+    <string name="summary_mood_2">Meh</string>
+    <string name="summary_mood_3">Okay</string>
+    <string name="summary_mood_4">Good</string>
+    <string name="summary_mood_5">Strong</string>
+    <string name="summary_save">Save</string>
+    <string name="summary_arrow_description">changes to</string>
 </resources>

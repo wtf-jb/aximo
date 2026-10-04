@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.domain.workout
 
+import io.github.wtfjb.aximo.domain.repository.ProgressionRepository
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
 import io.github.wtfjb.aximo.domain.routine.RoutineLogic
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.first
 class WorkoutStarter(
     private val workouts: WorkoutRepository,
     private val routines: RoutineRepository,
+    private val progression: ProgressionRepository,
     private val time: TimeSource,
 ) {
     /** Returns the id of the running workout: the one already running, or a new one. */
@@ -19,7 +21,7 @@ class WorkoutStarter(
         val routine = routineId?.let { routines.getRoutine(it) } ?: return workoutId
         for (target in routine.exercises) {
             val last = workouts.lastSessionSets(target.exerciseId, workoutId)
-            workouts.addExercise(workoutId, target.exerciseId, target.supersetGroup, RoutineLogic.plannedSets(target, last))
+            workouts.addExercise(workoutId, target.exerciseId, target.supersetGroup, RoutineLogic.plannedSets(target, last, progression.get(target.exerciseId)))
         }
         return workoutId
     }

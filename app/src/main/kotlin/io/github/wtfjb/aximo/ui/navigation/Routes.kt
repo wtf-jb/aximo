@@ -22,6 +22,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object WorkoutRoute
 
+/** Summary after finishing a workout. */
+@Serializable data class SummaryRoute(val workoutId: Long)
+
 /** routineId = 0 creates a new routine. */
 @Serializable data class RoutineEditRoute(val routineId: Long = 0)
 
