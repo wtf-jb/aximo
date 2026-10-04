@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Übungsdetail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+a{color:inherit;text-decoration:none}a:hover{color:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 1120px; position: relative; overflow: hidden; background: #F3F3F1; font-family: 'Manrope', sans-serif; color: #17181C; display: flex; flex-direction: column; font-variant-numeric: tabular-nums">
+
+  <header style="flex-shrink: 0; padding: 14px 16px 6px; display: flex; align-items: center; gap: 12px">
+    <a href="Statistik.html" aria-label="Zurück" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>
+    </a>
+    <div style="flex: 1"></div>
+    <button aria-label="Übung bearbeiten" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16z"></path><path d="M13 7l4 4"></path></svg></button>
+  </header>
+
+  <div style="flex: 1; min-height: 0; padding: 6px 16px 24px; display: flex; flex-direction: column; gap: 14px">
+
+    <div style="display: flex; flex-direction: column; gap: 4px; padding: 0 4px">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -0.02em">Bankdrücken</h1>
+      <div style="font-size: 14px; color: #5D626C">Langhantel · Brust, Trizeps, vordere Schulter</div>
+    </div>
+
+    <div role="tablist" aria-label="Ansicht" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; background: #E6E6E2; border-radius: 16px; padding: 4px">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+        <button role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <div style="background: #FFFFFF; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">104,5</div>
+        <div style="font-size: 12px; font-weight: 600; color: #5D626C">e1RM (kg)</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">85</div>
+        <div style="font-size: 12px; font-weight: 600; color: #5D626C">Max. (kg)</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">23</div>
+        <div style="font-size: 12px; font-weight: 600; color: #5D626C">Einheiten</div>
+      </div>
+    </div>
+
+    <div style="background: #17181C; color: #FFFFFF; border-radius: 22px; padding: 16px; display: flex; align-items: center; gap: 14px">
+      <div style="width: 44px; height: 44px; border-radius: 14px; background: #3A2620; color: #FFB39F; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"></path><path d="M15 7h6v6"></path></svg></div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <div style="font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: #B9BCC4">NÄCHSTES MAL</div>
+        <div style="font-size: 16px; font-weight: 800">3 × 82,5 kg · Ziel 8 Wdh.</div>
+        <div style="font-size: 13px; color: #B9BCC4">Satz 3 hatte 7 Wdh., Gewicht bleibt.</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{sessions}}" as="s" hint-placeholder-count="5">
+        <article style="background: #FFFFFF; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; align-items: center; gap: 8px">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+              <div style="font-size: 15px; font-weight: 800">{{s.date}}</div>
+              <div style="font-size: 13px; color: #5D626C">{{s.meta}}</div>
+            </div>
+            <sc-if value="{{s.pr}}" hint-placeholder-val="{{false}}">
+              <div style="background: #17181C; color: #FFFFFF; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 999px">PR · e1RM</div>
+            </sc-if>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px">
+            <sc-for list="{{s.sets}}" as="x" hint-placeholder-count="4">
+              <div style="{{x.style}}">{{x.label}}</div>
+            </sc-for>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1120}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'Verlauf' };
+  }
+  renderVals() {
+    var self = this;
+    var tabs = ['Verlauf', 'Diagramm', 'Bestwerte', 'Info'].map(function (l) {
+      var on = self.state.tab === l;
+      return {
+        label: l, on: on,
+        pick: function () { self.setState({ tab: l }); },
+        style: 'height: 40px; border-radius: 12px; font-size: 13px; ' +
+          (on ? 'background: #FFFFFF; font-weight: 800; box-shadow: 0 1px 3px rgba(23, 24, 28, 0.12)' : 'font-weight: 700; color: #4A4E57')
+      };
+    });
+    function set(label, warm) {
+      return {
+        label: label,
+        style: 'height: 34px; display: flex; align-items: center; padding: 0 10px; border-radius: 10px; font-size: 13px; font-weight: 800; ' +
+          (warm ? 'background: #FBE3DB; color: #9E2F18' : 'background: #F3F3F1; color: #17181C')
+      };
+    }
+    var sessions = [
+      { date: 'Sa, 3. Okt', meta: 'Push A · Volumen 1.900 kg', pr: true,
+        sets: [set('W 40 × 10', true), set('82,5 × 8 · R2'), set('82,5 × 8 · R2'), set('82,5 × 7 · R1')] },
+      { date: 'Mo, 28. Sep', meta: 'Push A · Volumen 1.920 kg', pr: false,
+        sets: [set('W 40 × 10', true), set('80 × 8 · R2'), set('80 × 8 · R2'), set('80 × 8 · R1')] },
+      { date: 'Do, 24. Sep', meta: 'Push A · Volumen 1.840 kg', pr: false,
+        sets: [set('W 40 × 10', true), set('80 × 8 · R2'), set('80 × 8 · R1'), set('80 × 7 · R1')] },
+      { date: 'Mo, 21. Sep', meta: 'Push A · Volumen 1.760 kg', pr: false,
+        sets: [set('W 40 × 10', true), set('80 × 8 · R2'), set('80 × 7 · R1'), set('80 × 7 · R0')] },
+      { date: 'Do, 17. Sep', meta: 'Push A · Volumen 1.800 kg', pr: false,
+        sets: [set('W 40 × 10', true), set('77,5 × 8 · R2'), set('77,5 × 8 · R2'), set('77,5 × 8 · R1')] }
+    ];
+    return { tabs: tabs, sessions: sessions };
+  }
+}
+</script>
+</body>
+</html>

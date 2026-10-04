@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Übung hinzufügen</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+input{font:inherit;color:inherit}
+input::placeholder{color:#6B707A}
+a{color:inherit;text-decoration:none}a:hover{color:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F3F3F1; font-family: 'Manrope', sans-serif; color: #17181C; display: flex; flex-direction: column; font-variant-numeric: tabular-nums">
+
+  <header style="flex-shrink: 0; padding: 14px 16px 8px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <a href="Routine.html" aria-label="Schließen" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </a>
+      <h1 style="flex: 1; margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.01em">Übung hinzufügen</h1>
+      <button aria-label="Eigene Übung anlegen" style="height: 44px; border-radius: 22px; background: #FFFFFF; padding: 0 14px; font-size: 13px; font-weight: 800">Neu</button>
+    </div>
+    <div style="height: 48px; border-radius: 16px; background: #FFFFFF; display: flex; align-items: center; gap: 10px; padding: 0 14px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5D626C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+      <input type="search" aria-label="Übungen suchen" placeholder="Übung suchen" style="flex: 1; min-width: 0; height: 44px; border: 0; outline: none; background: transparent; font-size: 15px">
+    </div>
+    <div style="display: flex; gap: 6px; overflow: hidden">
+      <sc-for list="{{filters}}" as="f" hint-placeholder-count="6">
+        <button onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}</button>
+      </sc-for>
+    </div>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; padding: 4px 16px 120px; display: flex; flex-direction: column; gap: 6px">
+    <div style="font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: #5D626C; padding: 6px 4px">ZULETZT VERWENDET</div>
+    <sc-for list="{{items}}" as="it" hint-placeholder-count="8">
+      <button onClick="{{it.toggle}}" aria-pressed="{{it.selected}}" style="{{it.rowStyle}}">
+        <div style="width: 48px; height: 48px; border-radius: 14px; background: #EDEDE9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #4A4E57"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12"></path></svg></div>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; text-align: left">
+          <div style="display: flex; align-items: center; gap: 6px">
+            <div style="font-size: 15px; font-weight: 800">{{it.name}}</div>
+            <sc-if value="{{it.custom}}" hint-placeholder-val="{{false}}">
+              <div style="background: #EDEDE9; font-size: 10px; font-weight: 800; letter-spacing: 0.04em; padding: 2px 6px; border-radius: 6px">EIGENE</div>
+            </sc-if>
+          </div>
+          <div style="font-size: 13px; color: #5D626C">{{it.meta}}</div>
+        </div>
+        <div style="{{it.checkStyle}}">
+          <sc-if value="{{it.selected}}" hint-placeholder-val="{{false}}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+          </sc-if>
+        </div>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="position: absolute; left: 12px; right: 12px; bottom: 16px; background: #17181C; color: #FFFFFF; border-radius: 26px; padding: 10px; display: flex; gap: 8px; box-shadow: 0 12px 32px rgba(23, 24, 28, 0.28)">
+    <button style="flex: 1; height: 48px; border-radius: 18px; background: #2C2E35; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>
+      Als Supersatz
+    </button>
+    <a href="Routine.html" style="flex: 1.2; height: 48px; border-radius: 18px; background: #F0643F; color: #17181C; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{addLabel}}</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: 'Alle', selected: { 1: true, 4: true } };
+  }
+  renderVals() {
+    var self = this;
+    var labels = ['Alle', 'Brust', 'Rücken', 'Beine', 'Schultern', 'Arme'];
+    var filters = labels.map(function (l) {
+      var on = self.state.filter === l;
+      return {
+        label: l,
+        pick: function () { self.setState({ filter: l }); },
+        style: 'height: 36px; flex-shrink: 0; border-radius: 18px; padding: 0 14px; font-size: 13px; font-weight: 800; white-space: nowrap; ' +
+          (on ? 'background: #17181C; color: #FFFFFF' : 'background: #FFFFFF; color: #17181C')
+      };
+    });
+    var data = [
+      { id: 0, name: 'Bankdrücken', meta: 'Brust · Langhantel', group: 'Brust' },
+      { id: 1, name: 'Butterfly Maschine', meta: 'Brust · Maschine', group: 'Brust' },
+      { id: 2, name: 'Klimmzüge', meta: 'Rücken · Bodyweight', group: 'Rücken' },
+      { id: 3, name: 'Rudern vorgebeugt', meta: 'Rücken · Langhantel', group: 'Rücken' },
+      { id: 4, name: 'Face Pulls', meta: 'Schultern · Kabel', group: 'Schultern' },
+      { id: 5, name: 'Bulgarian Split Squat', meta: 'Beine · Kurzhantel', group: 'Beine' },
+      { id: 6, name: 'Hip Thrust Bank', meta: 'Beine · Langhantel', group: 'Beine', custom: true },
+      { id: 7, name: 'Hammercurls', meta: 'Arme · Kurzhantel', group: 'Arme' }
+    ];
+    var filter = this.state.filter;
+    var sel = this.state.selected;
+    var items = data.filter(function (d) { return filter === 'Alle' || d.group === filter; }).map(function (d) {
+      var on = !!sel[d.id];
+      return {
+        name: d.name,
+        meta: d.meta,
+        custom: !!d.custom,
+        selected: on,
+        toggle: function () {
+          var next = Object.assign({}, self.state.selected);
+          next[d.id] = !next[d.id];
+          self.setState({ selected: next });
+        },
+        rowStyle: 'width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 10px; border-radius: 20px; box-sizing: border-box; ' +
+          (on ? 'background: #FFFFFF; box-shadow: inset 0 0 0 2px #F0643F' : 'background: #FFFFFF'),
+        checkStyle: 'width: 28px; height: 28px; border-radius: 14px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex-shrink: 0; ' +
+          (on ? 'background: #F0643F; color: #17181C' : 'border: 2px solid #C9C9C3')
+      };
+    });
+    var count = Object.keys(sel).filter(function (k) { return sel[k]; }).length;
+    return {
+      filters: filters,
+      items: items,
+      addLabel: count === 1 ? '1 Übung hinzufügen' : count + ' Übungen hinzufügen'
+    };
+  }
+}
+</script>
+</body>
+</html>
