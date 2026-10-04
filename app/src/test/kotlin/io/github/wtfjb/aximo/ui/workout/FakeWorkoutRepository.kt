@@ -30,6 +30,11 @@ class FakeWorkoutRepository(
 
     override fun observeActiveWorkout(): Flow<WorkoutDetail?> = active
 
+    /** Finished workouts for "Zuletzt"; tests set it directly. */
+    val recentFinished = MutableStateFlow<List<WorkoutDetail>>(emptyList())
+
+    override fun observeRecentFinished(limit: Int): Flow<List<WorkoutDetail>> = recentFinished
+
     override suspend fun startWorkout(startedAt: Instant, routineId: Long?): Long {
         val id = nextId++
         active.value = WorkoutDetail(Workout(id = id, startedAt = startedAt, routineId = routineId), emptyList())

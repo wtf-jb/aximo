@@ -14,6 +14,9 @@ interface WorkoutRepository {
     /** The running workout (no end time), or null. There is at most one. */
     fun observeActiveWorkout(): Flow<WorkoutDetail?>
 
+    /** The newest [limit] finished workouts, newest first. */
+    fun observeRecentFinished(limit: Int): Flow<List<WorkoutDetail>>
+
     suspend fun startWorkout(startedAt: Instant, routineId: Long? = null): Long
 
     /** Adds the exercise at the end of the workout with the given sets. Returns the workout-exercise id. */

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -12,10 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,14 +40,15 @@ import io.github.wtfjb.aximo.ui.theme.Spacing
 import org.koin.androidx.compose.koinViewModel
 
 /**
- * "Pläne" tab (A-05, mockup Plaene.html): free training, exercise list and the
- * routines with "Als Nächstes". Block card and "Mit KI erstellen" are Prio B and
- * left out; "Cardio erfassen" follows with A-04.
+ * "Pläne" tab (A-05, mockup Plaene.html): free training, cardio, the routines
+ * with "Als Nächstes" and the exercise list. Block card and "Mit KI erstellen"
+ * are Prio B and left out; the exercise list takes the free spot next to "Routinen".
  */
 @Composable
 fun PlansScreen(
     onOpenWorkout: () -> Unit,
     onOpenExercises: () -> Unit,
+    onLogCardio: () -> Unit,
     onOpenRoutine: (Long) -> Unit,
     onNewRoutine: () -> Unit,
     modifier: Modifier = Modifier,
@@ -82,11 +86,25 @@ fun PlansScreen(
                 QuickAction(AppIcons.Play, stringResource(R.string.plans_free_training), Modifier.weight(1f)) {
                     viewModel.start(null, onOpenWorkout)
                 }
-                QuickAction(AppIcons.Dumbbell, stringResource(R.string.exercises_open), Modifier.weight(1f), onOpenExercises)
+                QuickAction(AppIcons.Cardio, stringResource(R.string.plans_cardio), Modifier.weight(1f), onLogCardio)
             }
         }
         item {
-            Text(text = stringResource(R.string.plans_routines), style = MaterialTheme.typography.titleSmall)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.plans_routines),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.weight(1f),
+                )
+                TextButton(
+                    onClick = onOpenExercises,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                ) {
+                    Icon(AppIcons.Dumbbell, contentDescription = null, modifier = Modifier.size(Sizes.iconSmall))
+                    Spacer(Modifier.size(Spacing.s6))
+                    Text(text = stringResource(R.string.exercises_open), style = MaterialTheme.typography.labelLarge)
+                }
+            }
         }
         if (!state.loading && state.routines.isEmpty()) {
             item {

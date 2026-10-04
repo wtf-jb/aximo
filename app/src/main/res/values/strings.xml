@@ -256,4 +256,57 @@
     <string name="summary_mood_5">Strong</string>
     <string name="summary_save">Save</string>
     <string name="summary_arrow_description">changes to</string>
+
+    <!-- Cardio (A-04) -->
+    <string name="plans_cardio">Log cardio</string>
+    <string name="cardio_title">Log cardio</string>
+    <string name="cardio_title_edit">Edit cardio</string>
+    <string name="cardio_activity_running">Running</string>
+    <string name="cardio_activity_cycling">Cycling</string>
+    <string name="cardio_activity_rowing">Rowing</string>
+    <string name="cardio_activity_other">Other</string>
+    <string name="cardio_today">Today</string>
+    <string name="cardio_when">%1$s · %2$s</string>
+    <string name="cardio_change_start">Change date and time</string>
+    <string name="cardio_start_time">Start time</string>
+    <string name="cardio_next">Next</string>
+    <string name="cardio_duration">Duration</string>
+    <string name="cardio_duration_unit">h:mm:ss</string>
+    <string name="cardio_hours">h</string>
+    <string name="cardio_minutes">min</string>
+    <string name="cardio_seconds">s</string>
+    <string name="cardio_distance">Distance</string>
+    <string name="cardio_distance_km">Distance (km)</string>
+    <string name="cardio_km">km</string>
+    <string name="cardio_empty_value">–</string>
+    <string name="cardio_pace_calculated">PACE · CALCULATED</string>
+    <string name="cardio_speed_calculated">SPEED · CALCULATED</string>
+    <string name="cardio_pace">Pace</string>
+    <string name="cardio_avg_speed">Avg speed</string>
+    <string name="cardio_pace_per_km">%1$s /km</string>
+    <string name="cardio_pace_per_500m">%1$s /500 m</string>
+    <string name="cardio_speed_kmh">%1$s km/h</string>
+    <string name="cardio_heart_rate">Avg heart rate</string>
+    <string name="cardio_heart_rate_bpm">Avg heart rate (bpm)</string>
+    <string name="cardio_bpm">%1$d bpm</string>
+    <string name="cardio_elevation">Elevation gain</string>
+    <string name="cardio_elevation_m">Elevation gain (m)</string>
+    <string name="cardio_meters">%1$s m</string>
+    <string name="cardio_note">Note</string>
+    <string name="cardio_optional">optional</string>
+    <string name="cardio_save">Save</string>
+    <string name="cardio_delete">Delete</string>
+    <string name="cardio_delete_title">Delete entry?</string>
+    <string name="cardio_delete_body">This cardio session will be removed permanently.</string>
+    <string name="cardio_error_activity">Choose an activity.</string>
+    <string name="cardio_error_duration">Enter the duration.</string>
+    <string name="cardio_recent_title">%1$s · %2$s km</string>
+
+    <!-- Today: recent activity -->
+    <string name="today_recent">Recent</string>
+    <string name="today_recent_free">Free workout</string>
+    <plurals name="today_recent_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d min</item>
+    </plurals>
 </resources>

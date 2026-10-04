@@ -20,6 +20,9 @@ class RoomWorkoutRepository(private val dao: WorkoutDao) : WorkoutRepository {
     override fun observeActiveWorkout(): Flow<WorkoutDetail?> =
         dao.observeActive().map { it?.toDomain() }
 
+    override fun observeRecentFinished(limit: Int): Flow<List<WorkoutDetail>> =
+        dao.observeRecentFinished(limit).map { rows -> rows.map { it.toDomain() } }
+
     override suspend fun startWorkout(startedAt: Instant, routineId: Long?): Long =
         dao.insert(WorkoutEntity(startedAt = startedAt, endedAt = null, routineId = routineId, note = "", rating = null))
 

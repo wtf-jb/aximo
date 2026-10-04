@@ -12,6 +12,12 @@ interface CardioDao {
     @Query("SELECT * FROM cardio_entries ORDER BY startedAt DESC")
     fun observeAll(): Flow<List<CardioEntryEntity>>
 
+    @Query("SELECT * FROM cardio_entries ORDER BY startedAt DESC LIMIT :limit")
+    fun observeRecent(limit: Int): Flow<List<CardioEntryEntity>>
+
+    @Query("SELECT * FROM cardio_entries WHERE id = :id")
+    suspend fun getById(id: Long): CardioEntryEntity?
+
     @Insert
     suspend fun insert(entry: CardioEntryEntity): Long
 

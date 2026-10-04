@@ -47,6 +47,10 @@ object AppIcons {
     }
     val SkipForward by lazy { lineIcon("SkipForward", "M6 5l9 7-9 7z", "M18 5v14") }
     val Cardio by lazy { lineIcon("Cardio", "M3 12h4l3-8 4 16 3-8h4") }
+    val Calendar by lazy { lineIcon("Calendar", "M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z", "M4 10h16M9 3v4M15 3v4") }
+    val Heart by lazy { lineIcon("Heart", "M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z") }
+    val Mountain by lazy { lineIcon("Mountain", "M3 19l6-10 4 6 3-4 5 8z") }
+    val Note by lazy { lineIcon("Note", "M5 4h14v16H5z", "M9 9h6M9 13h6M9 17h3") }
 
     /** Filled play triangle (design system: filled icons are only play, check circle and dots). */
     val Play by lazy {
