@@ -56,11 +56,15 @@ object TrainingCalendar {
         return CalendarMonth.of(minOf(StatsCalendar.localDate(oldest, zone), today))
     }
 
-    /** Previous month, or null if [month] is [first] or earlier. */
-    fun previous(month: CalendarMonth, first: CalendarMonth): CalendarMonth? =
-        month.plusMonths(-1).takeIf { it.first >= first.first }
-
-    /** Next month, or null past the month of [today]. */
-    fun next(month: CalendarMonth, today: LocalDate): CalendarMonth? =
-        month.plusMonths(1).takeIf { it.first <= today }
+    /** All months from [first] to the month of [today], oldest first: the pages of the calendar. */
+    fun months(first: CalendarMonth, today: LocalDate): List<CalendarMonth> {
+        val last = CalendarMonth.of(today)
+        val result = mutableListOf<CalendarMonth>()
+        var month = first
+        while (month.first <= last.first) {
+            result += month
+            month = month.plusMonths(1)
+        }
+        return result.ifEmpty { listOf(last) }
+    }
 }

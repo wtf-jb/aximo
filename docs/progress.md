@@ -152,6 +152,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: MockEngine, Domain, ViewModel
 
 ## In Arbeit
+- Kalender: Monate per Wisch (Pager) statt nur per Pfeil, Pfeile bleiben; Domain `TrainingCalendar.months`, `CalendarViewModel.showMonth`
 - Kalender (Branch `claude/untitled-session-70idaq`): Kalender-Icon auf „Heute“ neben Einstellungen → Monatsansicht, Krafttage dunkel, Cardio-Tage getönt, heute mit Ring; Tippen auf einen Tag zeigt Workouts/Cardio darunter, Tippen auf eine Zeile öffnet Abschluss-Screen bzw. Cardio-Eintrag. Blättern bis zum ältesten Training.
   - Domain `calendar`: `TrainingCalendar` (Wochenraster Mo–So, Einträge pro Tag, Monatsgrenzen), `CalendarMonth`
   - Tests: Domain, `CalendarViewModel`

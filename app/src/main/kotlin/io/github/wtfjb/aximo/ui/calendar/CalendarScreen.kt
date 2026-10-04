@@ -10,6 +10,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
+import io.github.wtfjb.aximo.domain.calendar.CalendarMonth
+import io.github.wtfjb.aximo.domain.calendar.TrainingCalendar
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -74,14 +85,7 @@ fun CalendarScreen(
                 .padding(horizontal = Spacing.s20, vertical = Spacing.s8),
             verticalArrangement = Arrangement.spacedBy(Spacing.s18),
         ) {
-            MonthHeader(
-                title = formatMonthYear(state.month),
-                canGoBack = state.canGoBack,
-                canGoForward = state.canGoForward,
-                onPrevious = viewModel::previousMonth,
-                onNext = viewModel::nextMonth,
-            )
-            MonthGrid(state, onSelect = viewModel::select)
+            MonthPager(state, onShowMonth = viewModel::showMonth, onSelect = viewModel::select)
             Legend()
             Text(text = formatLongDate(state.selected), style = MaterialTheme.typography.titleSmall)
             if (state.selectedItems.isEmpty()) {
@@ -97,25 +101,51 @@ fun CalendarScreen(
     }
 }
 
+/**
+ * One page per month, oldest left. Swipe sideways or use the arrows. The pager is
+ * rebuilt when the list of months changes (data loaded), so it always starts on [CalendarUiState.month].
+ */
 @Composable
-private fun MonthHeader(
-    title: String,
-    canGoBack: Boolean,
-    canGoForward: Boolean,
-    onPrevious: () -> Unit,
-    onNext: () -> Unit,
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s8)) {
-            if (canGoBack) CircleIconButton(AppIcons.ChevronLeft, stringResource(R.string.calendar_previous), onPrevious)
-            if (canGoForward) CircleIconButton(AppIcons.ChevronRight, stringResource(R.string.calendar_next), onNext)
+private fun MonthPager(state: CalendarUiState, onShowMonth: (CalendarMonth) -> Unit, onSelect: (LocalDate) -> Unit) {
+    val months = state.months
+    key(months.size) {
+        val pagerState = rememberPagerState(initialPage = months.indexOf(state.month).coerceAtLeast(0)) { months.size }
+        val scope = rememberCoroutineScope()
+        val currentOnShowMonth by rememberUpdatedState(onShowMonth)
+        LaunchedEffect(pagerState) {
+            snapshotFlow { pagerState.currentPage }.collect { page -> currentOnShowMonth(months[page]) }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.s18)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = formatMonthYear(months[pagerState.currentPage]),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f),
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s8)) {
+                    if (pagerState.currentPage > 0) {
+                        CircleIconButton(AppIcons.ChevronLeft, stringResource(R.string.calendar_previous), {
+                            scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) }
+                        })
+                    }
+                    if (pagerState.currentPage < months.lastIndex) {
+                        CircleIconButton(AppIcons.ChevronRight, stringResource(R.string.calendar_next), {
+                            scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
+                        })
+                    }
+                }
+            }
+            HorizontalPager(state = pagerState, verticalAlignment = Alignment.Top) { page ->
+                MonthGrid(months[page], state, onSelect)
+            }
         }
     }
 }
 
+/** Weekday header and the weeks of [month], always six rows so the pages have the same height. */
 @Composable
-private fun MonthGrid(state: CalendarUiState, onSelect: (LocalDate) -> Unit) {
+private fun MonthGrid(month: CalendarMonth, state: CalendarUiState, onSelect: (LocalDate) -> Unit) {
+    val weeks = TrainingCalendar.weeks(month)
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.s6)) {
         Row {
             // Any week gives the localized weekday labels, Monday first.
@@ -130,10 +160,11 @@ private fun MonthGrid(state: CalendarUiState, onSelect: (LocalDate) -> Unit) {
                 )
             }
         }
-        state.weeks.forEach { week ->
+        for (row in 0 until MAX_WEEKS) {
             Row {
+                val week = weeks.getOrNull(row) ?: List<LocalDate?>(7) { null }
                 week.forEach { date ->
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.weight(1f).height(Sizes.touch), contentAlignment = Alignment.Center) {
                         if (date != null) {
                             DayCell(
                                 date = date,
@@ -150,6 +181,8 @@ private fun MonthGrid(state: CalendarUiState, onSelect: (LocalDate) -> Unit) {
         }
     }
 }
+
+private const val MAX_WEEKS = 6
 
 @Composable
 private fun DayCell(

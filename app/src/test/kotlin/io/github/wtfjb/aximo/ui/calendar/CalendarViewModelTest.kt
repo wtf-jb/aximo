@@ -25,7 +25,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -58,14 +57,13 @@ class CalendarViewModelTest {
         assertEquals(CalendarMonth(2026, 10), state.month)
         assertEquals(LocalDate(2026, 10, 4), state.selected)
         assertTrue(state.selectedItems.isEmpty())
-        assertFalse(state.canGoForward)
-        assertTrue(state.canGoBack)
+        assertEquals(listOf(8, 9, 10), state.months.map { it.month })
     }
 
     @Test
     fun marksTrainingDaysAndListsTheSelectedDay() = runTest {
         val vm = viewModel()
-        vm.previousMonth()
+        vm.showMonth(CalendarMonth(2026, 9))
         vm.select(LocalDate(2026, 9, 30))
 
         val state = vm.uiState.value
@@ -77,14 +75,12 @@ class CalendarViewModelTest {
     }
 
     @Test
-    fun stopsAtTheOldestMonthAndAtTheCurrentOne() = runTest {
+    fun ignoresMonthsOutsideTheRange() = runTest {
         val vm = viewModel()
-        vm.previousMonth()
-        vm.previousMonth()
-        vm.previousMonth()
-
+        vm.showMonth(CalendarMonth(2026, 7))
+        vm.showMonth(CalendarMonth(2026, 11))
+        assertEquals(CalendarMonth(2026, 10), vm.uiState.value.month)
+        vm.showMonth(CalendarMonth(2026, 8))
         assertEquals(CalendarMonth(2026, 8), vm.uiState.value.month)
-        assertFalse(vm.uiState.value.canGoBack)
-        assertTrue(vm.uiState.value.canGoForward)
     }
 }
