@@ -26,15 +26,17 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      - name: Test and build
-        run: ./gradlew test assembleDebug
+      - name: Test, build and lint
+        run: ./gradlew test assembleDebug lintDebug
 
-      - name: Upload test reports
+      - name: Upload test and lint reports
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: test-reports
-          path: "**/build/reports/tests/"
+          name: reports
+          path: |
+            **/build/reports/tests/
+            **/build/reports/lint-results-*.html
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v7

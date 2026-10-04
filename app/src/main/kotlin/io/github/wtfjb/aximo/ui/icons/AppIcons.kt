@@ -34,6 +34,11 @@ object AppIcons {
     val Close by lazy { lineIcon("Close", "M18 6 6 18M6 6l12 12") }
     val Search by lazy { lineIcon("Search", "M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z", "M21 21l-4.3-4.3") }
     val Check by lazy { lineIcon("Check", "M20 6 9 17l-5-5") }
+    /** Three dots, drawn as round-capped dots (zero-length strokes, 3 px wide look). */
+    val More by lazy { lineIcon("More", "M5 12h.01M12 12h.01M19 12h.01") }
+    val Minus by lazy { lineIcon("Minus", "M5 12h14") }
+    val Minimize by lazy { lineIcon("Minimize", "M6 9l6 6 6-6") }
+    val Superset by lazy { lineIcon("Superset", "M7 7h10M7 12h10M7 17h10") }
     val Plus by lazy { lineIcon("Plus", "M12 5v14M5 12h14") }
     val Dumbbell by lazy { lineIcon("Dumbbell", "M6 7v10M3 9.5v5M18 7v10M21 9.5v5M6 12h12") }
     val Bodyweight by lazy {

@@ -2,7 +2,7 @@
 
 Einstellungen des Environments, in dem die Cloud-Sessions laufen.
 
-**Stand 04.10.2026:** Noch nicht eingerichtet. Die Sessions laufen in „Standard-Cloud-Umgebung“ ohne diese Einstellungen: `dl.google.com` ist geblockt (403), `ANDROID_HOME` ist leer. Da `maven.google.com` auf `dl.google.com` umleitet, fehlen dann auch AGP und AndroidX, lokal baut nichts.
+**Stand 04.10.2026:** Netzwerk ist eingerichtet (`dl.google.com` erreichbar). Lokaler Build mit `./gradlew test assembleDebug lintDebug` läuft. Hinweis: `maven.google.com` leitet auf `dl.google.com` um, ohne diese Domain fehlen auch AGP und AndroidX.
 
 **Netzwerk:** Custom, Allowed domains `dl.google.com`, „Also include default list of common package managers“ angehakt.
 
@@ -20,8 +20,10 @@ cd /tmp && curl -sSLo clt.zip https://dl.google.com/android/repository/commandli
 unzip -q clt.zip -d $ANDROID_HOME/cmdline-tools && mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
 yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null
 $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
-$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-37" "build-tools;36.0.0"
+$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-37.0" "build-tools;36.0.0"
 echo "export ANDROID_HOME=$ANDROID_HOME" >> /etc/profile.d/android.sh
 ```
 
-Platform und Build-Tools lädt Gradle beim ersten Build selbst nach, solange sie hier nicht fest stehen.
+Platform und Build-Tools lädt Gradle beim ersten Build selbst nach, solange sie hier nicht fest stehen. Der Paketname der Plattform ist `platforms;android-37.0` (nicht `android-37`).
+
+Ohne gelaufenes Setup-Skript (z. B. Environment in einer laufenden Session geändert) installiert Claude das SDK mit denselben Befehlen nach `/opt/android-sdk` und legt `local.properties` mit `sdk.dir=/opt/android-sdk` an (nicht im Git).

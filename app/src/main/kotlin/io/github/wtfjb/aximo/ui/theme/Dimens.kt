@@ -47,6 +47,19 @@ object Sizes {
     /** Selection check circle in list rows. */
     val check = 28.dp
 
+    /** Set row columns (mockup grid 40 | 1fr | 1fr | 56 | 44). */
+    val setNumberColumn = 40.dp
+    val setRirColumn = 56.dp
+
+    /** Small round badge (W/D/F) and the check buttons of done and active sets. */
+    val badge = 28.dp
+    val setCheckDone = 36.dp
+    val setCheckActive = 40.dp
+
+    /** Borders: active input (accent) and normal control (line-control). */
+    val borderActive = 2.dp
+    val borderControl = 1.5.dp
+
     /** Color swatch in the theme showcase. */
     val swatch = 40.dp
 }
@@ -54,4 +67,7 @@ object Sizes {
 /** Elevation tokens. Surfaces stand out by color, not by shadow or tint. */
 object Elevation {
     val none = 0.dp
+
+    /** shadow-float: floating bars (timer, selection bar). */
+    val float = 12.dp
 }

@@ -6,9 +6,18 @@ import io.github.wtfjb.aximo.data.db.entity.ExerciseWithMuscles
 import io.github.wtfjb.aximo.data.db.entity.MuscleRole
 import io.github.wtfjb.aximo.data.db.entity.RoutineEntity
 import io.github.wtfjb.aximo.data.db.entity.RoutineExerciseEntity
+import io.github.wtfjb.aximo.data.db.entity.SetEntryEntity
+import io.github.wtfjb.aximo.data.db.entity.WorkoutEntity
+import io.github.wtfjb.aximo.data.db.entity.WorkoutExerciseEntity
+import io.github.wtfjb.aximo.data.db.entity.WorkoutWithDetails
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.Routine
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
+import io.github.wtfjb.aximo.domain.model.SetEntry
+import io.github.wtfjb.aximo.domain.model.Workout
+import io.github.wtfjb.aximo.domain.model.WorkoutExercise
+import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
+import io.github.wtfjb.aximo.domain.workout.WorkoutExerciseDetail
 
 // Conversion between database rows (:data) and domain models (:domain).
 
@@ -74,4 +83,57 @@ internal fun RoutineExercise.toEntity() = RoutineExerciseEntity(
     repMax = repMax,
     targetRir = targetRir,
     supersetGroup = supersetGroup,
+)
+
+internal fun WorkoutEntity.toDomain() = Workout(
+    id = id,
+    startedAt = startedAt,
+    endedAt = endedAt,
+    routineId = routineId,
+    note = note,
+    rating = rating,
+)
+
+internal fun WorkoutExerciseEntity.toDomain() = WorkoutExercise(
+    id = id,
+    workoutId = workoutId,
+    exerciseId = exerciseId,
+    position = position,
+    supersetGroup = supersetGroup,
+    note = note,
+)
+
+internal fun SetEntryEntity.toDomain() = SetEntry(
+    id = id,
+    workoutExerciseId = workoutExerciseId,
+    position = position,
+    weightKg = weightKg,
+    reps = reps,
+    rpe = rpe,
+    rir = rir,
+    setType = setType,
+    completedAt = completedAt,
+)
+
+internal fun SetEntry.toEntity() = SetEntryEntity(
+    id = id,
+    workoutExerciseId = workoutExerciseId,
+    position = position,
+    weightKg = weightKg,
+    reps = reps,
+    rpe = rpe,
+    rir = rir,
+    setType = setType,
+    completedAt = completedAt,
+)
+
+internal fun WorkoutWithDetails.toDomain() = WorkoutDetail(
+    workout = workout.toDomain(),
+    exercises = exercises.sortedBy { it.entry.position }.map { row ->
+        WorkoutExerciseDetail(
+            entry = row.entry.toDomain(),
+            exercise = row.exercise.toDomain(),
+            sets = row.sets.sortedBy { it.position }.map { it.toDomain() },
+        )
+    },
 )

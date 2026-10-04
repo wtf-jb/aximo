@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -22,6 +23,10 @@ import io.github.wtfjb.aximo.ui.exercises.ExerciseListScreen
 import io.github.wtfjb.aximo.ui.navigation.CoachRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseEditRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseListRoute
+import io.github.wtfjb.aximo.ui.navigation.ExercisePickerRoute
+import io.github.wtfjb.aximo.ui.navigation.WorkoutRoute
+import io.github.wtfjb.aximo.ui.workout.PickedExercises
+import io.github.wtfjb.aximo.ui.workout.WorkoutScreen
 import io.github.wtfjb.aximo.ui.navigation.PlansRoute
 import io.github.wtfjb.aximo.ui.navigation.StatsRoute
 import io.github.wtfjb.aximo.ui.navigation.ThemeShowcaseRoute
@@ -69,7 +74,10 @@ fun AximoAppShell(
             modifier = Modifier.padding(innerPadding),
         ) {
             composable<TodayRoute> {
-                TodayScreen(onOpenThemeShowcase = { navController.navigate(ThemeShowcaseRoute) })
+                TodayScreen(
+                    onOpenWorkout = { navController.navigate(WorkoutRoute) { launchSingleTop = true } },
+                    onOpenThemeShowcase = { navController.navigate(ThemeShowcaseRoute) },
+                )
             }
             composable<PlansRoute> {
                 PlansScreen(onOpenExercises = { navController.navigate(ExerciseListRoute) })
@@ -85,6 +93,36 @@ fun AximoAppShell(
                     onBack = { navController.popBackStack() },
                     onCreate = { navController.navigate(ExerciseEditRoute()) },
                     onOpen = { id -> navController.navigate(ExerciseEditRoute(id)) },
+                )
+            }
+            composable<WorkoutRoute> { entry ->
+                // Result of the exercise picker, handed over via the saved state of this entry.
+                val handle = entry.savedStateHandle
+                val ids by handle.getStateFlow<LongArray?>(PICKED_IDS, null).collectAsStateWithLifecycle()
+                val superset by handle.getStateFlow(PICKED_SUPERSET, false).collectAsStateWithLifecycle()
+                WorkoutScreen(
+                    picked = ids?.let { PickedExercises(it.toList(), superset) },
+                    onPickedConsumed = {
+                        handle.remove<LongArray>(PICKED_IDS)
+                        handle.remove<Boolean>(PICKED_SUPERSET)
+                    },
+                    onAddExercise = { navController.navigate(ExercisePickerRoute) },
+                    onClose = { navController.popBackStack() },
+                )
+            }
+            composable<ExercisePickerRoute> {
+                ExerciseListScreen(
+                    onBack = { navController.popBackStack() },
+                    onCreate = { navController.navigate(ExerciseEditRoute()) },
+                    onOpen = {},
+                    selectionMode = true,
+                    onPicked = { ids, superset ->
+                        navController.previousBackStackEntry?.savedStateHandle?.apply {
+                            set(PICKED_IDS, ids.toLongArray())
+                            set(PICKED_SUPERSET, superset)
+                        }
+                        navController.popBackStack()
+                    },
                 )
             }
             composable<ExerciseEditRoute> { entry ->
@@ -103,3 +141,6 @@ fun AximoAppShell(
         }
     }
 }
+
+private const val PICKED_IDS = "picked_ids"
+private const val PICKED_SUPERSET = "picked_superset"

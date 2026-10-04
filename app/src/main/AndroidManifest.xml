@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- No INTERNET permission: everything in Prio A works offline. -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:name=".AximoApplication"
@@ -12,7 +13,8 @@
         android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Aximo">
+        android:theme="@style/Theme.Aximo"
+        tools:targetApi="33">
         <activity
             android:name=".MainActivity"
             android:exported="true"
