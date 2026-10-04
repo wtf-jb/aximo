@@ -83,9 +83,9 @@ class RoomWorkoutRepository(private val dao: WorkoutDao) : WorkoutRepository {
         position = position,
         weightKg = weightKg,
         reps = reps,
-        rpe = null,
+        rpe = rpe,
         rir = rir,
         setType = setType,
-        completedAt = null,
+        completedAt = completedAt,
     )
 }

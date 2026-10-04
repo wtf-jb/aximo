@@ -2,6 +2,8 @@ package io.github.wtfjb.aximo.ui.workout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.ai.AiProfileRepository
+import io.github.wtfjb.aximo.domain.ai.AiProfiles
 import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
 import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
@@ -98,7 +100,12 @@ class WorkoutViewModel(
     private val time: TimeSource,
     private val restTimer: RestTimerController,
     settings: SettingsRepository,
+    aiProfiles: AiProfileRepository,
 ) : ViewModel() {
+
+    /** An AI provider profile exists: "Per Text oder Sprache erfassen" shows (B-04). */
+    val aiAvailable: StateFlow<Boolean> = aiProfiles.observeProfiles().map { AiProfiles.isAvailable(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     /** Last session and progression per exercise id, loaded once per exercise. */
     private val history = MutableStateFlow(ExerciseHistory())

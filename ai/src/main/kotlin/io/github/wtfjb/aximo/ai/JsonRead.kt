@@ -4,6 +4,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.longOrNull
 
@@ -31,6 +32,8 @@ internal object JsonRead {
 
     fun JsonObject.int(key: String): Int? = (this[key] as? JsonPrimitive)?.takeIf { !it.isString }?.intOrNull
 
+    fun JsonObject.double(key: String): Double? = (this[key] as? JsonPrimitive)?.takeIf { !it.isString }?.doubleOrNull
+
     /** Wraps the value so "null in JSON" (a valid value) differs from "missing or wrong type". */
     fun JsonObject.nullableInt(key: String): NullableInt? = when (val value: JsonElement? = this[key]) {
         JsonNull -> NullableInt(null)
@@ -39,4 +42,13 @@ internal object JsonRead {
     }
 
     data class NullableInt(val value: Int?)
+
+    /** Like [nullableInt] for decimals. */
+    fun JsonObject.nullableDouble(key: String): NullableDouble? = when (val value: JsonElement? = this[key]) {
+        JsonNull -> NullableDouble(null)
+        is JsonPrimitive -> value.takeIf { !it.isString }?.doubleOrNull?.let { NullableDouble(it) }
+        else -> null
+    }
+
+    data class NullableDouble(val value: Double?)
 }

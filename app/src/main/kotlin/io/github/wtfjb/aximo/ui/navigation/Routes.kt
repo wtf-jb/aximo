@@ -37,6 +37,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object WorkoutRoute
 
+/** Log sets by text or voice into the running workout (B-04). */
+@Serializable data object LoggingRoute
+
 /** Summary after finishing a workout. */
 @Serializable data class SummaryRoute(val workoutId: Long)
 

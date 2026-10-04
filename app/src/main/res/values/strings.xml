@@ -676,4 +676,41 @@
     <string name="catalog_instructions">Instructions</string>
     <string name="catalog_step" translatable="false">%1$d. %2$s</string>
     <string name="exercises_badge_custom">OWN</string>
+
+    <!-- Logging by text or voice (B-04) -->
+    <string name="logging_title">Log by text or voice</string>
+    <string name="logging_intro">Write or say what you did, e.g. “Bench press 3x8 80 kg RIR 2”. The AI reads the sets out of it and you see a preview before anything is saved.</string>
+    <string name="logging_field">Your sets</string>
+    <string name="logging_placeholder">e.g. Bench press 3x8 80 kg RIR 2, squat 100 kg 5 reps, 105 kg 3 reps</string>
+    <string name="logging_mic">Dictate</string>
+    <string name="logging_mic_stop">Stop recording</string>
+    <string name="logging_listening">Listening …</string>
+    <string name="logging_parse">Read sets</string>
+    <string name="logging_running">Reading your text …</string>
+    <string name="logging_preview">PREVIEW</string>
+    <string name="logging_preview_hint">Check the sets. Switch off what should not be saved. Nothing is saved before you confirm.</string>
+    <string name="logging_said">You said: “%1$s”</string>
+    <string name="logging_option_new">New: %1$s</string>
+    <string name="logging_run_count" translatable="false">%1$d ×</string>
+    <string name="logging_weight_missing">No weight given. The sets are saved with 0 kg; you can change them in the workout.</string>
+    <plurals name="logging_save">
+        <item quantity="one">Save %d set</item>
+        <item quantity="other">Save %d sets</item>
+    </plurals>
+    <string name="logging_save_hint">The sets are added to the running workout as done. New exercises are created.</string>
+    <string name="logging_choose_hint">Choose an exercise for every entry that is switched on, or switch it off.</string>
+    <string name="logging_nothing_selected">Nothing selected.</string>
+    <string name="logging_edit_text">Change text</string>
+    <plurals name="logging_dropped">
+        <item quantity="one">%d entry of the answer did not fit and was left out.</item>
+        <item quantity="other">%d entries of the answer did not fit and were left out.</item>
+    </plurals>
+    <string name="logging_notice_body">For logging, the text you typed or said and the names of your exercises go to your AI provider. No training history, no weights from your data, no notes, no cardio or health data. Speech is recognized on your device only; the audio is not sent. The answer is only a preview; nothing is saved until you confirm it.</string>
+    <string name="logging_error_empty">Enter or say something first.</string>
+    <string name="logging_error_nothing_usable">No usable sets found in the text. Name the exercise and the reps, e.g. “Bench press 3x8 80 kg”.</string>
+    <string name="logging_speech_permission">Microphone permission is missing. Allow it in the Android settings or type the text.</string>
+    <string name="logging_speech_nothing">Nothing understood. Tap the microphone and try again.</string>
+    <string name="logging_speech_language">The speech pack for this language is missing on the device. Download it in the Android settings (speech recognition).</string>
+    <string name="logging_speech_failed">Voice input failed. Type the text instead.</string>
+    <string name="workout_log_text">Log by text or voice</string>
 </resources>
