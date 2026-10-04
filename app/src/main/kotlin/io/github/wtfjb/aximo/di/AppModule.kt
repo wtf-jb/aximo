@@ -1,6 +1,7 @@
 package io.github.wtfjb.aximo.di
 
 import io.github.wtfjb.aximo.MainViewModel
+import io.github.wtfjb.aximo.data.backup.RoomBackupRepository
 import io.github.wtfjb.aximo.data.db.AximoDatabase
 import io.github.wtfjb.aximo.data.repository.RoomCardioRepository
 import io.github.wtfjb.aximo.data.repository.RoomExerciseRepository
@@ -8,6 +9,7 @@ import io.github.wtfjb.aximo.data.repository.RoomProgressionRepository
 import io.github.wtfjb.aximo.data.repository.RoomRoutineRepository
 import io.github.wtfjb.aximo.data.repository.RoomWorkoutRepository
 import io.github.wtfjb.aximo.data.settings.DataStoreSettingsRepository
+import io.github.wtfjb.aximo.domain.backup.BackupRepository
 import io.github.wtfjb.aximo.domain.cardio.DefaultActivity
 import io.github.wtfjb.aximo.domain.repository.CardioRepository
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
@@ -27,6 +29,8 @@ import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
 import io.github.wtfjb.aximo.ui.plans.PlansViewModel
 import io.github.wtfjb.aximo.ui.routine.RoutineEditViewModel
+import io.github.wtfjb.aximo.ui.settings.ContentResolverDocumentStore
+import io.github.wtfjb.aximo.ui.settings.DocumentStore
 import io.github.wtfjb.aximo.ui.settings.SettingsViewModel
 import io.github.wtfjb.aximo.ui.stats.StatsViewModel
 import io.github.wtfjb.aximo.ui.summary.SummaryViewModel
@@ -48,6 +52,8 @@ val appModule = module {
     single<WorkoutRepository> { RoomWorkoutRepository(get<AximoDatabase>().workoutDao()) }
     single<CardioRepository> { RoomCardioRepository(get<AximoDatabase>().cardioDao()) }
     single { TimeSource.System }
+    single<BackupRepository> { RoomBackupRepository(get(), get(), get()) }
+    single<DocumentStore> { ContentResolverDocumentStore(androidContext()) }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
     single { WorkoutFinisher(get(), get(), get(), get(), get()) }
@@ -73,7 +79,7 @@ val appModule = module {
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
     viewModel { StatsViewModel(get(), get(), get(), get()) }
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get()) }
 }
 
 /** Display name of a default cardio activity, stored once when the activities are created. */

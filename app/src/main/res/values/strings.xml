@@ -423,4 +423,19 @@
     <string name="settings_steps_barbell">Barbell and other (%1$s)</string>
     <string name="settings_steps_dumbbell">Dumbbells (%1$s)</string>
     <string name="settings_training_hint">Default rest and weight steps apply to new exercises. Progression suggestions are rounded to the weight steps.</string>
+    <string name="settings_section_data">DATA &amp; BACKUP</string>
+    <string name="settings_export_json">Export JSON</string>
+    <string name="settings_export_csv">Export CSV</string>
+    <string name="settings_import">Import</string>
+    <string name="settings_backup_hint">JSON contains all data and can be imported again. CSV contains every set for spreadsheets. Files stay where you save them; nothing leaves the device on its own.</string>
+    <string name="settings_import_title">Replace all data?</string>
+    <string name="settings_import_body">The backup replaces all exercises, routines, workouts and cardio entries on this device. This cannot be undone. Export first if you want to keep the current data.</string>
+    <string name="settings_import_confirm">Choose file</string>
+    <string name="settings_backup_busy">Working…</string>
+    <string name="settings_backup_exported">Backup saved.</string>
+    <string name="settings_backup_csv_exported">CSV saved.</string>
+    <string name="settings_backup_restored">Backup imported.</string>
+    <string name="settings_backup_invalid">This file is not a valid Aximo backup. Nothing was changed.</string>
+    <string name="settings_backup_newer">This backup comes from a newer app version. Update Aximo first. Nothing was changed.</string>
+    <string name="settings_backup_failed">The file could not be read or written.</string>
 </resources>

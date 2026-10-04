@@ -411,4 +411,19 @@
     <string name="settings_steps_barbell">Langhantel und Rest (%1$s)</string>
     <string name="settings_steps_dumbbell">Kurzhanteln (%1$s)</string>
     <string name="settings_training_hint">Standard-Pause und Gewichtsschritte gelten für neue Übungen. Progressionsvorschläge werden auf die Gewichtsschritte gerundet.</string>
+    <string name="settings_section_data">DATEN &amp; BACKUP</string>
+    <string name="settings_export_json">Export JSON</string>
+    <string name="settings_export_csv">Export CSV</string>
+    <string name="settings_import">Import</string>
+    <string name="settings_backup_hint">JSON enthält alle Daten und lässt sich wieder importieren. CSV enthält jeden Satz für Tabellenkalkulationen. Die Dateien liegen dort, wo du sie speicherst; nichts verlässt das Gerät von selbst.</string>
+    <string name="settings_import_title">Alle Daten ersetzen?</string>
+    <string name="settings_import_body">Das Backup ersetzt alle Übungen, Routinen, Workouts und Cardio-Einträge auf diesem Gerät. Das lässt sich nicht rückgängig machen. Exportiere vorher, wenn du die aktuellen Daten behalten willst.</string>
+    <string name="settings_import_confirm">Datei wählen</string>
+    <string name="settings_backup_busy">Läuft …</string>
+    <string name="settings_backup_exported">Backup gespeichert.</string>
+    <string name="settings_backup_csv_exported">CSV gespeichert.</string>
+    <string name="settings_backup_restored">Backup importiert.</string>
+    <string name="settings_backup_invalid">Die Datei ist kein gültiges Aximo-Backup. Es wurde nichts geändert.</string>
+    <string name="settings_backup_newer">Das Backup stammt aus einer neueren App-Version. Bitte zuerst Aximo aktualisieren. Es wurde nichts geändert.</string>
+    <string name="settings_backup_failed">Die Datei konnte nicht gelesen oder geschrieben werden.</string>
 </resources>

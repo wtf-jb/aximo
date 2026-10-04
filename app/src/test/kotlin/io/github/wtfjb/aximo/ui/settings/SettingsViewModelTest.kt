@@ -4,7 +4,11 @@ import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.units.WeightUnit
+import io.github.wtfjb.aximo.domain.backup.BackupException
+import io.github.wtfjb.aximo.domain.backup.SetsCsv
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
+import io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository
+import io.github.wtfjb.aximo.ui.workout.FakeWorkoutRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -24,7 +28,10 @@ class SettingsViewModelTest {
     private val settings = FakeSettingsRepository()
 
     // Lazy: viewModelScope must be created after MainDispatcherRule has replaced Dispatchers.Main.
-    private val vm by lazy { SettingsViewModel(settings) }
+    private val backup = FakeBackupRepository()
+    private val documents = FakeDocumentStore()
+    private val workouts = FakeWorkoutRepository(emptyMap())
+    private val vm by lazy { SettingsViewModel(settings, backup, workouts, FakeRoutineRepository(), documents) }
 
     @Test
     fun showsTheStoredSettings() = runTest(UnconfinedTestDispatcher()) {
@@ -75,5 +82,54 @@ class SettingsViewModelTest {
         assertFalse(vm.setSteps("abc", "2"))
 
         assertEquals(WeightSteps.standard(WeightUnit.KG), settings.training.value.steps)
+    }
+
+    @Test
+    fun exportWritesTheBackupIntoThePickedFile() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.exportJson("content://backup.json")
+
+        assertEquals("{\"schemaVersion\": 1}", documents.files["content://backup.json"])
+        assertEquals(BackupState(busy = false, message = BackupMessage.EXPORTED), vm.uiState.value.backup)
+    }
+
+    @Test
+    fun csvExportWritesTheSets() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.exportCsv("content://sets.csv")
+
+        assertEquals(SetsCsv.HEADER.joinToString(",") + "\n", documents.files["content://sets.csv"])
+        assertEquals(BackupMessage.CSV_EXPORTED, vm.uiState.value.backup.message)
+    }
+
+    @Test
+    fun restoreReadsThePickedFile() = runTest(UnconfinedTestDispatcher()) {
+        documents.files["content://old.json"] = "{ old }"
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.restore("content://old.json")
+
+        assertEquals("{ old }", backup.restored)
+        assertEquals(BackupMessage.RESTORED, vm.uiState.value.backup.message)
+    }
+
+    @Test
+    fun restoreErrorsBecomeMessages() = runTest(UnconfinedTestDispatcher()) {
+        documents.files["content://x.json"] = "x"
+        vm.uiState.launchIn(backgroundScope)
+
+        backup.failWith = BackupException.Reason.INVALID_FILE
+        vm.restore("content://x.json")
+        assertEquals(BackupMessage.INVALID_FILE, vm.uiState.value.backup.message)
+
+        backup.failWith = BackupException.Reason.NEWER_VERSION
+        vm.restore("content://x.json")
+        assertEquals(BackupMessage.NEWER_VERSION, vm.uiState.value.backup.message)
+
+        vm.restore("content://missing.json")
+        assertEquals(BackupMessage.FAILED, vm.uiState.value.backup.message)
+        assertEquals(null, backup.restored)
     }
 }

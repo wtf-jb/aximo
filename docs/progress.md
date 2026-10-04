@@ -51,15 +51,21 @@
   - UI: Statistik-Tab mit Vico-Diagramm, Übungsdetail (Verlauf, Diagramm, Bestwerte, Info, „Nächstes Mal“), Workout-Detail aus „Zuletzt“ (Abschluss-Screen), Volumen-Vergleich ggü. letzter gleicher Routine
   - Tests: Domain, Room, ViewModels
 
-## In Arbeit
-- Schritt 10a Einstellungen (A-09), PR #10:
+- Schritt 10a Einstellungen (A-09), PR #10 (gemergt):
   - Domain: `TrainingSettings` (Einheit, Standard-Pause, `WeightSteps` Langhantel/Kurzhantel), Einheitenwechsel nimmt Standardschritte mit; `ExerciseDraft.new`/`withEquipment`; `WorkoutFinisher` rundet auf die Schritte aus den Einstellungen
   - Data: Trainings-Einstellungen im DataStore
   - UI: Einstellungen nach `Einstellungen.html` (Sprache ab Android 13, Gewichtseinheit, Darstellung, Standard-Pause, Gewichtsschritte), Einstieg über das Regler-Icon auf „Heute“; Einheit app-weit über `LocalWeightUnit`
   - Tests: Domain, DataStore, ViewModels
 
+## In Arbeit
+- Schritt 10b Export/Import (A-08), PR #11:
+  - Domain: `BackupRepository`, `BackupException` (ungültig / neuere Version), `SetsCsv` (eine Zeile pro Satz)
+  - Data: `BackupFile` (JSON, `schemaVersion` 1, Tabellen 1:1 mit IDs, Trainings-Einstellungen), `BackupDao`, `RoomBackupRepository` (Export in einer Transaktion; Restore prüft Domain-Regeln und ersetzt alles in einer Transaktion, bei Fehler bleibt alles wie es war)
+  - UI: „Daten & Backup“ in den Einstellungen: Export JSON, Export CSV, Import mit Bestätigung, über Androids Dateidialog
+  - Tests: Domain, Room (Rundreise, Ersetzen, kaputte Dateien, neuere Version), ViewModel
+
 ## Nächster Schritt
-- 10b. Export/Import (A-08): JSON-Vollexport mit `schemaVersion`, Import (Restore), CSV der Sätze; Einstieg unter „Daten & Backup“ in den Einstellungen
+- Prio A ist damit komplett. Danach: Prio-A-Lücken prüfen (Hero-Karte und Wochenleiste auf „Heute“, Übungskatalog vorbelegen?), dann Prio B (KI) nach Rückfrage, weil dafür die `INTERNET`-Permission dazukommt
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

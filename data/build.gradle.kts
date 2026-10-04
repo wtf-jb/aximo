@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -38,6 +39,7 @@ dependencies {
     api(project(":domain"))
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
     api(libs.room.runtime) // api: :app builds the database (AximoDatabase extends RoomDatabase)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
