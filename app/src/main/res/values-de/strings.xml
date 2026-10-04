@@ -545,4 +545,51 @@
     <string name="ai_error_network">Keine Verbindung. Netz, Adresse und Port prüfen.</string>
     <string name="ai_error_invalid_response">Unerwartete Antwort. Passt die Art (OpenAI-kompatibel/Anthropic)?</string>
     <string name="ai_error_refused">Das Modell hat die Antwort verweigert.</string>
+
+    <!-- Coach, weekly review (B-02) -->
+    <string name="coach_title">Wochen-Review</string>
+    <string name="coach_week">KW %1$d · %2$s – %3$s</string>
+    <string name="coach_empty">Der Coach schaut sich deine letzten 6 Wochen an und schlägt konkrete Änderungen an deinen Routinen vor. Du entscheidest bei jedem Vorschlag selbst.</string>
+    <string name="coach_summary">ZUSAMMENFASSUNG</string>
+    <plurals name="coach_basis">
+        <item quantity="one">Basis: aggregierte Trainingsdaten, letzte Woche</item>
+        <item quantity="other">Basis: aggregierte Trainingsdaten, letzte %d Wochen</item>
+    </plurals>
+    <string name="coach_apply_all">Alle übernehmen</string>
+    <string name="coach_no_suggestions">Keine Änderungen vorgeschlagen.</string>
+    <string name="coach_routine">Routine %1$s</string>
+    <string name="coach_category_volume">VOLUMEN</string>
+    <string name="coach_category_exercise">ÜBUNG</string>
+    <string name="coach_title_more_sets">Mehr Sätze</string>
+    <string name="coach_title_fewer_sets">Weniger Sätze</string>
+    <string name="coach_title_reps">Wdh.-Bereich anpassen</string>
+    <string name="coach_title_rir">Ziel-RIR anpassen</string>
+    <string name="coach_title_add">Übung ergänzen</string>
+    <string name="coach_title_remove">Übung streichen</string>
+    <string name="coach_diff_sets">%1$s · Sätze</string>
+    <string name="coach_diff_reps">%1$s · Wdh.</string>
+    <string name="coach_diff_rir">%1$s · Ziel-RIR</string>
+    <string name="coach_diff_to">wird zu</string>
+    <string name="coach_badge_new">NEU</string>
+    <string name="coach_badge_removed">RAUS</string>
+    <string name="coach_discard">Verwerfen</string>
+    <string name="coach_apply">Übernehmen</string>
+    <string name="coach_status_applied">Übernommen</string>
+    <string name="coach_status_discarded">Verworfen</string>
+    <string name="coach_not_applicable">Passt nicht mehr zur Routine, sie wurde inzwischen geändert.</string>
+    <string name="coach_running">Coach denkt nach …</string>
+    <string name="coach_create">Review erstellen</string>
+    <string name="coach_create_again">Neuen Review erstellen</string>
+    <string name="coach_sent_data">Gesendete Daten ansehen</string>
+    <string name="coach_sent_data_short">Daten ansehen</string>
+    <string name="coach_close">Schließen</string>
+    <string name="coach_notice_title">Daten an den KI-Provider senden?</string>
+    <string name="coach_notice_body">Für den Review gehen zusammengefasste Trainingsdaten der letzten 6 Wochen an deinen KI-Provider: Routinen mit Zielen, Übungsnamen, Trends (e1RM, Wdh., RIR), Sätze pro Muskelgruppe und Einheiten pro Woche. Keine einzelnen Sätze, keine Notizen, keine Cardio- oder Gesundheitsdaten. Die Antwort sind nur Vorschläge; geändert wird erst, wenn du sie übernimmst.</string>
+    <string name="coach_notice_confirm">Senden</string>
+    <string name="coach_error_no_profile">Kein KI-Profil. Lege eins in den Einstellungen an.</string>
+    <string name="coach_error_no_data">In den letzten 6 Wochen gibt es kein beendetes Training. Ohne Daten kann der Coach nichts auswerten.</string>
+    <plurals name="coach_suggestions">
+        <item quantity="one">%d Vorschlag</item>
+        <item quantity="other">%d Vorschläge</item>
+    </plurals>
 </resources>

@@ -3,6 +3,7 @@ package io.github.wtfjb.aximo.ai
 import io.github.wtfjb.aximo.domain.ai.AiMessage
 import io.github.wtfjb.aximo.domain.ai.AiRequest
 import io.github.wtfjb.aximo.domain.review.ReviewContext
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.add
@@ -125,6 +126,12 @@ object ReviewPrompt {
             }
         }
     }
+
+    /** The context as the user sees it under "Gesendete Daten ansehen": same JSON, indented. */
+    fun prettyContext(context: ReviewContext): String =
+        prettyJson.encodeToString(JsonObject.serializer(), contextJson(context))
+
+    private val prettyJson = Json { prettyPrint = true }
 
     private fun formatKg(kg: Double): String = if (kg % 1.0 == 0.0) kg.toLong().toString() else kg.toString()
 

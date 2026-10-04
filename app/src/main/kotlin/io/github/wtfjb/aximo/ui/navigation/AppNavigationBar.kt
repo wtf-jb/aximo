@@ -16,9 +16,10 @@ import io.github.wtfjb.aximo.ui.theme.AppTextStyles
 import io.github.wtfjb.aximo.ui.theme.Elevation
 import io.github.wtfjb.aximo.ui.theme.Sizes
 
-/** Bottom navigation: Heute · Pläne · Statistik (Coach follows with Prio B). */
+/** Bottom navigation: Heute · Pläne · Statistik · Coach (Coach only with an AI profile). */
 @Composable
 fun AppNavigationBar(
+    destinations: List<TopLevelDestination>,
     selected: TopLevelDestination?,
     onSelect: (TopLevelDestination) -> Unit,
 ) {
@@ -28,7 +29,7 @@ fun AppNavigationBar(
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = Elevation.none,
         ) {
-            TopLevelDestination.entries.forEach { destination ->
+            destinations.forEach { destination ->
                 val isSelected = destination == selected
                 NavigationBarItem(
                     selected = isSelected,

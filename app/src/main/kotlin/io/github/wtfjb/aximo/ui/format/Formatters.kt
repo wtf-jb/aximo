@@ -80,3 +80,10 @@ fun formatShortWeekday(date: kotlinx.datetime.LocalDate, locale: Locale = Locale
 /** RPE with the locale's decimal separator: 8.5 → "8,5" in German, 8.0 → "8". */
 fun formatRpe(rpe: Double, locale: Locale = Locale.getDefault()): String =
     localizeDecimal(ExerciseDraft.formatNumber(rpe), locale)
+
+/** Day and short month, e.g. "28. Sep." / "Sep 28". */
+fun formatDayMonth(date: kotlinx.datetime.LocalDate, locale: Locale = Locale.getDefault()): String {
+    val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "dMMM")
+    val javaDate = java.time.LocalDate.of(date.year, date.month.ordinal + 1, date.day)
+    return java.time.format.DateTimeFormatter.ofPattern(pattern, locale).format(javaDate)
+}

@@ -3,11 +3,13 @@ package io.github.wtfjb.aximo.data.settings
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import io.github.wtfjb.aximo.domain.ai.AiPreferences
 import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
@@ -68,5 +70,21 @@ class DataStoreSettingsRepository(context: Context) : SettingsRepository {
         val STEP_DUMBBELL_KG = doublePreferencesKey("step_dumbbell_kg")
         val SET_RATING = stringPreferencesKey("set_rating")
         val WEEKLY_GOAL = intPreferencesKey("weekly_goal")
+    }
+}
+
+/** AI settings in the same DataStore file as the other settings. */
+class DataStoreAiPreferences(context: Context) : AiPreferences {
+
+    private val dataStore = context.settingsDataStore
+
+    override val dataNoticeAccepted: Flow<Boolean> = dataStore.data.map { prefs -> prefs[AI_NOTICE_ACCEPTED] ?: false }
+
+    override suspend fun acceptDataNotice() {
+        dataStore.edit { prefs -> prefs[AI_NOTICE_ACCEPTED] = true }
+    }
+
+    private companion object {
+        val AI_NOTICE_ACCEPTED = booleanPreferencesKey("ai_data_notice_accepted")
     }
 }

@@ -97,24 +97,30 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - App: `INTERNET`-Permission, Klartext erlaubt (Ollama im LAN), OkHttp-Engine; Einstellungen „KI-Coach“ → Profilliste → Formular mit „Verbindung testen“, Löschen mit Bestätigung
   - Tests: Adapter gegen Ktor MockEngine (Request-Format, Statuscodes, Fehlerformen, Timeout, Netz), Domain, Room-Repository, ViewModels
 
-## In Arbeit
-- B-02a Wochen-Review, Logik und Speicher (ohne UI):
+- B-02a Wochen-Review, Logik und Speicher, PR #17 (gemergt):
   - Domain `review`: `ReviewContext` + `ReviewContextBuilder` (6 Wochen: Einheiten/Woche, Routinen mit Zielen, Trend je Übung mit e1RM/Wdh., „Sessions seit Bestwert“, letzter Top-Satz, Ø-RIR; Volumen je Region; RIR-Trend 1./2. Hälfte; Übungen zum Hinzufügen), `SuggestionChange` (Sätze, Wdh.-Bereich, Ziel-RIR, Übung hinzufügen/entfernen), `AiSuggestion`, `AiReview`, `SuggestionApplier` (prüft gegen aktuelle Routine, wendet an), `ReviewService` (Kontext, Review erstellen, übernehmen, verwerfen), `AiReviewRepository`
   - `:ai`: `ReviewPrompt` (Version `review-v1`, JSON-Schema im Systemprompt, Kontext als JSON), `ReviewParser` (Schema-Prüfung, ungültige Vorschläge werden verworfen und gezählt), `KtorReviewGenerator`
   - Data: Tabellen `ai_reviews`, `ai_suggestions` (DB v3, Auto-Migration), Payload als JSON
   - Tests: Domain, Parser/Prompt, Room, `ReviewService` mit Fakes
 
+## In Arbeit
+- B-02b Coach-Tab mit Wochen-Review (`Review.html`):
+  - Coach-Tab wieder in der Navigation, aber nur mit KI-Profil (`MainViewModel.aiAvailable`); verschwindet das letzte Profil, springt die App auf Heute
+  - `CoachScreen`: KW + Zeitraum, dunkle Zusammenfassungskarte, „N Vorschläge“ + „Alle übernehmen“, Karten mit Kategorie, Routine, Titel, Diff (alt durchgestrichen → neu, NEU/RAUS-Badge), Begründung, Verwerfen/Übernehmen; Status „Übernommen“/„Verworfen“; „Passt nicht mehr zur Routine“, wenn sie inzwischen geändert wurde
+  - „Review erstellen“ mit Datenschutz-Hinweis beim ersten Mal (`AiPreferences`, DataStore), Fehleranzeige, „Gesendete Daten ansehen“ (exakt das gesendete JSON)
+  - Tests: `CoachViewModel`
+- Nicht enthalten: Coach-Chat-Composer (B-05), „Rückgängig“ (siehe decisions.md)
+
 ## Nächster Schritt
-- B-02b: Coach-Tab (nur mit Profil) mit Review-Screen nach `Review.html`: Zusammenfassung, Vorschlagskarten mit Diff, Übernehmen/Verwerfen, „Review erstellen“, Datenschutz-Hinweis vor dem ersten Call, „Gesendete Daten ansehen“
-- B-02c: wöchentlicher Trigger (WorkManager, Wochentag in den Einstellungen), Hinweis „Wochen-Review bereit“ auf Heute
-- Danach Periodisierung (Deload/Blöcke, B-02 Rest), B-03 …
+- B-02c: wöchentlicher Trigger (WorkManager, Wochentag/Uhrzeit, Notification), Zeilen „Wöchentlicher Review“ und „Gesendete Daten ansehen“ in den Einstellungen, Hinweis „Wochen-Review bereit“ auf Heute
+- Danach Periodisierung (Deload/Blöcke, B-02 Rest), B-03 Plan-Generierung …
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
-- B-01 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“
+- B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
 - Setup-Skript im Environment prüfen: Plattform-Paket heißt `platforms;android-37.0` (in `docs/cloud-environment.md` korrigiert)
 - Routine im claude.ai-UI anlegen (meine per Tool angelegte Routine hat kein Repo und keinen GitHub-Zugang und ist deaktiviert), Prompt siehe `docs/routine-prompt.md`

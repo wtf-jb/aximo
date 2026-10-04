@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
             val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
             val weightUnit by viewModel.weightUnit.collectAsStateWithLifecycle()
             val setRating by viewModel.setRating.collectAsStateWithLifecycle()
+            val aiAvailable by viewModel.aiAvailable.collectAsStateWithLifecycle()
             val darkTheme = themeMode.isDark(systemIsDark = isSystemInDarkTheme())
 
             // Status bar icons follow the app theme, not only the system setting.
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
                     AximoAppShell(
                         themeMode = themeMode,
                         onThemeModeChange = viewModel::setThemeMode,
+                        aiAvailable = aiAvailable,
                     )
                 }
             }

@@ -1,6 +1,7 @@
 package io.github.wtfjb.aximo.data
 
 import org.robolectric.RuntimeEnvironment
+import io.github.wtfjb.aximo.data.settings.DataStoreAiPreferences
 import io.github.wtfjb.aximo.data.settings.DataStoreSettingsRepository
 import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
@@ -24,5 +25,15 @@ class SettingsRepositoryTest {
         repository.setTraining(settings)
 
         assertEquals(settings, repository.training.first())
+    }
+
+    @Test
+    fun aiDataNoticeIsRemembered() = runTest {
+        val preferences = DataStoreAiPreferences(RuntimeEnvironment.getApplication())
+        assertEquals(false, preferences.dataNoticeAccepted.first())
+
+        preferences.acceptDataNotice()
+
+        assertEquals(true, preferences.dataNoticeAccepted.first())
     }
 }

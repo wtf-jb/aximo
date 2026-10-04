@@ -562,4 +562,53 @@
     <string name="ai_error_network">No connection. Check network, address and port.</string>
     <string name="ai_error_invalid_response">Unexpected answer. Is the kind (OpenAI-compatible/Anthropic) right?</string>
     <string name="ai_error_refused">The model refused to answer.</string>
+
+    <!-- Coach, weekly review (B-02) -->
+    <string name="nav_coach" translatable="false">Coach</string>
+    <string name="coach_title">Weekly review</string>
+    <string name="coach_week">Week %1$d · %2$s – %3$s</string>
+    <string name="coach_empty">The coach looks at your last 6 weeks and suggests concrete changes to your routines. You decide on every suggestion.</string>
+    <string name="coach_summary">SUMMARY</string>
+    <plurals name="coach_basis">
+        <item quantity="one">Based on aggregated training data, last week</item>
+        <item quantity="other">Based on aggregated training data, last %d weeks</item>
+    </plurals>
+    <string name="coach_apply_all">Apply all</string>
+    <string name="coach_no_suggestions">No changes suggested.</string>
+    <string name="coach_routine">Routine %1$s</string>
+    <string name="coach_category_volume">VOLUME</string>
+    <string name="coach_category_exercise">EXERCISE</string>
+    <string name="coach_title_more_sets">More sets</string>
+    <string name="coach_title_fewer_sets">Fewer sets</string>
+    <string name="coach_title_reps">Adjust rep range</string>
+    <string name="coach_title_rir">Adjust target RIR</string>
+    <string name="coach_title_add">Add exercise</string>
+    <string name="coach_title_remove">Remove exercise</string>
+    <string name="coach_diff_sets">%1$s · Sets</string>
+    <string name="coach_diff_reps">%1$s · Reps</string>
+    <string name="coach_diff_rir">%1$s · Target RIR</string>
+    <string name="coach_diff_to">becomes</string>
+    <string name="coach_badge_new">NEW</string>
+    <string name="coach_badge_removed">OUT</string>
+    <string name="coach_sets_reps" translatable="false">%1$d × %2$s</string>
+    <string name="coach_discard">Discard</string>
+    <string name="coach_apply">Apply</string>
+    <string name="coach_status_applied">Applied</string>
+    <string name="coach_status_discarded">Discarded</string>
+    <string name="coach_not_applicable">No longer fits the routine; it was changed in the meantime.</string>
+    <string name="coach_running">Coach is thinking …</string>
+    <string name="coach_create">Create review</string>
+    <string name="coach_create_again">Create new review</string>
+    <string name="coach_sent_data">View sent data</string>
+    <string name="coach_sent_data_short">View data</string>
+    <string name="coach_close">Close</string>
+    <string name="coach_notice_title">Send data to the AI provider?</string>
+    <string name="coach_notice_body">For the review, summarized training data of the last 6 weeks goes to your AI provider: routines with targets, exercise names, trends (e1RM, reps, RIR), sets per muscle group and sessions per week. No single sets, no notes, no cardio or health data. The answer is only suggestions; nothing changes until you apply them.</string>
+    <string name="coach_notice_confirm">Send</string>
+    <string name="coach_error_no_profile">No AI profile. Add one in the settings.</string>
+    <string name="coach_error_no_data">There is no finished workout in the last 6 weeks. Without data the coach has nothing to review.</string>
+    <plurals name="coach_suggestions">
+        <item quantity="one">%d suggestion</item>
+        <item quantity="other">%d suggestions</item>
+    </plurals>
 </resources>

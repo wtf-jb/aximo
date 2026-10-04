@@ -14,6 +14,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object StatsRoute
 
+/** Coach tab (B-02), only shown with an AI provider profile. */
+@Serializable data object CoachRoute
+
 @Serializable data object ThemeShowcaseRoute
 
 @Serializable data object SettingsRoute
@@ -49,7 +52,7 @@ import kotlinx.serialization.Serializable
 /** exerciseId = 0 creates a new exercise. */
 @Serializable data class ExerciseEditRoute(val exerciseId: Long = 0)
 
-/** The tabs of the bottom navigation, in display order. Coach (AI, Prio B) follows later. */
+/** The tabs of the bottom navigation, in display order. Coach only shows with an AI profile. */
 enum class TopLevelDestination(
     val route: Any,
     @StringRes val label: Int,
@@ -58,4 +61,12 @@ enum class TopLevelDestination(
     TODAY(TodayRoute, R.string.nav_today, AppIcons.Today),
     PLANS(PlansRoute, R.string.nav_plans, AppIcons.Plans),
     STATS(StatsRoute, R.string.nav_stats, AppIcons.Stats),
+    COACH(CoachRoute, R.string.nav_coach, AppIcons.Coach),
+    ;
+
+    companion object {
+        /** Tabs to show: Coach only if AI features are available (B-01). */
+        fun visible(aiAvailable: Boolean): List<TopLevelDestination> =
+            if (aiAvailable) entries else entries.filter { it != COACH }
+    }
 }
