@@ -2,6 +2,8 @@ package io.github.wtfjb.aximo.ui.plans
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.ai.AiProfileRepository
+import io.github.wtfjb.aximo.domain.ai.AiProfiles
 import io.github.wtfjb.aximo.domain.model.BodyRegion
 import io.github.wtfjb.aximo.domain.model.Routine
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
@@ -29,6 +31,8 @@ data class RoutineItem(
 data class PlansUiState(
     val loading: Boolean = true,
     val routines: List<RoutineItem> = emptyList(),
+    /** An AI provider profile exists: "Mit KI erstellen" shows (B-03). */
+    val aiAvailable: Boolean = false,
 )
 
 /** "Pläne" tab (A-05, mockup Plaene.html). */
@@ -36,6 +40,7 @@ class PlansViewModel(
     routines: RoutineRepository,
     exercises: ExerciseRepository,
     workouts: WorkoutRepository,
+    aiProfiles: AiProfileRepository,
     private val starter: WorkoutStarter,
 ) : ViewModel() {
 
@@ -43,11 +48,13 @@ class PlansViewModel(
         routines.observeRoutinesWithExercises(),
         exercises.observeExercises(includeArchived = true),
         workouts.observeLastWorkoutPerRoutine(),
-    ) { list, allExercises, lastTrained ->
+        aiProfiles.observeProfiles(),
+    ) { list, allExercises, lastTrained, profiles ->
         val byId = allExercises.associateBy { it.id }
         val next = RoutineLogic.nextRoutine(list.map { it.routine }, lastTrained)
         PlansUiState(
             loading = false,
+            aiAvailable = AiProfiles.isAvailable(profiles),
             routines = list.map { item ->
                 val regions = item.exercises
                     .flatMap { byId[it.exerciseId]?.primaryMuscles.orEmpty() }

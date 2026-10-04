@@ -41,8 +41,8 @@ import org.koin.androidx.compose.koinViewModel
 
 /**
  * "Pläne" tab (A-05, mockup Plaene.html): free training, cardio, the routines
- * with "Als Nächstes" and the exercise list. Block card and "Mit KI erstellen"
- * are Prio B and left out; the exercise list takes the free spot next to "Routinen".
+ * with "Als Nächstes" and the exercise list. "Mit KI erstellen" (B-03) shows only
+ * with an AI profile; the block card (periodization) is left out until it has logic.
  */
 @Composable
 fun PlansScreen(
@@ -51,6 +51,7 @@ fun PlansScreen(
     onLogCardio: () -> Unit,
     onOpenRoutine: (Long) -> Unit,
     onNewRoutine: () -> Unit,
+    onGeneratePlan: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlansViewModel = koinViewModel(),
 ) {
@@ -96,13 +97,23 @@ fun PlansScreen(
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.weight(1f),
                 )
+                if (state.aiAvailable) {
+                    TextButton(
+                        onClick = onGeneratePlan,
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    ) {
+                        Icon(AppIcons.Sparkle, contentDescription = null, modifier = Modifier.size(Sizes.iconSmall))
+                        Spacer(Modifier.size(Spacing.s6))
+                        Text(text = stringResource(R.string.plans_generate), style = MaterialTheme.typography.labelLarge, maxLines = 1)
+                    }
+                }
                 TextButton(
                     onClick = onOpenExercises,
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                 ) {
                     Icon(AppIcons.Dumbbell, contentDescription = null, modifier = Modifier.size(Sizes.iconSmall))
                     Spacer(Modifier.size(Spacing.s6))
-                    Text(text = stringResource(R.string.exercises_open), style = MaterialTheme.typography.labelLarge)
+                    Text(text = stringResource(R.string.exercises_open), style = MaterialTheme.typography.labelLarge, maxLines = 1)
                 }
             }
         }

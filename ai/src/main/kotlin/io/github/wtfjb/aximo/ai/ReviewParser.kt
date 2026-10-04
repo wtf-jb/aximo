@@ -4,13 +4,12 @@ import io.github.wtfjb.aximo.domain.ai.AiException
 import io.github.wtfjb.aximo.domain.review.GeneratedReview
 import io.github.wtfjb.aximo.domain.review.GeneratedSuggestion
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.ai.JsonRead.int
+import io.github.wtfjb.aximo.ai.JsonRead.long
+import io.github.wtfjb.aximo.ai.JsonRead.nullableInt
+import io.github.wtfjb.aximo.ai.JsonRead.string
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.intOrNull
-import kotlinx.serialization.json.longOrNull
 
 /**
  * Validates the review answer against the schema in [ReviewPrompt] (B-02).
@@ -21,7 +20,7 @@ import kotlinx.serialization.json.longOrNull
 object ReviewParser {
 
     fun parse(text: String): GeneratedReview {
-        val root = extractObject(text) ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
+        val root = JsonRead.extractObject(text) ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
         val summary = root.string("summary")?.trim()?.takeIf { it.isNotEmpty() }
             ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
         val raw = (root["suggestions"] as? JsonArray).orEmpty()
@@ -66,34 +65,4 @@ object ReviewParser {
         }
         return GeneratedSuggestion(change, rationale)
     }
-
-    /**
-     * The JSON object in the answer. Models sometimes wrap it in ``` fences or
-     * a sentence, so everything from the first `{` to the last `}` is tried.
-     */
-    private fun extractObject(text: String): JsonObject? {
-        val start = text.indexOf('{')
-        val end = text.lastIndexOf('}')
-        if (start < 0 || end <= start) return null
-        return try {
-            AiHttp.json.parseToJsonElement(text.substring(start, end + 1)) as? JsonObject
-        } catch (e: IllegalArgumentException) {
-            null
-        }
-    }
-
-    private fun JsonObject.string(key: String): String? = (this[key] as? JsonPrimitive)?.takeIf { it.isString }?.content
-
-    private fun JsonObject.long(key: String): Long? = (this[key] as? JsonPrimitive)?.takeIf { !it.isString }?.longOrNull
-
-    private fun JsonObject.int(key: String): Int? = (this[key] as? JsonPrimitive)?.takeIf { !it.isString }?.intOrNull
-
-    /** Wraps the value so "null in JSON" (a valid value) differs from "missing or wrong type". */
-    private fun JsonObject.nullableInt(key: String): NullableInt? = when (val value: JsonElement? = this[key]) {
-        JsonNull -> NullableInt(null)
-        is JsonPrimitive -> value.takeIf { !it.isString }?.intOrNull?.let { NullableInt(it) }
-        else -> null
-    }
-
-    private data class NullableInt(val value: Int?)
 }

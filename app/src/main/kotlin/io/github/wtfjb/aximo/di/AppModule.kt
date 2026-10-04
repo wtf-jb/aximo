@@ -3,7 +3,12 @@ package io.github.wtfjb.aximo.di
 import io.github.wtfjb.aximo.MainViewModel
 import io.github.wtfjb.aximo.ai.AiHttp
 import io.github.wtfjb.aximo.ai.KtorAiProviderFactory
+import io.github.wtfjb.aximo.ai.KtorPlanGenerator
 import io.github.wtfjb.aximo.ai.KtorReviewGenerator
+import io.github.wtfjb.aximo.ai.PlanPrompt
+import io.github.wtfjb.aximo.domain.plan.PlanGenerator
+import io.github.wtfjb.aximo.domain.plan.PlanService
+import io.github.wtfjb.aximo.ui.plangen.PlanGeneratorViewModel
 import io.github.wtfjb.aximo.ai.ReviewPrompt
 import io.github.wtfjb.aximo.data.settings.DataStoreAiPreferences
 import io.github.wtfjb.aximo.domain.ai.AiPreferences
@@ -85,6 +90,8 @@ val appModule = module {
     single<ReviewGenerator> { KtorReviewGenerator() }
     single<AiPreferences> { DataStoreAiPreferences(androidContext()) }
     single { ReviewService(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single<PlanGenerator> { KtorPlanGenerator() }
+    single { PlanService(get(), get(), get(), get(), get()) }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
     single {
@@ -122,7 +129,16 @@ val appModule = module {
         val context = androidContext()
         CardioViewModel(get(), get(), get(), { activity -> context.getString(activity.nameRes()) }, entryId)
     }
-    viewModel { PlansViewModel(get(), get(), get(), get()) }
+    viewModel { PlansViewModel(get(), get(), get(), get(), get()) }
+    viewModel {
+        val context = androidContext()
+        PlanGeneratorViewModel(
+            service = get(),
+            preferences = get(),
+            language = { context.resources.configuration.locales[0].language },
+            formatInput = { PlanPrompt.prettyInput(it) },
+        )
+    }
     viewModel { (routineId: Long) -> RoutineEditViewModel(get(), get(), routineId) }
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }

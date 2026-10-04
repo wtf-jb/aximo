@@ -27,6 +27,9 @@ import kotlinx.serialization.Serializable
 /** profileId = 0 creates a new profile. */
 @Serializable data class AiProfileEditRoute(val profileId: Long = 0)
 
+/** "Mit KI erstellen": generate routines (B-03). */
+@Serializable data object PlanGeneratorRoute
+
 @Serializable data object ExerciseListRoute
 
 @Serializable data object WorkoutRoute

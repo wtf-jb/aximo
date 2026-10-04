@@ -38,6 +38,8 @@ import io.github.wtfjb.aximo.ui.navigation.WorkoutRoute
 import io.github.wtfjb.aximo.ui.workout.PickedExercises
 import io.github.wtfjb.aximo.ui.workout.WorkoutScreen
 import io.github.wtfjb.aximo.ui.navigation.PlansRoute
+import io.github.wtfjb.aximo.ui.navigation.PlanGeneratorRoute
+import io.github.wtfjb.aximo.ui.plangen.PlanGeneratorScreen
 import io.github.wtfjb.aximo.ui.navigation.StatsRoute
 import io.github.wtfjb.aximo.ui.navigation.CoachRoute
 import io.github.wtfjb.aximo.ui.coach.CoachScreen
@@ -112,6 +114,13 @@ fun AximoAppShell(
                     onLogCardio = { navController.navigate(CardioRoute()) },
                     onOpenRoutine = { id -> navController.navigate(RoutineEditRoute(id)) },
                     onNewRoutine = { navController.navigate(RoutineEditRoute()) },
+                    onGeneratePlan = { navController.navigate(PlanGeneratorRoute) },
+                )
+            }
+            composable<PlanGeneratorRoute> {
+                PlanGeneratorScreen(
+                    onBack = { navController.popBackStack() },
+                    onDone = { navController.popBackStack() },
                 )
             }
             composable<CoachRoute> {

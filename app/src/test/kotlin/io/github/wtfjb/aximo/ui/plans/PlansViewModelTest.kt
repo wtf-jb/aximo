@@ -11,6 +11,8 @@ import io.github.wtfjb.aximo.domain.model.RoutineWithExercises
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.workout.WorkoutStarter
+import io.github.wtfjb.aximo.domain.ai.ApiKeyChange
+import io.github.wtfjb.aximo.ui.ai.FakeAiProfileRepository
 import io.github.wtfjb.aximo.ui.exercises.FakeExerciseRepository
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
 import io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -50,7 +53,8 @@ class PlansViewModelTest {
     private val history = mapOf(1L to listOf(SetEntry(workoutExerciseId = 9, position = 0, weightKg = 80.0, reps = 8, completedAt = now)))
     private val workouts = FakeWorkoutRepository(mapOf(1L to bench, 2L to row), history)
     private val starter = WorkoutStarter(workouts, routines, io.github.wtfjb.aximo.ui.workout.FakeProgressionRepository(), TimeSource { now })
-    private val vm by lazy { PlansViewModel(routines, FakeExerciseRepository(listOf(bench, row)), workouts, starter) }
+    private val profiles = FakeAiProfileRepository()
+    private val vm by lazy { PlansViewModel(routines, FakeExerciseRepository(listOf(bench, row)), workouts, profiles, starter) }
 
     @Test
     fun listShowsCountsRegionsAndNext() = runTest(UnconfinedTestDispatcher()) {
@@ -62,6 +66,16 @@ class PlansViewModelTest {
         assertEquals(listOf(BodyRegion.CHEST), items[0].regions)
         assertEquals(now, items[0].lastTrained)
         assertEquals(listOf(false, true), items.map { it.isNext })
+    }
+
+    @Test
+    fun aiEntryShowsOnlyWithAProfile() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+        assertFalse(vm.uiState.value.aiAvailable)
+
+        profiles.saveProfile(FakeAiProfileRepository.profile("Ollama"), ApiKeyChange.Keep)
+
+        assertTrue(vm.uiState.value.aiAvailable)
     }
 
     @Test

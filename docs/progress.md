@@ -110,17 +110,24 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: `CoachViewModel`
 - Nicht enthalten: Coach-Chat-Composer (B-05), „Rückgängig“ (siehe decisions.md)
 
-## In Arbeit
-- B-02c Wöchentlicher Review automatisch, PR #19 (offen; nächste Session: CI prüfen, per Squash mergen, Branch neu von main):
+- B-02c Wöchentlicher Review automatisch, PR #19 (gemergt):
   - Domain: `WeeklyReviewSetting` (an/aus, Wochentag, Stunde; Standard aus, So 18:00), `WeeklySchedule.nextRun` (Zeitzone, Sommerzeit), `AiPreferences` erweitert
   - App: `WeeklyReviewWorker` (WorkManager, alle 7 Tage, nur mit Netz und Zustimmung, Wiederholung bei Netz-/Server-Fehlern), `WeeklyReviewScheduler` (hält den Job passend zur Einstellung, ohne Profil aus), Notification „Wochen-Review bereit“
   - Einstellungen KI-Coach: „Wöchentlicher Review“ (Schalter, erstes Einschalten mit Datenschutz-Hinweis), „Zeitpunkt“ (Tag, dann Uhrzeit), „Gesendete Daten ansehen“
   - Heute: Karte „Wochen-Review bereit“ mit Zahl offener Vorschläge, öffnet den Coach-Tab
   - Tests: Zeitplan, DataStore, Settings-ViewModel
 
+## In Arbeit
+- B-03 Plan-Generierung („Mit KI erstellen“ auf Pläne), PR offen (nächste Session: CI prüfen, per Squash mergen, Branch neu von main):
+  - Domain `plan`: `PlanRequest` (Ziel, Tage 2–6, Dauer, Equipment, Einschränkungen als Freitext) + `PlanOptions`, `PlanInput` (nutzbare Übungen: Kraft/Bodyweight, nicht archiviert, passendes Equipment, max. 120), `PlanBuilder` (prüft Antwort gegen angebotene Übungen und Wertebereiche, verwirft und zählt Unpassendes), `PlanProposal` (Entwurf), `PlanService` (erzeugen, speichern ans Listenende)
+  - `:ai`: `PlanPrompt` (`plan-v1`, Schema im Systemprompt, nur Wünsche + Übungsliste als JSON, kein Trainingsverlauf), `PlanParser`, `KtorPlanGenerator`; gemeinsame JSON-Helfer in `JsonRead` (auch vom `ReviewParser` genutzt)
+  - UI: „Mit KI erstellen“ neben „Übungen“ auf Pläne (nur mit KI-Profil) → Formular (Chips, Freitext) → Entwurf (Zusammenfassung, Routinen mit Übungen und Zielen, je Routine „Entfernen“, „N Routinen speichern“, „Wünsche ändern“); Datenschutz-Hinweis beim ersten KI-Aufruf, „Gesendete Daten ansehen“
+  - Tests: Domain (Builder, Eingabe), Parser/Prompt, `PlanService`, `PlanGeneratorViewModel`, `PlansViewModel`
+
 ## Nächster Schritt
-- Periodisierung (Rest von B-02): Zyklen/Blöcke mit Deload-Woche anlegen, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review
-- B-03 Plan-Generierung („Mit KI erstellen“ auf Pläne)
+- B-04 Freitext-/Sprach-Logging
+- Danach B-05 Coach-Chat, B-06 Übungskatalog, B-07 Auto-Backup
+- Periodisierung (Rest von B-02: Zyklen/Blöcke mit Deload-Woche, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review): **nach B-05 einplanen**, wenn Jonas ≥ 4–6 Wochen Daten mit der App hat (Review-Fenster = 6 Wochen; Deload-Regeln brauchen echte RIR-/Stagnations-Verläufe) und die ersten Reviews auf dem Pixel getestet sind. Sinnvoller Startpunkt: Montag nach einer Deload-Woche oder direkt nach einem mit B-03 erzeugten Plan (= „Block 1“). Vorher von Jonas festlegen: Blocklänge (z. B. 4 + 1 Deload), Deload-Art (Volumen −40 % oder Gewicht −10 %)
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk
@@ -128,6 +135,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 
 ## Offen für Jonas
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
+- B-03 auf dem Pixel testen (PR-APK): Pläne → „Mit KI erstellen“, Plan erzeugen, Entwurf prüfen, speichern
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
 - Setup-Skript im Environment prüfen: Plattform-Paket heißt `platforms;android-37.0` (in `docs/cloud-environment.md` korrigiert)
 - Routine im claude.ai-UI anlegen (meine per Tool angelegte Routine hat kein Repo und keinen GitHub-Zugang und ist deaktiviert), Prompt siehe `docs/routine-prompt.md`
