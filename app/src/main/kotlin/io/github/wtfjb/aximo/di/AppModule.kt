@@ -173,7 +173,7 @@ val appModule = module {
     viewModel { TodayViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (entryId: Long) ->
         val context = androidContext()
-        CardioViewModel(get(), get(), get(), { activity -> context.getString(activity.nameRes()) }, entryId)
+        CardioViewModel(get(), get(), get(), get(), { activity -> context.getString(activity.nameRes()) }, entryId)
     }
     viewModel { PlansViewModel(get(), get(), get(), get(), get()) }
     viewModel {
@@ -197,7 +197,7 @@ val appModule = module {
     }
     viewModel { (routineId: Long) -> RoutineEditViewModel(get(), get(), routineId) }
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
+    viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), get(), workoutId) }
     viewModel { StatsViewModel(get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) { ReviewPrompt.prettyContext(it) } }
     viewModel { AiProfilesViewModel(get()) }

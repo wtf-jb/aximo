@@ -66,7 +66,7 @@ import java.time.LocalDate
 import kotlinx.datetime.DayOfWeek
 
 /** Which dialog is open. */
-private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, IMPORT, REVIEW_DAY, REVIEW_HOUR, LOAD_TEST_DATA, CLEAR_ALL }
+private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, BODY_WEIGHT, IMPORT, REVIEW_DAY, REVIEW_HOUR, LOAD_TEST_DATA, CLEAR_ALL }
 
 /**
  * Settings (A-09, mockup Einstellungen.html) with export and import (A-08)
@@ -124,6 +124,8 @@ fun SettingsScreen(
                 onSelect = { viewModel.setUnit(WeightUnit.entries[it]) },
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            ValueRow(stringResource(R.string.settings_body_weight), bodyWeightLabel(training), onClick = { dialog = SettingsDialog.BODY_WEIGHT })
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             SegmentRow(
                 label = stringResource(R.string.settings_theme),
                 options = ThemeMode.entries.map { stringResource(it.label()) },
@@ -131,6 +133,7 @@ fun SettingsScreen(
                 onSelect = { viewModel.setThemeMode(ThemeMode.entries[it]) },
             )
         }
+        Hint(stringResource(R.string.settings_body_weight_hint))
 
         SectionLabel(stringResource(R.string.settings_section_training))
         SettingsCard {
@@ -247,6 +250,11 @@ fun SettingsScreen(
                 onDismiss = { dialog = null },
             )
         }
+        SettingsDialog.BODY_WEIGHT -> BodyWeightDialog(
+            training = training,
+            onConfirm = { text -> if (viewModel.setBodyWeight(text)) dialog = null },
+            onDismiss = { dialog = null },
+        )
         SettingsDialog.STEPS -> StepsDialog(
             training = training,
             onConfirm = { barbell, dumbbell -> if (viewModel.setSteps(barbell, dumbbell)) dialog = null },
@@ -624,6 +632,33 @@ private fun ChoiceDialog(title: String, options: List<String>, selectedIndex: In
 }
 
 /** Default steps for barbell (and everything else) and dumbbells, in the display unit. */
+@Composable
+private fun bodyWeightLabel(training: TrainingSettings): String =
+    training.bodyWeightKg?.let { "${formatWeight(it, training.unit)} ${stringResource(training.unit.label())}" }
+        ?: stringResource(R.string.settings_body_weight_none)
+
+/** One field in the display unit; blank removes the weight. */
+@Composable
+private fun BodyWeightDialog(training: TrainingSettings, onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
+    var text by remember { mutableStateOf(training.bodyWeightKg?.let { formatWeight(it, training.unit) } ?: "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(text = stringResource(R.string.settings_body_weight), style = MaterialTheme.typography.titleMedium) },
+        text = {
+            LabeledTextField(
+                label = stringResource(R.string.settings_body_weight_field, stringResource(training.unit.label())),
+                value = text,
+                onValueChange = { text = it },
+                keyboardType = KeyboardType.Decimal,
+            )
+        },
+        confirmButton = { InverseButton(text = stringResource(R.string.workout_apply), onClick = { onConfirm(text) }) },
+        dismissButton = { CancelButton(onDismiss) },
+    )
+}
+
 @Composable
 private fun StepsDialog(training: TrainingSettings, onConfirm: (String, String) -> Unit, onDismiss: () -> Unit) {
     var barbell by remember { mutableStateOf(formatWeight(training.steps.barbellKg, training.unit)) }

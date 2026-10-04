@@ -151,16 +151,16 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - UI: Formularreihenfolge Base-URL, Key, Modell; Dropdown-Pfeil und automatisches Laden (800 ms Debounce) erst mit URL und Key; Status „N Modelle verfügbar“ / Fehler mit „Erneut laden“; Freitext bleibt möglich
   - Tests: MockEngine, Domain, ViewModel
 
+- Entwickler-Werkzeuge (PR #26, gemergt): Theme-Showcase, „Testdaten laden“ (~3 Jahre), „Alle Daten löschen“ in Einstellungen → Entwickler (nur Debug)
+- Kalender (PR #27 + #28, gemergt): Kalender-Icon auf „Heute“ → Monatsansicht (Kraft dunkel, Cardio getönt), Tag antippen → Einträge, Monate per Wisch oder Pfeil; Domain `TrainingCalendar`
+
 ## In Arbeit
-- Kalender: Monate per Wisch (Pager) statt nur per Pfeil, Pfeile bleiben; Domain `TrainingCalendar.months`, `CalendarViewModel.showMonth`
-- Kalender (Branch `claude/untitled-session-70idaq`): Kalender-Icon auf „Heute“ neben Einstellungen → Monatsansicht, Krafttage dunkel, Cardio-Tage getönt, heute mit Ring; Tippen auf einen Tag zeigt Workouts/Cardio darunter, Tippen auf eine Zeile öffnet Abschluss-Screen bzw. Cardio-Eintrag. Blättern bis zum ältesten Training.
-  - Domain `calendar`: `TrainingCalendar` (Wochenraster Mo–So, Einträge pro Tag, Monatsgrenzen), `CalendarMonth`
-  - Tests: Domain, `CalendarViewModel`
-- Entwickler-Werkzeuge (Branch `claude/untitled-session-70idaq`, PR gegen main):
-  - Theme-Showcase von „Heute“ nach Einstellungen → Entwickler (nur Debug) verschoben
-  - „Testdaten laden“ (`TestDataGenerator`, `RoomDevDataRepository`, `DevDataRepository`): ~3 Jahre Training, Cardio, Routinen, Progression; ersetzt alle Daten, nach Rückfrage
-  - „Alle Daten löschen“: Trainingsdaten + KI-Reviews/Chat weg, Standardübungen neu; Einstellungen und KI-Profile bleiben
-  - Tests: Generator über Room (Umfang, Zeitraum, Satztypen, Routinen, Cardio, Progression, zweimal laden, Löschen), `SettingsViewModel`
+- Kalorienschätzung (Branch `claude/untitled-session-70idaq`, PR gegen main):
+  - Domain: `CalorieEstimate` (netto, konservativ, auf 10 kcal abgerundet; Kraft MET 3,5 × Dauer, Laufen/Gehen pro km, Rad/Rudern nach Tempo, Rest MET 4), `TrainingSettings.bodyWeightKg`
+  - Data: Körpergewicht im DataStore und im Backup (`bodyWeightKg`, ältere Dateien = keins)
+  - UI: Einstellungen → Allgemein → „Körpergewicht“; Abschluss-Screen Kachel „≈ N kcal“; „Cardio erfassen“ Zeile unter der Pace. Ohne Gewicht Hinweis auf die Einstellungen
+  - Tests: Domain, DataStore/Backup, ViewModels (Einstellungen, Abschluss, Cardio)
+  - Formeln und Gründe: `docs/decisions.md`
 
 ## Nächster Schritt
 - B-07 Auto-Backup (Periodischer JSON-Export in frei wählbaren Ordner, Intervall konfigurierbar, Rotation der letzten N Backups; Anforderung siehe `docs/requirements.md`)
@@ -171,8 +171,9 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
-- Kalender testen (APK vom PR): „Heute“ → Kalender-Icon; Tage mit Training markiert, Tag antippen, Zeile öffnen, Monate zurückblättern
-- Entwickler-Werkzeuge testen (APK vom PR): Einstellungen ganz unten → „Testdaten laden“ (Rückfrage), danach Statistik, Pläne, Verlauf und Coach durchklicken; „Alle Daten löschen“ leert alles, die Standardübungen sind wieder da; „Theme-Showcase“ öffnet sich dort, auf „Heute“ ist der Button weg
+- Kalorien testen (APK vom PR): Abschluss eines Workouts bzw. „Cardio erfassen“ ohne Körpergewicht → Hinweis; Einstellungen → „Körpergewicht“ eintragen (auch in lbs), dann zeigt der Abschluss „≈ N kcal“ und Cardio live die Schätzung (Laufen 10 km bei 80 kg ≈ 720 kcal, 60 min Kraft ≈ 200 kcal). Feld leeren → Schätzung weg. Formeln ggf. in `decisions.md` kommentieren
+- Kalender testen (APK von main): „Heute“ → Kalender-Icon; Tage mit Training markiert, Tag antippen, Zeile öffnen, Monate zurückblättern
+- Entwickler-Werkzeuge testen (APK von main): Einstellungen ganz unten → „Testdaten laden“ (Rückfrage), danach Statistik, Pläne, Verlauf und Coach durchklicken; „Alle Daten löschen“ leert alles, die Standardübungen sind wieder da; „Theme-Showcase“ öffnet sich dort, auf „Heute“ ist der Button weg
 - Modellauswahl im KI-Profil testen (APK von main): Einstellungen → KI-Coach → Profil. Nach Base-URL und Key erscheint „N Modelle verfügbar“, über den Pfeil auswählen; falscher Key → Fehlermeldung + „Erneut laden“; bestehendes Profil öffnen → Liste lädt mit gespeichertem Key; ohne Key keine Liste (auch Ollama im LAN: Modell tippen)
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
 - B-06 auf dem Pixel testen (APK von main): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung

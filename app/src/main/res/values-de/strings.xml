@@ -224,6 +224,9 @@
     <string name="summary_volume">Volumen (%1$s)</string>
     <string name="summary_working_sets">Arbeitssätze</string>
     <string name="summary_records">Bestwerte</string>
+    <string name="calories_value">≈ %1$s kcal</string>
+    <string name="calories_estimated">Kalorien (geschätzt, netto)</string>
+    <string name="calories_no_body_weight">Kalorien: Körpergewicht in den Einstellungen eintragen</string>
     <string name="summary_new_records">Neue Bestwerte</string>
     <string name="summary_record_e1rm">%1$s · e1RM</string>
     <string name="summary_record_weight">%1$s · Gewicht</string>
@@ -407,6 +410,10 @@
     <string name="settings_language">Sprache</string>
     <string name="settings_language_system">Systemsprache</string>
     <string name="settings_unit">Gewichtseinheit</string>
+    <string name="settings_body_weight">Körpergewicht</string>
+    <string name="settings_body_weight_none">Nicht gesetzt</string>
+    <string name="settings_body_weight_field">Körpergewicht (%1$s)</string>
+    <string name="settings_body_weight_hint">Das Körpergewicht wird nur für die Kalorienschätzung nach Workouts und Cardio verwendet. Feld leeren, um es zu entfernen.</string>
     <string name="settings_theme">Darstellung</string>
     <string name="settings_rest">Standard-Pause</string>
     <string name="settings_steps">Gewichtsschritte</string>

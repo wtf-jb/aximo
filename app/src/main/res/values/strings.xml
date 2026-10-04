@@ -239,6 +239,9 @@
     <string name="summary_volume">Volume (%1$s)</string>
     <string name="summary_working_sets">Working sets</string>
     <string name="summary_records">Records</string>
+    <string name="calories_value">≈ %1$s kcal</string>
+    <string name="calories_estimated">Calories (estimated, net)</string>
+    <string name="calories_no_body_weight">Calories: set body weight in settings</string>
     <string name="summary_new_records">New records</string>
     <string name="summary_record_e1rm">%1$s · e1RM</string>
     <string name="summary_record_weight">%1$s · weight</string>
@@ -419,6 +422,10 @@
     <string name="settings_language_german" translatable="false">Deutsch</string>
     <string name="settings_language_english" translatable="false">English</string>
     <string name="settings_unit">Weight unit</string>
+    <string name="settings_body_weight">Body weight</string>
+    <string name="settings_body_weight_none">Not set</string>
+    <string name="settings_body_weight_field">Body weight (%1$s)</string>
+    <string name="settings_body_weight_hint">Body weight is only used for the calorie estimate after workouts and cardio. Leave the field empty to remove it.</string>
     <string name="settings_theme">Appearance</string>
     <string name="settings_rest">Default rest</string>
     <string name="settings_steps">Weight steps</string>

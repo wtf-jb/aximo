@@ -38,10 +38,13 @@ data class TrainingSettings(
     val rating: SetRating = SetRating.RIR,
     /** Sessions per week the user aims for, shown on "Heute"; null = no goal. */
     val weeklyGoal: Int? = null,
+    /** Body weight in kg for the calorie estimate; null = not set, no estimate. */
+    val bodyWeightKg: Double? = null,
 ) {
     init {
         require(restSeconds >= 0) { "restSeconds must not be negative" }
         require(weeklyGoal == null || weeklyGoal in WEEKLY_GOAL_CHOICES) { "weeklyGoal must be 1–7" }
+        require(bodyWeightKg == null || bodyWeightKg in BODY_WEIGHT_RANGE_KG) { "bodyWeightKg must be 30–300" }
     }
 
     /**
@@ -60,5 +63,8 @@ data class TrainingSettings(
 
         /** Choices for the weekly goal (sessions per week). */
         val WEEKLY_GOAL_CHOICES = 1..7
+
+        /** Plausible body weights in kg. */
+        val BODY_WEIGHT_RANGE_KG = 30.0..300.0
     }
 }

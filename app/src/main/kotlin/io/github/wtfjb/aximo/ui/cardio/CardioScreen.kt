@@ -43,6 +43,7 @@ import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.ui.components.CircleIconButton
 import io.github.wtfjb.aximo.ui.components.PrimaryButton
+import io.github.wtfjb.aximo.ui.format.formatInteger
 import io.github.wtfjb.aximo.ui.format.formatShortDate
 import io.github.wtfjb.aximo.ui.format.formatTime
 import io.github.wtfjb.aximo.ui.format.localizeDecimal
@@ -322,28 +323,55 @@ private fun PaceCard(state: CardioUiState) {
         contentColor = MaterialTheme.colorScheme.inverseOnSurface,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(horizontal = Spacing.s18, vertical = Spacing.s16),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(Spacing.s12),
         ) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
-                Text(
-                    text = stringResource(if (speedFirst) R.string.cardio_speed_calculated else R.string.cardio_pace_calculated),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = extended.onInverseMuted,
-                )
-                Text(text = if (speedFirst) speedText else paceText, style = MaterialTheme.typography.displaySmall, maxLines = 1)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.s16),
+            ) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
+                    Text(
+                        text = stringResource(if (speedFirst) R.string.cardio_speed_calculated else R.string.cardio_pace_calculated),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = extended.onInverseMuted,
+                    )
+                    Text(text = if (speedFirst) speedText else paceText, style = MaterialTheme.typography.displaySmall, maxLines = 1)
+                }
+                Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
+                    Text(
+                        text = stringResource(if (speedFirst) R.string.cardio_pace else R.string.cardio_avg_speed),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = extended.onInverseMuted,
+                    )
+                    Text(text = if (speedFirst) paceText else speedText, style = MaterialTheme.typography.titleSmall)
+                }
             }
-            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(Spacing.s4)) {
-                Text(
-                    text = stringResource(if (speedFirst) R.string.cardio_pace else R.string.cardio_avg_speed),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = extended.onInverseMuted,
-                )
-                Text(text = if (speedFirst) paceText else speedText, style = MaterialTheme.typography.titleSmall)
-            }
+            CaloriesRow(state)
         }
+    }
+}
+
+/** Calorie estimate under the pace; asks for the body weight if it is missing. */
+@Composable
+private fun CaloriesRow(state: CardioUiState) {
+    val muted = MaterialTheme.extendedColors.onInverseMuted
+    if (state.bodyWeightKg == null) {
+        Text(text = stringResource(R.string.calories_no_body_weight), style = MaterialTheme.typography.bodySmall, color = muted)
+        return
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.s16)) {
+        Text(
+            text = stringResource(R.string.calories_estimated),
+            style = MaterialTheme.typography.bodySmall,
+            color = muted,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = state.kcal?.let { stringResource(R.string.calories_value, formatInteger(it.toDouble())) } ?: stringResource(R.string.cardio_empty_value),
+            style = MaterialTheme.typography.titleSmall,
+        )
     }
 }
 

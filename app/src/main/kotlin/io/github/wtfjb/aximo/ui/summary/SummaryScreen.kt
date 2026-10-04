@@ -181,6 +181,11 @@ private fun HeroCard(state: SummaryUiState, unit: WeightUnit) {
                 StatTile(state.workingSets.toString(), stringResource(R.string.summary_working_sets), Modifier.weight(1f))
                 StatTile(state.records.size.toString(), stringResource(R.string.summary_records), Modifier.weight(1f))
             }
+            StatTile(
+                value = state.kcal?.let { stringResource(R.string.calories_value, formatInteger(it.toDouble())) } ?: stringResource(R.string.cardio_empty_value),
+                label = stringResource(if (state.kcal != null) R.string.calories_estimated else R.string.calories_no_body_weight),
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

@@ -2,12 +2,14 @@ package io.github.wtfjb.aximo.ui.summary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.calories.CalorieEstimate
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.domain.progression.ProgressionRules
 import io.github.wtfjb.aximo.domain.repository.ProgressionRepository
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
+import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.stats.PersonalRecord
 import io.github.wtfjb.aximo.domain.stats.Records
 import io.github.wtfjb.aximo.domain.stats.WorkoutComparison
@@ -15,6 +17,7 @@ import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -30,6 +33,8 @@ data class SummaryUiState(
     val durationSeconds: Long = 0,
     val volumeKg: Double = 0.0,
     val workingSets: Int = 0,
+    /** Estimated net kcal; null without a body weight in the settings. */
+    val kcal: Int? = null,
     /** Volume change against the previous workout of the same routine, e.g. 0.04 = +4 %. */
     val volumeChange: Double? = null,
     val records: List<RecordItem> = emptyList(),
@@ -46,6 +51,7 @@ class SummaryViewModel(
     private val workouts: WorkoutRepository,
     private val routines: RoutineRepository,
     private val progression: ProgressionRepository,
+    private val settings: SettingsRepository,
     private val workoutId: Long,
 ) : ViewModel() {
 
@@ -77,12 +83,16 @@ class SummaryViewModel(
             NextTimeItem(entries.first().exercise, working.maxOf { it.weightKg }, suggestion)
         }
 
+        val durationSeconds = detail.workout.endedAt?.let { end -> (end - start).inWholeSeconds } ?: 0
+        val bodyWeightKg = settings.training.first().bodyWeightKg
+
         _uiState.update {
             it.copy(
                 loading = false,
                 workout = detail,
                 routineName = detail.workout.routineId?.let { id -> routines.getRoutine(id)?.routine?.name },
-                durationSeconds = detail.workout.endedAt?.let { end -> (end - start).inWholeSeconds } ?: 0,
+                durationSeconds = durationSeconds,
+                kcal = bodyWeightKg?.let { kg -> CalorieEstimate.strength(durationSeconds, kg) },
                 volumeKg = Records.volume(allSets),
                 volumeChange = detail.workout.routineId?.let { routineId ->
                     WorkoutComparison.volumeChange(detail, workouts.previousOfRoutine(routineId, start))
