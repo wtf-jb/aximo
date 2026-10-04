@@ -148,9 +148,12 @@ class AiProfilesTest {
     }
 
     @Test
-    fun canListModelsNeedsUrlAndForAnthropicAKey() {
+    fun canListModelsNeedsUrlAndKey() {
         assertFalse(AiProfileDraft().canListModels)
-        assertTrue(AiProfileDraft(baseUrl = "http://nas:11434/v1").canListModels)
+        val openAi = AiProfileDraft(baseUrl = "https://api.mistral.ai/v1")
+        assertFalse(openAi.canListModels)
+        assertFalse(AiProfileDraft(apiKey = "sk").canListModels)
+        assertTrue(openAi.copy(apiKey = "sk").canListModels)
         val anthropic = AiProfileDraft().withKind(AiProviderKind.ANTHROPIC)
         assertFalse(anthropic.canListModels)
         assertTrue(anthropic.copy(apiKey = "sk").canListModels)

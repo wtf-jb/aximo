@@ -28,7 +28,7 @@ sealed interface ConnectionTestState {
 
 /** The model list for the dropdown, loaded from the provider. */
 sealed interface ModelListState {
-    /** Not enough input yet (URL, for Anthropic also a key). */
+    /** Not enough input yet (URL and key). */
     data object Idle : ModelListState
     data object Loading : ModelListState
     data class Loaded(val models: List<String>) : ModelListState
@@ -89,7 +89,7 @@ class AiProfileEditViewModel(
     fun reloadModels() = scheduleModelLoad(delayMillis = 0)
 
     /**
-     * Loads the model list once URL (and for Anthropic a key) are there. Each
+     * Loads the model list once URL and key are there. Each
      * change to them starts over; the answer of an older request is dropped.
      */
     private fun scheduleModelLoad(delayMillis: Long = modelDebounceMillis) {
