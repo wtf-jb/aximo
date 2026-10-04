@@ -644,4 +644,15 @@
     <string name="plangen_notice_body">Für den Plan gehen deine Wünsche (Ziel, Tage, Zeit, Equipment, Text zu Einschränkungen) und die Namen deiner Übungen an deinen KI-Provider. Kein Trainingsverlauf, keine Notizen, keine Cardio- oder Gesundheitsdaten. Die Antwort ist nur ein Entwurf; gespeichert wird erst nach deiner Bestätigung.</string>
     <string name="plangen_error_few_exercises">Zu wenige Übungen für dieses Equipment. Wähle mehr Equipment oder lege zuerst Übungen an.</string>
     <string name="plangen_error_nothing_usable">Die Antwort enthielt keine brauchbare Routine. Versuch es nochmal.</string>
+
+    <!-- B-06 Übungskatalog -->
+    <string name="catalog_title">Übungskatalog</string>
+    <string name="catalog_open">Aus Katalog hinzufügen</string>
+    <string name="catalog_search">Katalog durchsuchen</string>
+    <string name="catalog_english_note">Namen und Anleitungen im Katalog sind englisch. Nach dem Hinzufügen kannst du eine Übung umbenennen.</string>
+    <string name="catalog_in_list">Schon in deiner Liste</string>
+    <string name="catalog_add">Zu meinen Übungen</string>
+    <string name="catalog_close">Schließen</string>
+    <string name="catalog_instructions">Anleitung</string>
+    <string name="exercises_badge_custom">EIGENE</string>
 </resources>

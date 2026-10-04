@@ -4,6 +4,9 @@ import io.github.wtfjb.aximo.MainViewModel
 import io.github.wtfjb.aximo.ai.AiHttp
 import io.github.wtfjb.aximo.ai.KtorAiProviderFactory
 import io.github.wtfjb.aximo.ai.KtorPlanGenerator
+import io.github.wtfjb.aximo.catalog.AssetCatalogRepository
+import io.github.wtfjb.aximo.domain.catalog.CatalogRepository
+import io.github.wtfjb.aximo.ui.catalog.CatalogViewModel
 import io.github.wtfjb.aximo.ai.KtorReviewGenerator
 import io.github.wtfjb.aximo.ai.PlanPrompt
 import io.github.wtfjb.aximo.domain.plan.PlanGenerator
@@ -91,6 +94,7 @@ val appModule = module {
     single<AiPreferences> { DataStoreAiPreferences(androidContext()) }
     single { ReviewService(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single<PlanGenerator> { KtorPlanGenerator() }
+    single<CatalogRepository> { AssetCatalogRepository(androidContext()) }
     single { PlanService(get(), get(), get(), get(), get()) }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
@@ -123,7 +127,8 @@ val appModule = module {
     }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), get(), exerciseId) }
-    viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), exerciseId) }
+    viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), get(), exerciseId) }
+    viewModel { CatalogViewModel(get(), get(), get()) }
     viewModel { TodayViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (entryId: Long) ->
         val context = androidContext()

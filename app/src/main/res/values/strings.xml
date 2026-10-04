@@ -664,4 +664,16 @@
     <string name="plangen_notice_body">For the plan, your wishes (goal, days, time, equipment, restrictions text) and the names of your exercises go to your AI provider. No training history, no notes, no cardio or health data. The answer is only a draft; nothing is saved until you confirm it.</string>
     <string name="plangen_error_few_exercises">Too few exercises for this equipment. Choose more equipment or add exercises first.</string>
     <string name="plangen_error_nothing_usable">The answer contained no usable routine. Try again.</string>
+
+    <!-- B-06 Exercise library -->
+    <string name="catalog_title">Exercise library</string>
+    <string name="catalog_open">Add from library</string>
+    <string name="catalog_search">Search library</string>
+    <string name="catalog_english_note">Names and instructions in the library are in English. After adding you can rename an exercise.</string>
+    <string name="catalog_in_list">Already in your list</string>
+    <string name="catalog_add">Add to my exercises</string>
+    <string name="catalog_close">Close</string>
+    <string name="catalog_instructions">Instructions</string>
+    <string name="catalog_step" translatable="false">%1$d. %2$s</string>
+    <string name="exercises_badge_custom">OWN</string>
 </resources>

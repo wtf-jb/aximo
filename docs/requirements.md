@@ -209,7 +209,7 @@ Begründung: Es gibt keine Kotlin-Vorkenntnisse und die Entwicklung läuft per V
 - App-Name
 - Open-Source-Lizenz (GPLv3 vs. Apache 2.0)
 - F-Droid-Kompatibilität der Health Connect-Library prüfen (vor Prio C)
-- Größe und Bildlizenz von `free-exercise-db` final prüfen (vor B-06)
+- Bilder zum Übungskatalog: Größe geprüft (ca. 85 MB, nicht bündelbar); Nachladen oder weglassen ist offen (siehe `docs/decisions.md`, B-06)
 - Feintuning der Progressionsregeln (Isolationsübungen, Bodyweight)
 - Prompt-Design und Token-Budget für den KI-Review
 - Design-System: Tokens, Komponenten, Schlüssel-Screens

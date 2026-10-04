@@ -30,6 +30,9 @@ import kotlinx.serialization.Serializable
 /** "Mit KI erstellen": generate routines (B-03). */
 @Serializable data object PlanGeneratorRoute
 
+/** Bundled exercise library (B-06). */
+@Serializable data object CatalogRoute
+
 @Serializable data object ExerciseListRoute
 
 @Serializable data object WorkoutRoute

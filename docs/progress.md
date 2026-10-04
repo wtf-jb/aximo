@@ -118,15 +118,22 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: Zeitplan, DataStore, Settings-ViewModel
 
 ## In Arbeit
-- B-03 Plan-Generierung („Mit KI erstellen“ auf Pläne), PR offen (nächste Session: CI prüfen, per Squash mergen, Branch neu von main):
+- B-03 Plan-Generierung („Mit KI erstellen“ auf Pläne) und B-06 Übungskatalog (Text, ohne Bilder), beides in PR #20 (nächste Session: CI prüfen, per Squash mergen, Branch neu von main). B-04 und B-05 stehen noch aus:
+- B-03 Plan-Generierung:
   - Domain `plan`: `PlanRequest` (Ziel, Tage 2–6, Dauer, Equipment, Einschränkungen als Freitext) + `PlanOptions`, `PlanInput` (nutzbare Übungen: Kraft/Bodyweight, nicht archiviert, passendes Equipment, max. 120), `PlanBuilder` (prüft Antwort gegen angebotene Übungen und Wertebereiche, verwirft und zählt Unpassendes), `PlanProposal` (Entwurf), `PlanService` (erzeugen, speichern ans Listenende)
   - `:ai`: `PlanPrompt` (`plan-v1`, Schema im Systemprompt, nur Wünsche + Übungsliste als JSON, kein Trainingsverlauf), `PlanParser`, `KtorPlanGenerator`; gemeinsame JSON-Helfer in `JsonRead` (auch vom `ReviewParser` genutzt)
   - UI: „Mit KI erstellen“ neben „Übungen“ auf Pläne (nur mit KI-Profil) → Formular (Chips, Freitext) → Entwurf (Zusammenfassung, Routinen mit Übungen und Zielen, je Routine „Entfernen“, „N Routinen speichern“, „Wünsche ändern“); Datenschutz-Hinweis beim ersten KI-Aufruf, „Gesendete Daten ansehen“
   - Tests: Domain (Builder, Eingabe), Parser/Prompt, `PlanService`, `PlanGeneratorViewModel`, `PlansViewModel`
 
+- B-06 Übungskatalog (Text):
+  - Asset `exercise_catalog.json` (668 Übungen aus free-exercise-db, Unlicense; `tools/build_exercise_catalog.py`, Lizenztext in `licenses/`), Parser `CatalogFile` (`:data`), `AssetCatalogRepository` (`:app`)
+  - Domain `catalog`: `CatalogEntry`, `CatalogSearch` (Suche, Region, Übung aus Eintrag, Anleitung zu `catalogId`), Zuordnung der 38 Startübungen zu Katalogeinträgen
+  - UI: „Aus Katalog hinzufügen“ in der Übungsliste (auch im Picker), Katalog-Screen mit Suche, Region-Chips, Details mit Anleitung, „Zu meinen Übungen“; Anleitung im Tab „Info“ der Übung; Badge „EIGENE“
+  - Tests: Suche/Zuordnung, Parser, ViewModels, Prüfung der echten Asset-Datei
+  - Keine Bilder (siehe decisions.md)
+
 ## Nächster Schritt
-- B-04 Freitext-/Sprach-Logging
-- Danach B-05 Coach-Chat, B-06 Übungskatalog, B-07 Auto-Backup
+- B-04 Freitext-/Sprach-Logging, danach B-05 Coach-Chat, B-07 Auto-Backup
 - Periodisierung (Rest von B-02: Zyklen/Blöcke mit Deload-Woche, „Block 1, Woche 4“ auf Heute, Deload-Vorschlag im Review): **nach B-05 einplanen**, wenn Jonas ≥ 4–6 Wochen Daten mit der App hat (Review-Fenster = 6 Wochen; Deload-Regeln brauchen echte RIR-/Stagnations-Verläufe) und die ersten Reviews auf dem Pixel getestet sind. Sinnvoller Startpunkt: Montag nach einer Deload-Woche oder direkt nach einem mit B-03 erzeugten Plan (= „Block 1“). Vorher von Jonas festlegen: Blocklänge (z. B. 4 + 1 Deload), Deload-Art (Volumen −40 % oder Gewicht −10 %)
 
 ## APK aufs Handy
@@ -135,6 +142,8 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 
 ## Offen für Jonas
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
+- Entscheidung Katalog-Bilder: weglassen (Standard), oder optional von GitHub nachladen (raw.githubusercontent.com, ca. 50 KB je Bild, nur auf Tipp pro Übung)? Antwort in der Session genügt
+- B-06 auf dem Pixel testen (PR-APK): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung
 - B-03 auf dem Pixel testen (PR-APK): Pläne → „Mit KI erstellen“, Plan erzeugen, Entwurf prüfen, speichern
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
 - Setup-Skript im Environment prüfen: Plattform-Paket heißt `platforms;android-37.0` (in `docs/cloud-environment.md` korrigiert)

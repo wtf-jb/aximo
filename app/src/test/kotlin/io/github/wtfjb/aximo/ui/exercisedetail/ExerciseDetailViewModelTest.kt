@@ -1,5 +1,10 @@
 package io.github.wtfjb.aximo.ui.exercisedetail
 
+import io.github.wtfjb.aximo.domain.catalog.CatalogEntry
+import io.github.wtfjb.aximo.domain.exercise.CatalogExercise
+import io.github.wtfjb.aximo.domain.model.Equipment
+import io.github.wtfjb.aximo.domain.model.ExerciseType
+import io.github.wtfjb.aximo.domain.model.MuscleGroup
 import io.github.wtfjb.aximo.domain.model.ProgressionReason
 import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.ui.exercises.FakeExerciseRepository
@@ -25,8 +30,16 @@ class ExerciseDetailViewModelTest {
 
     private val workouts = FakeWorkoutRepository(mapOf(1L to bench))
     private val progression = FakeProgressionRepository(listOf(ProgressionState(1, 87.5, 6, ProgressionReason.INCREASE_WEIGHT)))
+    private val library = listOf(
+        CatalogEntry(
+            id = "Barbell_Bench_Press_-_Medium_Grip", name = "Barbell Bench Press", type = ExerciseType.STRENGTH,
+            equipment = Equipment.BARBELL, primary = setOf(MuscleGroup.CHEST), secondary = emptySet(),
+            repMin = 6, repMax = 10, instructions = listOf("Lie down.", "Press."),
+        ),
+    )
+    private var exercise = bench
     private val vm by lazy {
-        ExerciseDetailViewModel(FakeExerciseRepository(listOf(bench)), workouts, FakeRoutineRepository(), progression, exerciseId = 1)
+        ExerciseDetailViewModel(FakeExerciseRepository(listOf(exercise)), workouts, FakeRoutineRepository(), progression, { library }, exerciseId = 1)
     }
 
     @Test
@@ -42,6 +55,21 @@ class ExerciseDetailViewModelTest {
         assertEquals(2, state.bests!!.sessions)
         assertEquals(87.5, state.suggestion!!.nextWeightKg, 0.0)
         assertEquals(1, state.lastWorkingSets)
+    }
+
+    @Test
+    fun instructionsComeFromTheLibraryEntryOfTheExercise() = runTest(UnconfinedTestDispatcher()) {
+        exercise = bench.copy(catalogId = CatalogExercise.BENCH_PRESS.catalogId)
+        vm.uiState.launchIn(backgroundScope)
+
+        assertEquals(listOf("Lie down.", "Press."), vm.uiState.value.instructions)
+    }
+
+    @Test
+    fun ownExercisesHaveNoInstructions() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+
+        assertEquals(emptyList<String>(), vm.uiState.value.instructions)
     }
 
     @Test
