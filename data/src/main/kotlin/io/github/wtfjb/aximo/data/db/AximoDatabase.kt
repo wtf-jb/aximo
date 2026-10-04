@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import io.github.wtfjb.aximo.data.db.dao.BackupDao
 import io.github.wtfjb.aximo.data.db.dao.CardioDao
 import io.github.wtfjb.aximo.data.db.dao.ExerciseDao
 import io.github.wtfjb.aximo.data.db.dao.ProgressionDao
@@ -50,6 +51,7 @@ abstract class AximoDatabase : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao
     abstract fun cardioDao(): CardioDao
     abstract fun progressionDao(): ProgressionDao
+    abstract fun backupDao(): BackupDao
 
     companion object {
         private const val FILE_NAME = "aximo.db"

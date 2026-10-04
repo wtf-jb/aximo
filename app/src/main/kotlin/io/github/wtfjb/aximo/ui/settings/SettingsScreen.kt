@@ -1,5 +1,7 @@
 package io.github.wtfjb.aximo.ui.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.R
@@ -48,13 +53,14 @@ import io.github.wtfjb.aximo.ui.icons.AppIcons
 import io.github.wtfjb.aximo.ui.theme.Sizes
 import io.github.wtfjb.aximo.ui.theme.Spacing
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
 
 /** Which dialog is open. */
-private enum class SettingsDialog { LANGUAGE, REST, STEPS }
+private enum class SettingsDialog { LANGUAGE, REST, STEPS, IMPORT }
 
 /**
- * Settings (A-09, mockup Einstellungen.html). AI coach (B) and Health Connect (C)
- * are left out; export and import follow with A-08.
+ * Settings (A-09, mockup Einstellungen.html) with export and import (A-08).
+ * AI coach (B) and Health Connect (C) are left out.
  */
 @Composable
 fun SettingsScreen(
@@ -66,6 +72,17 @@ fun SettingsScreen(
     var dialog by remember { mutableStateOf<SettingsDialog?>(null) }
     val context = LocalContext.current
     val language = remember { if (AppLanguages.isSupported) AppLanguages.current(context) else AppLanguage.SYSTEM }
+
+    // Android's file dialogs: create a file for the exports, pick one for the import.
+    val exportJson = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(MIME_JSON)) { uri ->
+        uri?.let { viewModel.exportJson(it.toString()) }
+    }
+    val exportCsv = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(MIME_CSV)) { uri ->
+        uri?.let { viewModel.exportCsv(it.toString()) }
+    }
+    val importJson = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let { viewModel.restore(it.toString()) }
+    }
 
     Column(
         modifier = Modifier
@@ -106,11 +123,16 @@ fun SettingsScreen(
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             ValueRow(stringResource(R.string.settings_steps), stepsLabel(training), onClick = { dialog = SettingsDialog.STEPS })
         }
-        Text(
-            text = stringResource(R.string.settings_training_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        Hint(stringResource(R.string.settings_training_hint))
+
+        SectionLabel(stringResource(R.string.settings_section_data))
+        BackupCard(
+            state = state.backup,
+            onExportJson = { exportJson.launch(fileName("backup", "json")) },
+            onExportCsv = { exportCsv.launch(fileName("sets", "csv")) },
+            onImport = { dialog = SettingsDialog.IMPORT },
         )
+        Hint(stringResource(R.string.settings_backup_hint))
     }
 
     when (dialog) {
@@ -139,8 +161,82 @@ fun SettingsScreen(
             onConfirm = { barbell, dumbbell -> if (viewModel.setSteps(barbell, dumbbell)) dialog = null },
             onDismiss = { dialog = null },
         )
+        SettingsDialog.IMPORT -> ImportDialog(
+            onConfirm = {
+                dialog = null
+                importJson.launch(IMPORT_TYPES)
+            },
+            onDismiss = { dialog = null },
+        )
         null -> Unit
     }
+}
+
+private const val MIME_JSON = "application/json"
+private const val MIME_CSV = "text/csv"
+
+/** Some file managers don't know .json and report it as binary or text. */
+private val IMPORT_TYPES = arrayOf(MIME_JSON, "application/octet-stream", "text/plain")
+
+/** "aximo-backup-2026-10-04.json". */
+private fun fileName(kind: String, extension: String): String = "aximo-$kind-${LocalDate.now()}.$extension"
+
+@Composable
+private fun BackupCard(state: BackupState, onExportJson: () -> Unit, onExportCsv: () -> Unit, onImport: () -> Unit) {
+    SettingsCard {
+        // Three rows instead of the mockup's button row: the labels fit without wrapping.
+        ValueRow(stringResource(R.string.settings_export_json), "", onClick = onExportJson)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        ValueRow(stringResource(R.string.settings_export_csv), "", onClick = onExportCsv)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        ValueRow(stringResource(R.string.settings_import), "", onClick = onImport)
+        val message = when {
+            state.busy -> stringResource(R.string.settings_backup_busy)
+            state.message != null -> stringResource(state.message.text())
+            else -> null
+        }
+        if (message != null) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (state.message?.isError() == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .padding(vertical = Spacing.s12)
+                    .semantics { liveRegion = LiveRegionMode.Polite },
+            )
+        }
+    }
+}
+
+private fun BackupMessage.text(): Int = when (this) {
+    BackupMessage.EXPORTED -> R.string.settings_backup_exported
+    BackupMessage.CSV_EXPORTED -> R.string.settings_backup_csv_exported
+    BackupMessage.RESTORED -> R.string.settings_backup_restored
+    BackupMessage.INVALID_FILE -> R.string.settings_backup_invalid
+    BackupMessage.NEWER_VERSION -> R.string.settings_backup_newer
+    BackupMessage.FAILED -> R.string.settings_backup_failed
+}
+
+private fun BackupMessage.isError(): Boolean =
+    this == BackupMessage.INVALID_FILE || this == BackupMessage.NEWER_VERSION || this == BackupMessage.FAILED
+
+/** Import replaces everything, so it is confirmed before the file is picked. */
+@Composable
+private fun ImportDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(text = stringResource(R.string.settings_import_title), style = MaterialTheme.typography.titleMedium) },
+        text = { Text(text = stringResource(R.string.settings_import_body), style = MaterialTheme.typography.bodyMedium) },
+        confirmButton = { InverseButton(text = stringResource(R.string.settings_import_confirm), onClick = onConfirm) },
+        dismissButton = { CancelButton(onDismiss) },
+    )
+}
+
+@Composable
+private fun Hint(text: String) {
+    Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @Composable
