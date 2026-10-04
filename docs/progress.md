@@ -111,7 +111,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Nicht enthalten: Coach-Chat-Composer (B-05), „Rückgängig“ (siehe decisions.md)
 
 ## In Arbeit
-- B-02c Wöchentlicher Review automatisch:
+- B-02c Wöchentlicher Review automatisch, PR #19 (offen; nächste Session: CI prüfen, per Squash mergen, Branch neu von main):
   - Domain: `WeeklyReviewSetting` (an/aus, Wochentag, Stunde; Standard aus, So 18:00), `WeeklySchedule.nextRun` (Zeitzone, Sommerzeit), `AiPreferences` erweitert
   - App: `WeeklyReviewWorker` (WorkManager, alle 7 Tage, nur mit Netz und Zustimmung, Wiederholung bei Netz-/Server-Fehlern), `WeeklyReviewScheduler` (hält den Job passend zur Einstellung, ohne Profil aus), Notification „Wochen-Review bereit“
   - Einstellungen KI-Coach: „Wöchentlicher Review“ (Schalter, erstes Einschalten mit Datenschutz-Hinweis), „Zeitpunkt“ (Tag, dann Uhrzeit), „Gesendete Daten ansehen“
