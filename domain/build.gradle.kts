@@ -13,10 +13,12 @@ java {
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
+        optIn.add("kotlin.time.ExperimentalTime")
     }
 }
 
 dependencies {
-    implementation(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.coroutines.core)
+    api(libs.kotlinx.datetime)
     testImplementation(libs.junit)
 }

@@ -1,0 +1,60 @@
+package io.github.wtfjb.aximo.data.db
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import io.github.wtfjb.aximo.data.db.dao.CardioDao
+import io.github.wtfjb.aximo.data.db.dao.ExerciseDao
+import io.github.wtfjb.aximo.data.db.dao.ProgressionDao
+import io.github.wtfjb.aximo.data.db.dao.RoutineDao
+import io.github.wtfjb.aximo.data.db.dao.WorkoutDao
+import io.github.wtfjb.aximo.data.db.entity.BlockEntity
+import io.github.wtfjb.aximo.data.db.entity.CardioEntryEntity
+import io.github.wtfjb.aximo.data.db.entity.CycleEntity
+import io.github.wtfjb.aximo.data.db.entity.ExerciseEntity
+import io.github.wtfjb.aximo.data.db.entity.ExerciseMuscleEntity
+import io.github.wtfjb.aximo.data.db.entity.ProgressionStateEntity
+import io.github.wtfjb.aximo.data.db.entity.RoutineEntity
+import io.github.wtfjb.aximo.data.db.entity.RoutineExerciseEntity
+import io.github.wtfjb.aximo.data.db.entity.SetEntryEntity
+import io.github.wtfjb.aximo.data.db.entity.WorkoutEntity
+import io.github.wtfjb.aximo.data.db.entity.WorkoutExerciseEntity
+
+/**
+ * The local database. Every schema change raises [version] and needs a
+ * migration; the schemas are exported to data/schemas.
+ */
+@Database(
+    entities = [
+        ExerciseEntity::class,
+        ExerciseMuscleEntity::class,
+        CycleEntity::class,
+        BlockEntity::class,
+        RoutineEntity::class,
+        RoutineExerciseEntity::class,
+        WorkoutEntity::class,
+        WorkoutExerciseEntity::class,
+        SetEntryEntity::class,
+        CardioEntryEntity::class,
+        ProgressionStateEntity::class,
+    ],
+    version = 1,
+    exportSchema = true,
+)
+@TypeConverters(Converters::class)
+abstract class AximoDatabase : RoomDatabase() {
+    abstract fun exerciseDao(): ExerciseDao
+    abstract fun routineDao(): RoutineDao
+    abstract fun workoutDao(): WorkoutDao
+    abstract fun cardioDao(): CardioDao
+    abstract fun progressionDao(): ProgressionDao
+
+    companion object {
+        private const val FILE_NAME = "aximo.db"
+
+        fun build(context: Context): AximoDatabase =
+            Room.databaseBuilder(context, AximoDatabase::class.java, FILE_NAME).build()
+    }
+}
