@@ -171,6 +171,8 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
+- Katalog mit Fotos und deutschen Texten testen (APK vom PR): Übungen → „Aus Katalog hinzufügen“ → Namen sind deutsch, Suche nach „Kniebeuge“ und „squat“ findet beide; Eintrag antippen → zwei Fotos (Start/Ende) über der Anleitung; Info-Tab einer Startübung (z. B. Bankdrücken) zeigt Fotos und deutsche Anleitung. Gerätesprache Englisch → englische Texte. Übersetzungsfehler gern als Liste melden
+- Notizfeld im Abschluss, Textfeld in „Per Text erfassen“ und Einschränkungen in „Mit KI erstellen“: im hellen Theme jetzt weiß statt unsichtbar
 - Kalorien testen (APK vom PR): Abschluss eines Workouts bzw. „Cardio erfassen“ ohne Körpergewicht → Hinweis; Einstellungen → „Körpergewicht“ eintragen (auch in lbs), dann zeigt der Abschluss „≈ N kcal“ und Cardio live die Schätzung (Formeln überarbeitet, brutto nach Compendium: Laufen 10 km in 60 min bei 80 kg ≈ 840 kcal, 60 min Kraft ≈ 420 kcal mit freien Gewichten, ≈ 500 mit Kniebeuge/Kreuzheben, ≈ 290 nur Maschine/Bodyweight). Feld leeren → Schätzung weg. Formeln ggf. in `decisions.md` kommentieren
 - Kalender testen (APK von main): „Heute“ → Kalender-Icon; Tage mit Training markiert, Tag antippen, Zeile öffnen, Monate zurückblättern
 - Entwickler-Werkzeuge testen (APK von main): Einstellungen ganz unten → „Testdaten laden“ (Rückfrage), danach Statistik, Pläne, Verlauf und Coach durchklicken; „Alle Daten löschen“ leert alles, die Standardübungen sind wieder da; „Theme-Showcase“ öffnet sich dort, auf „Heute“ ist der Button weg

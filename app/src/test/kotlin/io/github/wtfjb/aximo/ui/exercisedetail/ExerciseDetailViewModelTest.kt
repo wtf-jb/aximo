@@ -63,6 +63,7 @@ class ExerciseDetailViewModelTest {
         vm.uiState.launchIn(backgroundScope)
 
         assertEquals(listOf("Lie down.", "Press."), vm.uiState.value.instructions)
+        assertEquals("Barbell_Bench_Press_-_Medium_Grip", vm.uiState.value.libraryId)
     }
 
     @Test
@@ -70,6 +71,7 @@ class ExerciseDetailViewModelTest {
         vm.uiState.launchIn(backgroundScope)
 
         assertEquals(emptyList<String>(), vm.uiState.value.instructions)
+        assertEquals(null, vm.uiState.value.libraryId)
     }
 
     @Test

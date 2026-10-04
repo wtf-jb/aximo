@@ -739,7 +739,9 @@
     <string name="catalog_title">Exercise library</string>
     <string name="catalog_open">Add from library</string>
     <string name="catalog_search">Search library</string>
-    <string name="catalog_english_note">Names and instructions in the library are in English. After adding you can rename an exercise.</string>
+    <string name="catalog_source_note">Photos and instructions: free-exercise-db (public domain). After adding you can rename an exercise.</string>
+    <string name="catalog_image_start">Start position</string>
+    <string name="catalog_image_end">End position</string>
     <string name="catalog_in_list">Already in your list</string>
     <string name="catalog_add">Add to my exercises</string>
     <string name="catalog_close">Close</string>

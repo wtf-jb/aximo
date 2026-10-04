@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.R
+import io.github.wtfjb.aximo.ui.catalog.ExerciseImages
 import io.github.wtfjb.aximo.ui.catalog.Instructions
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.ExerciseType
@@ -176,7 +177,7 @@ fun ExerciseDetailScreen(
                 }
             }
             DetailTab.RECORDS -> item { RecordsCard(state, unit, unitLabel) }
-            DetailTab.INFO -> item { InfoCard(exercise, state.instructions, unit, unitLabel) }
+            DetailTab.INFO -> item { InfoCard(exercise, state.instructions, state.libraryId, unit, unitLabel) }
         }
     }
 }
@@ -308,9 +309,10 @@ private fun RecordsCard(state: ExerciseDetailUiState, unit: WeightUnit, unitLabe
 }
 
 @Composable
-private fun InfoCard(exercise: Exercise, instructions: List<String>, unit: WeightUnit, unitLabel: String) {
+private fun InfoCard(exercise: Exercise, instructions: List<String>, libraryId: String?, unit: WeightUnit, unitLabel: String) {
     val none = stringResource(R.string.detail_none)
     Card {
+        if (libraryId != null) ExerciseImages(libraryId)
         InfoRow(stringResource(R.string.detail_info_type), stringResource(exercise.type.label()))
         InfoRow(stringResource(R.string.detail_info_equipment), stringResource(exercise.equipment.label()))
         InfoRow(
