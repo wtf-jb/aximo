@@ -39,6 +39,9 @@ import io.github.wtfjb.aximo.ui.workout.PickedExercises
 import io.github.wtfjb.aximo.ui.workout.WorkoutScreen
 import io.github.wtfjb.aximo.ui.navigation.PlansRoute
 import io.github.wtfjb.aximo.ui.navigation.StatsRoute
+import io.github.wtfjb.aximo.ui.navigation.CoachRoute
+import io.github.wtfjb.aximo.ui.coach.CoachScreen
+import androidx.compose.runtime.LaunchedEffect
 import io.github.wtfjb.aximo.ui.navigation.ThemeShowcaseRoute
 import io.github.wtfjb.aximo.ui.navigation.TodayRoute
 import io.github.wtfjb.aximo.ui.navigation.TopLevelDestination
@@ -53,12 +56,24 @@ import io.github.wtfjb.aximo.ui.navigation.ExerciseDetailRoute
 fun AximoAppShell(
     themeMode: ThemeMode,
     onThemeModeChange: (ThemeMode) -> Unit,
+    aiAvailable: Boolean,
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
-    val currentTab = TopLevelDestination.entries.firstOrNull { tab ->
+    val tabs = TopLevelDestination.visible(aiAvailable)
+    val currentTab = tabs.firstOrNull { tab ->
         currentDestination?.hasRoute(tab.route::class) == true
+    }
+
+    // The last profile is gone while the Coach tab is open: back to Heute.
+    LaunchedEffect(aiAvailable, currentDestination) {
+        if (!aiAvailable && currentDestination?.hasRoute(CoachRoute::class) == true) {
+            navController.navigate(TodayRoute) {
+                popUpTo(navController.graph.findStartDestination().id) { saveState = false }
+                launchSingleTop = true
+            }
+        }
     }
 
     Scaffold(
@@ -67,6 +82,7 @@ fun AximoAppShell(
             // Hidden on detail screens, as in the design.
             if (currentTab != null) {
                 AppNavigationBar(
+                    destinations = tabs,
                     selected = currentTab,
                     onSelect = { tab ->
                         navController.navigate(tab.route) {
@@ -101,6 +117,9 @@ fun AximoAppShell(
                     onOpenRoutine = { id -> navController.navigate(RoutineEditRoute(id)) },
                     onNewRoutine = { navController.navigate(RoutineEditRoute()) },
                 )
+            }
+            composable<CoachRoute> {
+                CoachScreen()
             }
             composable<StatsRoute> {
                 StatsScreen(onOpenExercise = { id -> navController.navigate(ExerciseDetailRoute(id)) })

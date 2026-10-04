@@ -4,6 +4,10 @@ import io.github.wtfjb.aximo.MainViewModel
 import io.github.wtfjb.aximo.ai.AiHttp
 import io.github.wtfjb.aximo.ai.KtorAiProviderFactory
 import io.github.wtfjb.aximo.ai.KtorReviewGenerator
+import io.github.wtfjb.aximo.ai.ReviewPrompt
+import io.github.wtfjb.aximo.data.settings.DataStoreAiPreferences
+import io.github.wtfjb.aximo.domain.ai.AiPreferences
+import io.github.wtfjb.aximo.ui.coach.CoachViewModel
 import io.github.wtfjb.aximo.data.repository.RoomAiReviewRepository
 import io.github.wtfjb.aximo.domain.review.AiReviewRepository
 import io.github.wtfjb.aximo.domain.review.ReviewGenerator
@@ -78,6 +82,7 @@ val appModule = module {
     single { AiConnectionTester(get()) }
     single<AiReviewRepository> { RoomAiReviewRepository(get<AximoDatabase>().aiReviewDao()) }
     single<ReviewGenerator> { KtorReviewGenerator() }
+    single<AiPreferences> { DataStoreAiPreferences(androidContext()) }
     single { ReviewService(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
     single { WorkoutStarter(get(), get(), get(), get()) }
@@ -94,7 +99,19 @@ val appModule = module {
             effects = AndroidRestTimerEffects(androidContext()),
         )
     }
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel(get(), get()) }
+    viewModel {
+        val context = androidContext()
+        CoachViewModel(
+            service = get(),
+            reviews = get(),
+            routines = get(),
+            exercises = get(),
+            preferences = get(),
+            language = { context.resources.configuration.locales[0].language },
+            formatContext = { ReviewPrompt.prettyContext(it) },
+        )
+    }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), get(), exerciseId) }
     viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), exerciseId) }

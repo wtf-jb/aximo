@@ -2,6 +2,8 @@ package io.github.wtfjb.aximo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.ai.AiProfileRepository
+import io.github.wtfjb.aximo.domain.ai.AiProfiles
 import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.domain.units.WeightUnit
@@ -12,8 +14,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/** App-wide state: theme choice, weight display unit and set rating scale. */
-class MainViewModel(private val settings: SettingsRepository) : ViewModel() {
+/** App-wide state: theme choice, weight display unit, set rating scale, whether AI features show. */
+class MainViewModel(
+    private val settings: SettingsRepository,
+    aiProfiles: AiProfileRepository,
+) : ViewModel() {
+
+    /** True with at least one provider profile; without, all AI features are hidden (B-01). */
+    val aiAvailable: StateFlow<Boolean> = aiProfiles.observeProfiles().map { AiProfiles.isAvailable(it) }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false,
+    )
 
     val themeMode: StateFlow<ThemeMode> = settings.themeMode.stateIn(
         scope = viewModelScope,
