@@ -16,3 +16,5 @@
 | 2026-10-04 | Backup | Android-Cloud-Backup ausgeschlossen (`backup_rules`, `data_extraction_rules`) | „Daten nur lokal“. Sicherung läuft über den eigenen Export (A-08) |
 | 2026-10-04 | Lizenz (offener Punkt 7) | Arbeitsannahme **GPLv3**, LICENSE-Datei erst vor Veröffentlichung | Copyleft passt zu F-Droid und verhindert geschlossene Forks. Alternative Apache 2.0. Jonas entscheidet vor dem Release |
 | 2026-10-04 | Branches | Branch-Name gibt die Cloud-Session vor (`claude/…`), ein PR pro Inkrement | Die Session darf nur auf ihren zugewiesenen Branch pushen |
+| 2026-10-04 | Merge-Politik | Claude mergt eigene PRs selbst (Squash), sobald CI grün ist | Von Jonas so gewählt. Er testet über `debug-latest`, Probleme behebt das nächste Inkrement |
+| 2026-10-04 | Routine | 2× täglich (9:50 und 18:50, Europe/Berlin) startet eine neue Session mit „nächstes Inkrement“ | Von Jonas so gewählt. Muss im claude.ai-UI mit Repo angelegt werden, siehe progress.md |

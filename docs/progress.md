@@ -24,4 +24,5 @@
 
 ## Offen für Jonas
 - Cloud-Environment einrichten (Netzwerk `dl.google.com`, `ANDROID_HOME`, Setup-Skript), siehe `docs/cloud-environment.md`. Bis dahin baut nur CI
+- Routine im claude.ai-UI anlegen (meine per Tool angelegte Routine hat kein Repo und keinen GitHub-Zugang und ist deaktiviert), Prompt siehe `docs/routine-prompt.md`
 - Lizenz: Arbeitsannahme GPLv3 (siehe `docs/decisions.md`)
