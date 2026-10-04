@@ -23,4 +23,76 @@
     <string name="theme_dark">Dunkel</string>
 
     <string name="action_back">Zurück</string>
+
+    <string name="exercises_title">Übungen</string>
+    <string name="exercises_open">Übungen</string>
+    <string name="exercises_new">Neu</string>
+    <string name="exercises_new_description">Eigene Übung anlegen</string>
+    <string name="exercises_search">Übung suchen</string>
+    <string name="exercises_filter_all">Alle</string>
+    <string name="exercises_filter_archived">Archiv</string>
+    <string name="exercises_empty_title">Noch keine Übungen</string>
+    <string name="exercises_empty_body">Leg deine erste Übung an, um Sätze zu loggen und Routinen zu bauen.</string>
+    <string name="exercises_no_results">Keine Übung passt zu diesem Filter.</string>
+    <string name="exercises_create">Übung anlegen</string>
+    <string name="exercise_archived_badge">ARCHIVIERT</string>
+
+    <string name="exercise_edit_title_new">Neue Übung</string>
+    <string name="exercise_edit_title">Übung bearbeiten</string>
+    <string name="exercise_field_name">Name</string>
+    <string name="exercise_field_type">Typ</string>
+    <string name="exercise_field_equipment">Equipment</string>
+    <string name="exercise_field_primary">Primäre Muskeln</string>
+    <string name="exercise_field_secondary">Sekundäre Muskeln</string>
+    <string name="exercise_field_progression">Progression</string>
+    <string name="exercise_field_rep_min">Wdh. von</string>
+    <string name="exercise_field_rep_max">Wdh. bis</string>
+    <string name="exercise_field_increment">Inkrement (%1$s)</string>
+    <string name="exercise_field_rest">Pause (s)</string>
+    <string name="exercise_field_note">Notiz</string>
+    <string name="exercise_error_name">Gib einen Namen ein.</string>
+    <string name="exercise_error_reps">Gib einen Bereich wie 8 bis 12 ein.</string>
+    <string name="exercise_error_increment">Gib ein Gewicht ab 0 ein.</string>
+    <string name="exercise_error_rest">Gib die Pause in Sekunden ein.</string>
+    <string name="exercise_save">Speichern</string>
+    <string name="exercise_archive">Archivieren</string>
+    <string name="exercise_unarchive">Wiederherstellen</string>
+
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+
+    <string name="exercise_type_strength">Kraft</string>
+    <string name="exercise_type_bodyweight">Bodyweight</string>
+    <string name="exercise_type_cardio">Cardio</string>
+
+    <string name="equipment_barbell">Langhantel</string>
+    <string name="equipment_dumbbell">Kurzhantel</string>
+    <string name="equipment_machine">Maschine</string>
+    <string name="equipment_cable">Kabel</string>
+    <string name="equipment_kettlebell">Kettlebell</string>
+    <string name="equipment_band">Band</string>
+    <string name="equipment_bodyweight">Körpergewicht</string>
+    <string name="equipment_other">Sonstiges</string>
+
+    <string name="region_chest">Brust</string>
+    <string name="region_back">Rücken</string>
+    <string name="region_legs">Beine</string>
+    <string name="region_shoulders">Schultern</string>
+    <string name="region_arms">Arme</string>
+    <string name="region_core">Rumpf</string>
+
+    <string name="muscle_chest">Brust</string>
+    <string name="muscle_upper_back">Oberer Rücken</string>
+    <string name="muscle_lats">Latissimus</string>
+    <string name="muscle_lower_back">Unterer Rücken</string>
+    <string name="muscle_shoulders">Schultern</string>
+    <string name="muscle_biceps">Bizeps</string>
+    <string name="muscle_triceps">Trizeps</string>
+    <string name="muscle_forearms">Unterarme</string>
+    <string name="muscle_abs">Bauch</string>
+    <string name="muscle_quads">Quadrizeps</string>
+    <string name="muscle_hamstrings">Beinbeuger</string>
+    <string name="muscle_glutes">Gesäß</string>
+    <string name="muscle_calves">Waden</string>
+    <string name="muscle_adductors">Adduktoren</string>
 </resources>

@@ -16,12 +16,17 @@
   - Repository-Interfaces `ExerciseRepository`, `RoutineRepository` in `:domain`
   - Room-DB `AximoDatabase` v1 (alle Prio-A-Tabellen), DAOs, Mapper, Room-Repositories, Koin-Verdrahtung
   - Tests: Domain (Validierung, Einheiten), Room via Robolectric (Übungen, Routinen, Workouts/Kaskaden)
+- Schritt 3 Übungsverwaltung (A-01), PR #3 (CI grün, gemergt):
+  - Domain: `BodyRegion`, `ExerciseFilter` (Suche ohne Umlaut-/Groß-Klein-Beachtung, Region), `ExerciseDraft` (Formular + Validierung, kg/lbs)
+  - UI: Übungsliste (Suche, Region-Chips, Archiv, leerer Zustand), Formular Neu/Bearbeiten/Archivieren; Einstieg über „Pläne“ → „Übungen“
+  - Komponenten: `ChoiceChip`, `SearchField`, `LabeledTextField`, `CircleIconButton`, `PillTextButton`
+  - Tests: Domain (Filter, Formular), ViewModels mit Fake-Repository
 
 ## In Arbeit
 - –
 
 ## Nächster Schritt
-- 3. Übungsverwaltung (A-01) und Übungsauswahl-Screen (`Uebungen.html`)
+- 4. Workout-Logging inkl. SetRow, Satztypen, Supersätze (A-02), dabei Auswahlmodus der Übungsliste
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk

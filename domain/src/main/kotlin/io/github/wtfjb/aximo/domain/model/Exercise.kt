@@ -6,25 +6,28 @@ enum class ExerciseType { STRENGTH, BODYWEIGHT, CARDIO }
 /** Equipment an exercise needs. */
 enum class Equipment { BARBELL, DUMBBELL, MACHINE, CABLE, KETTLEBELL, BAND, BODYWEIGHT, OTHER }
 
+/** Coarse body region, used for the filter chips in the exercise list. */
+enum class BodyRegion { CHEST, BACK, LEGS, SHOULDERS, ARMS, CORE }
+
 /**
  * Fixed list of muscle groups. Used for filtering and for the weekly volume per
  * muscle group (A-07). Display names live in the string resources of :app.
  */
-enum class MuscleGroup {
-    CHEST,
-    UPPER_BACK,
-    LATS,
-    LOWER_BACK,
-    SHOULDERS,
-    BICEPS,
-    TRICEPS,
-    FOREARMS,
-    ABS,
-    QUADS,
-    HAMSTRINGS,
-    GLUTES,
-    CALVES,
-    ADDUCTORS,
+enum class MuscleGroup(val region: BodyRegion) {
+    CHEST(BodyRegion.CHEST),
+    UPPER_BACK(BodyRegion.BACK),
+    LATS(BodyRegion.BACK),
+    LOWER_BACK(BodyRegion.BACK),
+    SHOULDERS(BodyRegion.SHOULDERS),
+    BICEPS(BodyRegion.ARMS),
+    TRICEPS(BodyRegion.ARMS),
+    FOREARMS(BodyRegion.ARMS),
+    ABS(BodyRegion.CORE),
+    QUADS(BodyRegion.LEGS),
+    HAMSTRINGS(BodyRegion.LEGS),
+    GLUTES(BodyRegion.LEGS),
+    CALVES(BodyRegion.LEGS),
+    ADDUCTORS(BodyRegion.LEGS),
 }
 
 /**

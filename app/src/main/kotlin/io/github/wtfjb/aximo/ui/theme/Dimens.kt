@@ -35,6 +35,18 @@ object Sizes {
     /** Hairline for separators such as the top edge of the navigation bar. */
     val hairline = 1.dp
 
+    /** Filter chip height (tap area is still at least [touch]). */
+    val chip = 36.dp
+
+    /** Search field height, from the mockup. */
+    val search = 48.dp
+
+    /** Icon tile in list rows. */
+    val listTile = 48.dp
+
+    /** Selection check circle in list rows. */
+    val check = 28.dp
+
     /** Color swatch in the theme showcase. */
     val swatch = 40.dp
 }
