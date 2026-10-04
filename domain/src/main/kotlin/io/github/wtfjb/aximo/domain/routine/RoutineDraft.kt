@@ -50,6 +50,35 @@ data class RoutineDraft(
         return withEntries(list)
     }
 
+    /**
+     * The entries as cards: a single exercise, or all neighbouring entries of one
+     * superset together. Each inner list holds entry indices.
+     */
+    fun groups(): List<List<Int>> {
+        val groups = mutableListOf<MutableList<Int>>()
+        entries.forEachIndexed { index, entry ->
+            val last = groups.lastOrNull()
+            if (entry.supersetGroup != null && last != null && entries[last.first()].supersetGroup == entry.supersetGroup) {
+                last += index
+            } else {
+                groups += mutableListOf(index)
+            }
+        }
+        return groups
+    }
+
+    /**
+     * Moves a whole card (see [groups]) from position [from] to [to], used by
+     * drag and drop. A superset moves as a block. Out of range does nothing.
+     */
+    fun moveGroup(from: Int, to: Int): RoutineDraft {
+        val groups = groups()
+        if (from !in groups.indices || to !in groups.indices || from == to) return this
+        val reordered = groups.toMutableList()
+        reordered.add(to, reordered.removeAt(from))
+        return withEntries(reordered.flatten().map { entries[it] })
+    }
+
     fun remove(index: Int): RoutineDraft =
         if (index in entries.indices) withEntries(entries.filterIndexed { i, _ -> i != index }) else this
 
