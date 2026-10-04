@@ -118,7 +118,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: Zeitplan, DataStore, Settings-ViewModel
 
 ## In Arbeit
-- B-03 Plan-Generierung („Mit KI erstellen“ auf Pläne) und B-06 Übungskatalog (Text, ohne Bilder), beides in PR #20 (nächste Session: CI prüfen, per Squash mergen, Branch neu von main). B-04 und B-05 stehen noch aus:
+- B-03 Plan-Generierung („Mit KI erstellen“ auf Pläne) und B-06 Übungskatalog (Text, ohne Bilder), beides in PR #20 (nächste Session: CI prüfen, per Squash mergen, Branch neu von main). B-04 (läuft in eigener Session, gestapelt auf diesem Branch) und B-05 stehen noch aus:
 - B-03 Plan-Generierung:
   - Domain `plan`: `PlanRequest` (Ziel, Tage 2–6, Dauer, Equipment, Einschränkungen als Freitext) + `PlanOptions`, `PlanInput` (nutzbare Übungen: Kraft/Bodyweight, nicht archiviert, passendes Equipment, max. 120), `PlanBuilder` (prüft Antwort gegen angebotene Übungen und Wertebereiche, verwirft und zählt Unpassendes), `PlanProposal` (Entwurf), `PlanService` (erzeugen, speichern ans Listenende)
   - `:ai`: `PlanPrompt` (`plan-v1`, Schema im Systemprompt, nur Wünsche + Übungsliste als JSON, kein Trainingsverlauf), `PlanParser`, `KtorPlanGenerator`; gemeinsame JSON-Helfer in `JsonRead` (auch vom `ReviewParser` genutzt)
@@ -130,7 +130,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Domain `catalog`: `CatalogEntry`, `CatalogSearch` (Suche, Region, Übung aus Eintrag, Anleitung zu `catalogId`), Zuordnung der 38 Startübungen zu Katalogeinträgen
   - UI: „Aus Katalog hinzufügen“ in der Übungsliste (auch im Picker), Katalog-Screen mit Suche, Region-Chips, Details mit Anleitung, „Zu meinen Übungen“; Anleitung im Tab „Info“ der Übung; Badge „EIGENE“
   - Tests: Suche/Zuordnung, Parser, ViewModels, Prüfung der echten Asset-Datei
-  - Keine Bilder (siehe decisions.md)
+  - Keine Bilder (Entscheidung Jonas 04.10.: weglassen)
 
 ## Nächster Schritt
 - B-04 Freitext-/Sprach-Logging, danach B-05 Coach-Chat, B-07 Auto-Backup
@@ -142,7 +142,6 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 
 ## Offen für Jonas
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
-- Entscheidung Katalog-Bilder: weglassen (Standard), oder optional von GitHub nachladen (raw.githubusercontent.com, ca. 50 KB je Bild, nur auf Tipp pro Übung)? Antwort in der Session genügt
 - B-06 auf dem Pixel testen (PR-APK): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung
 - B-03 auf dem Pixel testen (PR-APK): Pläne → „Mit KI erstellen“, Plan erzeugen, Entwurf prüfen, speichern
 - APK von main installieren und die Liste „Auf dem Pixel prüfen“ aus PR #1 durchgehen; Probleme als Kommentar oder in einer Session melden
