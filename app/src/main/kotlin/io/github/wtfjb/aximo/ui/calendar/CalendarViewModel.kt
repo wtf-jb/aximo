@@ -26,14 +26,12 @@ import kotlinx.datetime.TimeZone
 data class CalendarUiState(
     val today: LocalDate,
     val month: CalendarMonth,
-    /** Weeks of the month, Monday to Sunday; days outside the month are null. */
-    val weeks: List<List<LocalDate?>> = emptyList(),
+    /** All months from the oldest training to today, oldest first: one pager page each. */
+    val months: List<CalendarMonth> = emptyList(),
     val days: Map<LocalDate, DayKind> = emptyMap(),
     val selected: LocalDate,
     /** Workouts and cardio of the selected day. */
     val selectedItems: List<RecentItem> = emptyList(),
-    val canGoBack: Boolean = false,
-    val canGoForward: Boolean = false,
 )
 
 /**
@@ -53,12 +51,9 @@ class CalendarViewModel(
 
     private data class View(val month: CalendarMonth, val selected: LocalDate)
 
-    /** Latest items, kept for the month limits. */
-    private val items = MutableStateFlow<List<RecentItem>>(emptyList())
-
     private val view = MutableStateFlow(View(CalendarMonth.of(today), today))
 
-    private val itemFlow = combine(
+    private val items = combine(
         workouts.observeFinished(),
         routines.observeRoutines(),
         cardio.observeAll(),
@@ -67,41 +62,30 @@ class CalendarViewModel(
         RecentActivity.merge(finished, list, entries, all, limit = Int.MAX_VALUE)
     }
 
-    val uiState: StateFlow<CalendarUiState> = combine(itemFlow, view) { all, (month, selected) ->
+    val uiState: StateFlow<CalendarUiState> = combine(items, view) { all, (month, selected) ->
         val days = Consistency.activeDays(
             strength = all.filterIsInstance<RecentItem.WorkoutItem>().map { it.startedAt },
             cardio = all.filterIsInstance<RecentItem.CardioItem>().map { it.startedAt },
             zone = zone,
         )
-        items.value = all
         val first = TrainingCalendar.firstMonth(all, today, zone)
         CalendarUiState(
             today = today,
             month = month,
-            weeks = TrainingCalendar.weeks(month),
+            months = TrainingCalendar.months(first, today),
             days = days,
             selected = selected,
             selectedItems = TrainingCalendar.itemsOn(selected, all, zone),
-            canGoBack = TrainingCalendar.previous(month, first) != null,
-            canGoForward = TrainingCalendar.next(month, today) != null,
         )
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        CalendarUiState(today = today, month = CalendarMonth.of(today), selected = today),
+        CalendarUiState(today = today, month = CalendarMonth.of(today), months = listOf(CalendarMonth.of(today)), selected = today),
     )
 
-    fun previousMonth() {
-        val first = TrainingCalendar.firstMonth(items.value, today, zone)
-        view.update { current ->
-            TrainingCalendar.previous(current.month, first)?.let { current.copy(month = it) } ?: current
-        }
-    }
-
-    fun nextMonth() {
-        view.update { current ->
-            TrainingCalendar.next(current.month, today)?.let { current.copy(month = it) } ?: current
-        }
+    /** Called when the pager settles on a month; months outside the range are ignored. */
+    fun showMonth(month: CalendarMonth) {
+        if (month in uiState.value.months) view.update { it.copy(month = month) }
     }
 
     fun select(date: LocalDate) {

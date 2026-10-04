@@ -12,7 +12,6 @@ import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Test
 
 class TrainingCalendarTest {
@@ -85,10 +84,16 @@ class TrainingCalendarTest {
         val items = listOf(workout(1, "2026-07-15"), cardio(2, "2026-09-01"))
         val first = TrainingCalendar.firstMonth(items, today, zone)
         assertEquals(CalendarMonth(2026, 7), first)
-        assertNull(TrainingCalendar.previous(CalendarMonth(2026, 7), first))
-        assertEquals(CalendarMonth(2026, 7), TrainingCalendar.previous(CalendarMonth(2026, 8), first))
-        assertEquals(CalendarMonth(2026, 10), TrainingCalendar.next(CalendarMonth(2026, 9), today))
-        assertNull(TrainingCalendar.next(CalendarMonth(2026, 10), today))
         assertEquals(CalendarMonth(2026, 10), TrainingCalendar.firstMonth(emptyList(), today, zone))
+    }
+
+    @Test
+    fun `months list runs from the first month to the current one`() {
+        val today = LocalDate(2027, 2, 10)
+        assertEquals(
+            listOf(CalendarMonth(2026, 11), CalendarMonth(2026, 12), CalendarMonth(2027, 1), CalendarMonth(2027, 2)),
+            TrainingCalendar.months(CalendarMonth(2026, 11), today),
+        )
+        assertEquals(listOf(CalendarMonth(2027, 2)), TrainingCalendar.months(CalendarMonth(2027, 2), today))
     }
 }
