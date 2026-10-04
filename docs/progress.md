@@ -90,16 +90,24 @@
 ## Prio B (freigegeben 04.10., inkl. `INTERNET`-Permission)
 Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in die Navigation, sobald er Inhalt hat (B-02).
 
-## In Arbeit
-- B-01 KI-Provider-Layer:
+- B-01 KI-Provider-Layer, PR #16 (gemergt):
   - Domain `ai`: `AiProvider`, `AiRequest`/`AiMessage`, `AiException` (Gründe), `AiProviderProfile` + `AiProfiles` (URL-Prüfung, aktives Profil), `AiProfileDraft` (Formular, Key-Pflicht nur Anthropic), `ApiKeyChange`, `AiProfileRepository`, `AiConnectionTester`
   - Modul `:ai` (reines Kotlin, Ktor): `OpenAiCompatibleProvider` (`/chat/completions`), `AnthropicProvider` (`/v1/messages`), `KtorAiProviderFactory`, `AiHttp` (Timeouts, Fehler-Mapping, Key-Schwärzung)
   - Data: Tabelle `ai_profiles` (DB v2, Auto-Migration), `KeystoreAiKeyStore` (AES-GCM, Keystore), `RoomAiProfileRepository`
   - App: `INTERNET`-Permission, Klartext erlaubt (Ollama im LAN), OkHttp-Engine; Einstellungen „KI-Coach“ → Profilliste → Formular mit „Verbindung testen“, Löschen mit Bestätigung
   - Tests: Adapter gegen Ktor MockEngine (Request-Format, Statuscodes, Fehlerformen, Timeout, Netz), Domain, Room-Repository, ViewModels
 
+## In Arbeit
+- B-02a Wochen-Review, Logik und Speicher (ohne UI):
+  - Domain `review`: `ReviewContext` + `ReviewContextBuilder` (6 Wochen: Einheiten/Woche, Routinen mit Zielen, Trend je Übung mit e1RM/Wdh., „Sessions seit Bestwert“, letzter Top-Satz, Ø-RIR; Volumen je Region; RIR-Trend 1./2. Hälfte; Übungen zum Hinzufügen), `SuggestionChange` (Sätze, Wdh.-Bereich, Ziel-RIR, Übung hinzufügen/entfernen), `AiSuggestion`, `AiReview`, `SuggestionApplier` (prüft gegen aktuelle Routine, wendet an), `ReviewService` (Kontext, Review erstellen, übernehmen, verwerfen), `AiReviewRepository`
+  - `:ai`: `ReviewPrompt` (Version `review-v1`, JSON-Schema im Systemprompt, Kontext als JSON), `ReviewParser` (Schema-Prüfung, ungültige Vorschläge werden verworfen und gezählt), `KtorReviewGenerator`
+  - Data: Tabellen `ai_reviews`, `ai_suggestions` (DB v3, Auto-Migration), Payload als JSON
+  - Tests: Domain, Parser/Prompt, Room, `ReviewService` mit Fakes
+
 ## Nächster Schritt
-- B-02 Wöchentlicher KI-Review: `AiSuggestion`-Tabelle, aggregierter Kontext (Volumen, e1RM, Stagnation, Frequenz, RIR-Trend), JSON-Schema + Validierung, Review-Screen nach `Review.html`, Datenschutz-Hinweis vor dem ersten Call, Coach-Tab zurück
+- B-02b: Coach-Tab (nur mit Profil) mit Review-Screen nach `Review.html`: Zusammenfassung, Vorschlagskarten mit Diff, Übernehmen/Verwerfen, „Review erstellen“, Datenschutz-Hinweis vor dem ersten Call, „Gesendete Daten ansehen“
+- B-02c: wöchentlicher Trigger (WorkManager, Wochentag in den Einstellungen), Hinweis „Wochen-Review bereit“ auf Heute
+- Danach Periodisierung (Deload/Blöcke, B-02 Rest), B-03 …
 
 ## APK aufs Handy
 - Stand main: https://github.com/wtf-jb/aximo/releases/download/debug-latest/aximo-debug.apk
