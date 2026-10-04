@@ -30,7 +30,7 @@ class RoomAiReviewRepository(private val dao: AiReviewDao) : AiReviewRepository 
         AiReviewEntity(createdAt = review.createdAt, weeks = review.weeks, summary = review.summary, droppedSuggestions = review.droppedSuggestions),
         review.suggestions.mapIndexed { index, s ->
             AiSuggestionEntity(
-                reviewId = 0,
+                reviewId = null,
                 position = index,
                 type = SuggestionCodec.type(s.change),
                 payloadJson = SuggestionCodec.encode(s.change),
@@ -44,9 +44,11 @@ class RoomAiReviewRepository(private val dao: AiReviewDao) : AiReviewRepository 
 
     override suspend fun setStatus(suggestionId: Long, status: SuggestionStatus) = dao.setStatus(suggestionId, status.name)
 
-    private fun AiSuggestionEntity.toDomain(): AiSuggestion? {
-        val change = SuggestionCodec.decode(type, payloadJson) ?: return null
-        val status = SuggestionStatus.entries.firstOrNull { it.name == status } ?: return null
-        return AiSuggestion(id = id, reviewId = reviewId, change = change, rationale = rationale, status = status)
-    }
+}
+
+/** Shared with [RoomAiChatRepository]: both read rows of `ai_suggestions`. Null if the row cannot be read. */
+internal fun AiSuggestionEntity.toDomain(): AiSuggestion? {
+    val change = SuggestionCodec.decode(type, payloadJson) ?: return null
+    val status = SuggestionStatus.entries.firstOrNull { it.name == status } ?: return null
+    return AiSuggestion(id = id, reviewId = reviewId, chatMessageId = chatMessageId, change = change, rationale = rationale, status = status)
 }

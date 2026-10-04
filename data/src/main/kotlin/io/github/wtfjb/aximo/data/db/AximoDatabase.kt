@@ -6,6 +6,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import io.github.wtfjb.aximo.data.db.dao.AiChatDao
 import io.github.wtfjb.aximo.data.db.dao.AiProfileDao
 import io.github.wtfjb.aximo.data.db.dao.AiReviewDao
 import io.github.wtfjb.aximo.data.db.dao.BackupDao
@@ -14,6 +15,7 @@ import io.github.wtfjb.aximo.data.db.dao.ExerciseDao
 import io.github.wtfjb.aximo.data.db.dao.ProgressionDao
 import io.github.wtfjb.aximo.data.db.dao.RoutineDao
 import io.github.wtfjb.aximo.data.db.dao.WorkoutDao
+import io.github.wtfjb.aximo.data.db.entity.AiChatMessageEntity
 import io.github.wtfjb.aximo.data.db.entity.AiProfileEntity
 import io.github.wtfjb.aximo.data.db.entity.AiReviewEntity
 import io.github.wtfjb.aximo.data.db.entity.AiSuggestionEntity
@@ -49,11 +51,13 @@ import io.github.wtfjb.aximo.data.db.entity.WorkoutExerciseEntity
         AiProfileEntity::class,
         AiReviewEntity::class,
         AiSuggestionEntity::class,
+        AiChatMessageEntity::class,
     ],
-    // 2: ai_profiles (B-01); 3: ai_reviews, ai_suggestions (B-02).
-    // New tables only, so Room migrates automatically.
-    version = 3,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
+    // 2: ai_profiles (B-01); 3: ai_reviews, ai_suggestions (B-02);
+    // 4: ai_chat_messages, ai_suggestions.reviewId nullable + chatMessageId (B-05).
+    // Room migrates automatically (for 4 it rebuilds ai_suggestions and copies the rows).
+    version = 4,
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4)],
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -66,6 +70,7 @@ abstract class AximoDatabase : RoomDatabase() {
     abstract fun backupDao(): BackupDao
     abstract fun aiProfileDao(): AiProfileDao
     abstract fun aiReviewDao(): AiReviewDao
+    abstract fun aiChatDao(): AiChatDao
 
     companion object {
         private const val FILE_NAME = "aximo.db"

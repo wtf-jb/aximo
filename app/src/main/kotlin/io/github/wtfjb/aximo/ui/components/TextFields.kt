@@ -126,6 +126,35 @@ fun LabeledTextField(
     }
 }
 
+/** Multi-line message input on a surface pill without a label (coach chat). Grows up to [maxLines]. */
+@Composable
+fun MessageField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    maxLines: Int = 5,
+) {
+    Box(
+        modifier = modifier
+            .heightIn(min = Sizes.input)
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = Spacing.s14, vertical = Spacing.s12),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        InputText(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = placeholder,
+            singleLine = false,
+            maxLines = maxLines,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+            modifier = Modifier.fillMaxWidth().semantics { contentDescription = placeholder },
+        )
+    }
+}
+
 @Composable
 private fun InputText(
     value: String,
@@ -134,6 +163,7 @@ private fun InputText(
     keyboardOptions: KeyboardOptions,
     modifier: Modifier = Modifier,
     singleLine: Boolean = true,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     val textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface)
@@ -143,6 +173,7 @@ private fun InputText(
         modifier = modifier,
         textStyle = textStyle,
         singleLine = singleLine,
+        maxLines = maxLines,
         keyboardOptions = keyboardOptions,
         visualTransformation = visualTransformation,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),

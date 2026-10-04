@@ -37,6 +37,10 @@ class SettingsRepositoryTest {
         preferences.acceptDataNotice()
 
         assertEquals(true, preferences.dataNoticeAccepted.first())
+        // The chat (B-05) has its own notice; accepting it also counts as the general one.
+        assertEquals(false, preferences.chatNoticeAccepted.first())
+        preferences.acceptChatNotice()
+        assertEquals(true, preferences.chatNoticeAccepted.first())
     }
 
     @Test

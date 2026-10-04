@@ -77,34 +77,46 @@ class ReviewService(
         val provider = factory.create(profile, profiles.apiKey(profile.id))
         val generated = generator.generate(provider, context, language)
 
-        val currentRoutines = routines.observeRoutinesWithExercises().first().associateBy { it.routine.id }
-        val allExercises = exercises.observeExercises(includeArchived = true).first()
-        val valid = generated.suggestions
-            .filter { SuggestionApplier.isApplicable(it.change, currentRoutines[it.change.routineId], allExercises) }
-            .distinctBy { it.change }
+        val valid = SuggestionApplier.applicable(
+            // New plans come only from the chat (B-05); the review prompt does not offer them.
+            generated.suggestions.filter { it.change is SuggestionChange.RoutineChange },
+            routines.observeRoutinesWithExercises().first(),
+            exercises.observeExercises(includeArchived = true).first(),
+        )
         val review = AiReview(
             createdAt = time.now(),
             weeks = context.weeks,
             summary = generated.summary,
-            suggestions = valid.map { AiSuggestion(reviewId = 0, change = it.change, rationale = it.rationale) },
+            suggestions = valid.map { AiSuggestion(change = it.change, rationale = it.rationale) },
             droppedSuggestions = generated.dropped + (generated.suggestions.size - valid.size),
         )
         return reviews.saveReview(review)
     }
 
-    /** True if the suggestion still fits its routine (it may have changed since). */
-    suspend fun isApplicable(suggestion: AiSuggestion): Boolean {
-        val routine = routines.getRoutine(suggestion.change.routineId)
-        return SuggestionApplier.isApplicable(suggestion.change, routine, exercises.observeExercises(includeArchived = true).first())
-    }
+    /** True if the suggestion still fits the routines (they may have changed since). */
+    suspend fun isApplicable(suggestion: AiSuggestion): Boolean = SuggestionApplier.isApplicable(
+        suggestion.change,
+        routines.observeRoutinesWithExercises().first(),
+        exercises.observeExercises(includeArchived = true).first(),
+    )
 
-    /** Applies an open suggestion after the user confirmed it. Returns false if it no longer fits. */
+    /**
+     * Applies an open suggestion after the user confirmed it. Works for review
+     * and chat suggestions alike (B-05); a new plan goes through
+     * [io.github.wtfjb.aximo.domain.chat.ChatService.applyPlan] instead.
+     * Returns false if it no longer fits.
+     */
     suspend fun apply(suggestionId: Long): Boolean {
         val suggestion = reviews.getSuggestion(suggestionId) ?: return false
         if (suggestion.status != SuggestionStatus.OPEN) return false
-        val routine = routines.getRoutine(suggestion.change.routineId) ?: return false
-        if (!SuggestionApplier.isApplicable(suggestion.change, routine, exercises.observeExercises(includeArchived = true).first())) return false
-        routines.saveRoutine(routine.routine, SuggestionApplier.apply(suggestion.change, routine))
+        val change = suggestion.change as? SuggestionChange.RoutineChange ?: return false
+        val routine = routines.getRoutine(change.routineId) ?: return false
+        if (!SuggestionApplier.isApplicable(change, routine, exercises.observeExercises(includeArchived = true).first())) return false
+        when (change) {
+            is SuggestionChange.ExerciseChange -> routines.saveRoutine(routine.routine, SuggestionApplier.apply(change, routine))
+            is SuggestionChange.RenameRoutine -> routines.saveRoutine(routine.routine.copy(name = change.to.trim()), routine.exercises)
+            is SuggestionChange.DeleteRoutine -> routines.deleteRoutine(routine.routine.id)
+        }
         reviews.setStatus(suggestionId, SuggestionStatus.APPLIED)
         return true
     }

@@ -65,6 +65,8 @@ object AppIcons {
     val Mic by lazy {
         lineIcon("Mic", "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z", "M19 10v2a7 7 0 0 1-14 0v-2M12 19v3")
     }
+    /** Lucide "send". */
+    val Send by lazy { lineIcon("Send", "M22 2 11 13", "M22 2 15 22 11 13 2 9z") }
     val Note by lazy { lineIcon("Note", "M5 4h14v16H5z", "M9 9h6M9 13h6M9 17h3") }
 
     /** Filled play triangle (design system: filled icons are only play, check circle and dots). */

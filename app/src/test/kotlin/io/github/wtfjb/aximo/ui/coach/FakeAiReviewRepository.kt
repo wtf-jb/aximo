@@ -7,7 +7,8 @@ import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeAiReviewRepository : AiReviewRepository {
+/** Like Room, review and chat suggestions share one table: lookups fall back to [chat]. */
+class FakeAiReviewRepository(private val chat: FakeAiChatRepository? = null) : AiReviewRepository {
     val latest = MutableStateFlow<AiReview?>(null)
     private var nextId = 1L
 
@@ -22,11 +23,13 @@ class FakeAiReviewRepository : AiReviewRepository {
         return id
     }
 
-    override suspend fun getSuggestion(id: Long): AiSuggestion? = latest.value?.suggestions?.firstOrNull { it.id == id }
+    override suspend fun getSuggestion(id: Long): AiSuggestion? =
+        latest.value?.suggestions?.firstOrNull { it.id == id } ?: chat?.findSuggestion(id)
 
     override suspend fun setStatus(suggestionId: Long, status: SuggestionStatus) {
         latest.value = latest.value?.let { r ->
             r.copy(suggestions = r.suggestions.map { if (it.id == suggestionId) it.copy(status = status) else it })
         }
+        chat?.setStatus(suggestionId, status)
     }
 }
