@@ -152,7 +152,11 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Tests: MockEngine, Domain, ViewModel
 
 ## In Arbeit
-- Nichts. Nächstes Inkrement siehe unten
+- Entwickler-Werkzeuge (Branch `claude/untitled-session-70idaq`, PR gegen main):
+  - Theme-Showcase von „Heute“ nach Einstellungen → Entwickler (nur Debug) verschoben
+  - „Testdaten laden“ (`TestDataGenerator`, `RoomDevDataRepository`, `DevDataRepository`): ~3 Jahre Training, Cardio, Routinen, Progression; ersetzt alle Daten, nach Rückfrage
+  - „Alle Daten löschen“: Trainingsdaten + KI-Reviews/Chat weg, Standardübungen neu; Einstellungen und KI-Profile bleiben
+  - Tests: Generator über Room (Umfang, Zeitraum, Satztypen, Routinen, Cardio, Progression, zweimal laden, Löschen), `SettingsViewModel`
 
 ## Nächster Schritt
 - B-07 Auto-Backup (Periodischer JSON-Export in frei wählbaren Ordner, Intervall konfigurierbar, Rotation der letzten N Backups; Anforderung siehe `docs/requirements.md`)
@@ -163,6 +167,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
+- Entwickler-Werkzeuge testen (APK vom PR): Einstellungen ganz unten → „Testdaten laden“ (Rückfrage), danach Statistik, Pläne, Verlauf und Coach durchklicken; „Alle Daten löschen“ leert alles, die Standardübungen sind wieder da; „Theme-Showcase“ öffnet sich dort, auf „Heute“ ist der Button weg
 - Modellauswahl im KI-Profil testen (APK von main): Einstellungen → KI-Coach → Profil. Nach Base-URL und Key erscheint „N Modelle verfügbar“, über den Pfeil auswählen; falscher Key → Fehlermeldung + „Erneut laden“; bestehendes Profil öffnen → Liste lädt mit gespeichertem Key; ohne Key keine Liste (auch Ollama im LAN: Modell tippen)
 - B-01/B-02 auf dem Pixel testen: Profil für Ollama (Unraid/Tailscale) oder einen Cloud-Provider anlegen, „Verbindung testen“, im Coach-Tab einen Review erstellen
 - B-06 auf dem Pixel testen (APK von main): Übungen → „Aus Katalog hinzufügen“, suchen, Details, hinzufügen; Info-Tab einer Startübung zeigt die Anleitung

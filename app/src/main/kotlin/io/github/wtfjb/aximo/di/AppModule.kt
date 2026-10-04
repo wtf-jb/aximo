@@ -47,6 +47,8 @@ import io.github.wtfjb.aximo.ui.ai.AiProfilesViewModel
 import io.ktor.client.engine.okhttp.OkHttp
 import io.github.wtfjb.aximo.data.backup.RoomBackupRepository
 import io.github.wtfjb.aximo.data.db.AximoDatabase
+import io.github.wtfjb.aximo.data.testdata.RoomDevDataRepository
+import io.github.wtfjb.aximo.domain.devdata.DevDataRepository
 import io.github.wtfjb.aximo.data.repository.RoomCardioRepository
 import io.github.wtfjb.aximo.data.repository.RoomExerciseRepository
 import io.github.wtfjb.aximo.data.repository.RoomProgressionRepository
@@ -98,7 +100,8 @@ val appModule = module {
     single<WorkoutRepository> { RoomWorkoutRepository(get<AximoDatabase>().workoutDao()) }
     single<CardioRepository> { RoomCardioRepository(get<AximoDatabase>().cardioDao()) }
     single { TimeSource.System }
-    single<BackupRepository> { RoomBackupRepository(get(), get(), get()) }
+    single { RoomBackupRepository(get(), get(), get()) }
+    single<BackupRepository> { get<RoomBackupRepository>() }
     single<DocumentStore> { ContentResolverDocumentStore(androidContext()) }
     // AI (B-01): one HTTP client for all providers; keys encrypted via the Android Keystore.
     single<AiProfileRepository> { RoomAiProfileRepository(get<AximoDatabase>().aiProfileDao(), KeystoreAiKeyStore(androidContext())) }
@@ -125,6 +128,7 @@ val appModule = module {
         val context = androidContext()
         CatalogSeeder(get(), get()) { entry -> context.getString(entry.nameRes()) }
     }
+    single<DevDataRepository> { RoomDevDataRepository(get(), get(), get(), get()) }
     single { WorkoutFinisher(get(), get(), get(), get(), get()) }
     // One rest timer for the whole app; its scope lives as long as the app.
     single {
@@ -193,7 +197,7 @@ val appModule = module {
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
     viewModel { StatsViewModel(get(), get(), get(), get()) }
-    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) { ReviewPrompt.prettyContext(it) } }
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) { ReviewPrompt.prettyContext(it) } }
     viewModel { AiProfilesViewModel(get()) }
     viewModel { (profileId: Long) -> AiProfileEditViewModel(get(), get(), get(), profileId) }
 }

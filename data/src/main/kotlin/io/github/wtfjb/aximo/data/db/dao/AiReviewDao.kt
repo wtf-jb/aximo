@@ -27,6 +27,13 @@ interface AiReviewDao {
     @Query("UPDATE ai_suggestions SET status = :status WHERE id = :id")
     suspend fun setStatus(id: Long, status: String)
 
+    /** Reviews and chat messages are deleted afterwards; suggestions point to them. */
+    @Query("DELETE FROM ai_suggestions")
+    suspend fun deleteAllSuggestions()
+
+    @Query("DELETE FROM ai_reviews")
+    suspend fun deleteAllReviews()
+
     /** Saves the review with its suggestions, all or nothing. */
     @Transaction
     suspend fun save(review: AiReviewEntity, suggestions: List<AiSuggestionEntity>): Long {
