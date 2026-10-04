@@ -18,3 +18,11 @@
 | 2026-10-04 | Branches | Branch-Name gibt die Cloud-Session vor (`claude/…`), ein PR pro Inkrement | Die Session darf nur auf ihren zugewiesenen Branch pushen |
 | 2026-10-04 | Merge-Politik | Claude mergt eigene PRs selbst (Squash), sobald CI grün ist | Von Jonas so gewählt. Er testet über `debug-latest`, Probleme behebt das nächste Inkrement |
 | 2026-10-04 | Routine | 2× täglich (9:50 und 18:50, Europe/Berlin) startet eine neue Session mit „nächstes Inkrement“ | Von Jonas so gewählt. Muss im claude.ai-UI mit Repo angelegt werden, siehe progress.md |
+| 2026-10-04 | Muskelgruppen | Feste Liste als Enum `MuscleGroup` statt eigener Tabelle; Zuordnung in `exercise_muscles` (Rolle primär/sekundär) | Requirements sehen eine Tabelle vor. Ein Enum braucht kein Seeding, ist typsicher und reicht, solange Nutzer keine eigenen Muskelgruppen anlegen. Anzeigenamen kommen aus den String-Ressourcen |
+| 2026-10-04 | Equipment | Enum `Equipment` (Langhantel, Kurzhantel, Maschine, Kabel, Kettlebell, Band, Körpergewicht, Sonstiges) | Für Filter in der Übungsauswahl; freie Texte würden auseinanderlaufen |
+| 2026-10-04 | Bodyweight-Gewicht | `SetEntry.weightKg` ist bei Bodyweight die Zusatzlast: 0 = nur Körpergewicht, positiv = Zusatzgewicht, negativ = Assistenz | Eine Spalte statt drei; Vorzeichen ist eindeutig |
+| 2026-10-04 | Zeitstempel | `kotlin.time.Instant` im Domain-Modell, in Room als Epoch-Millisekunden; Datumswerte als `kotlinx.datetime.LocalDate` (Epoch-Tag) | Standard in Kotlin, KMP-tauglich |
+| 2026-10-04 | Zusätzliche Felder | `Routine.position` (Reihenfolge auf „Pläne“), `Workout.rating` (Gefühl 1–5, Abschluss-Screen), `CardioEntry.startedAt` (Cardio ohne Workout), `Exercise.roundingStepKg` (Scheibenschritt pro Übung, A-06) | Fehlten im Datenmodell-Entwurf, werden laut Requirements/Mockups gebraucht |
+| 2026-10-04 | Löschregeln | Übungen, die in Routinen oder Workouts vorkommen, lassen sich nicht löschen (`RESTRICT`), nur archivieren. Workouts und Routinen löschen ihre Kinder mit (`CASCADE`) | Historie bleibt konsistent |
+| 2026-10-04 | KI-Tabellen | `AiSuggestion` und `AiProviderProfile` noch nicht angelegt | Prio B; kommt mit einer Migration, wenn B beginnt |
+| 2026-10-04 | DB-Tests | Room-Tests laufen mit Robolectric als normale Unit-Tests (`./gradlew test`) | Kein Gerät/Emulator nötig, läuft in CI und Cloud-Session |
