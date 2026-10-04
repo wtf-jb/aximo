@@ -1,10 +1,12 @@
 package io.github.wtfjb.aximo.domain.routine
 
+import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.domain.model.Routine
 import io.github.wtfjb.aximo.domain.model.RoutineExercise
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
 import io.github.wtfjb.aximo.domain.workout.PlannedSet
+import io.github.wtfjb.aximo.domain.workout.WorkoutLogic
 import kotlin.time.Instant
 
 /** Rules for routines (A-05). Pure functions, fully tested. */
@@ -33,10 +35,15 @@ object RoutineLogic {
      * Sets to create for a routine exercise when a workout starts: as many as the
      * target says, with weight and reps from the matching working set of the last
      * session (else the last one, else 0 kg at the lower rep target) and the target RIR.
+     * A progression suggestion (A-06) replaces weight and reps.
      */
-    fun plannedSets(target: RoutineExercise, lastSession: List<SetEntry>): List<PlannedSet> {
+    fun plannedSets(
+        target: RoutineExercise,
+        lastSession: List<SetEntry>,
+        progression: ProgressionState? = null,
+    ): List<PlannedSet> {
         val working = lastSession.filter { it.setType != SetType.WARM_UP }
-        return List(target.targetSets) { index ->
+        val sets = List(target.targetSets) { index ->
             val template = working.getOrNull(index) ?: working.lastOrNull()
             PlannedSet(
                 weightKg = template?.weightKg ?: 0.0,
@@ -44,5 +51,6 @@ object RoutineLogic {
                 rir = target.targetRir,
             )
         }
+        return WorkoutLogic.applyProgression(sets, progression)
     }
 }

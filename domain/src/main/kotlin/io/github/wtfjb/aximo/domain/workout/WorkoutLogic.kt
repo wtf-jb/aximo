@@ -1,6 +1,7 @@
 package io.github.wtfjb.aximo.domain.workout
 
 import io.github.wtfjb.aximo.domain.model.Exercise
+import io.github.wtfjb.aximo.domain.model.ProgressionState
 import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.model.SetType
 
@@ -17,12 +18,25 @@ object WorkoutLogic {
      * (types and values), so a set can be logged with one tap. Without history:
      * [DEFAULT_SET_COUNT] working sets at the lower end of the rep range.
      */
-    fun initialSets(exercise: Exercise, lastSession: List<SetEntry>): List<PlannedSet> =
-        if (lastSession.isNotEmpty()) {
+    fun initialSets(exercise: Exercise, lastSession: List<SetEntry>, progression: ProgressionState? = null): List<PlannedSet> {
+        val sets = if (lastSession.isNotEmpty()) {
             lastSession.map { PlannedSet(it.weightKg, it.reps, it.rir, it.setType) }
         } else {
             List(DEFAULT_SET_COUNT) { PlannedSet(weightKg = 0.0, reps = exercise.repRangeMin) }
         }
+        return applyProgression(sets, progression)
+    }
+
+    /**
+     * Puts the progression suggestion (A-06) into the working sets: suggested weight
+     * and rep target. Warm-ups stay as they were. Without a suggestion nothing changes.
+     */
+    fun applyProgression(sets: List<PlannedSet>, progression: ProgressionState?): List<PlannedSet> {
+        if (progression == null) return sets
+        return sets.map { set ->
+            if (set.setType == SetType.WARM_UP) set else set.copy(weightKg = progression.nextWeightKg, reps = progression.nextRepTarget)
+        }
+    }
 
     /**
      * Values for a set added with "+ Satz": the last set of this workout, else

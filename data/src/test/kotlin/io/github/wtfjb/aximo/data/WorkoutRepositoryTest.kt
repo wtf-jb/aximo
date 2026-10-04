@@ -113,4 +113,36 @@ class WorkoutRepositoryTest : DatabaseTest() {
 
         assertEquals(mapOf(routineId to later), workouts.observeLastWorkoutPerRoutine().first())
     }
+
+    @Test
+    fun workoutByIdRatingAndHistoryBefore() = runTest {
+        val old = workouts.startWorkout(t0)
+        val weOld = workouts.addExercise(old, benchId, null, listOf(PlannedSet(75.0, 8)))
+        workouts.finishWorkout(old, t0, "")
+        val now = t0.plus(kotlin.time.Duration.parse("2d"))
+        val current = workouts.startWorkout(now)
+        workouts.addExercise(current, benchId, null, listOf(PlannedSet(80.0, 8)))
+
+        workouts.rateWorkout(current, 4, " gut ")
+
+        val detail = workouts.getWorkout(current)!!
+        assertEquals(4, detail.workout.rating)
+        assertEquals("gut", detail.workout.note)
+        assertEquals(listOf(weOld), workouts.setsBefore(benchId, now).map { it.workoutExerciseId })
+        assertEquals(emptyList<Any>(), workouts.setsBefore(benchId, t0))
+        assertNull(workouts.getWorkout(9999))
+    }
+
+    @Test
+    fun progressionIsStoredPerExercise() = runTest {
+        val repo = io.github.wtfjb.aximo.data.repository.RoomProgressionRepository(db.progressionDao())
+        val state = io.github.wtfjb.aximo.domain.model.ProgressionState(
+            benchId, 82.5, 6, io.github.wtfjb.aximo.domain.model.ProgressionReason.INCREASE_WEIGHT,
+        )
+        repo.save(state)
+        repo.save(state.copy(nextWeightKg = 85.0))
+
+        assertEquals(85.0, repo.get(benchId)!!.nextWeightKg, 0.0)
+        assertNull(repo.get(pullUpId))
+    }
 }

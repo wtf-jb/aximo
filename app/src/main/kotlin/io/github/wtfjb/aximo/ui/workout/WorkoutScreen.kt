@@ -59,9 +59,11 @@ fun WorkoutScreen(
     onPickedConsumed: () -> Unit,
     onAddExercise: () -> Unit,
     onClose: () -> Unit,
+    onFinished: (workoutId: Long) -> Unit,
     viewModel: WorkoutViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val finishState by viewModel.finishState.collectAsStateWithLifecycle()
 
     var editing by remember { mutableStateOf<SetEditing?>(null) }
     var noteFor by remember { mutableStateOf<WorkoutExerciseDetail?>(null) }
@@ -79,8 +81,13 @@ fun WorkoutScreen(
     }
 
     // Workout finished or discarded (or none running): leave the screen.
-    LaunchedEffect(state.loading, state.workout) {
-        if (!state.loading && state.workout == null) onClose()
+    // Finished: open the summary. No running workout (discarded or none): leave the screen.
+    LaunchedEffect(state.loading, state.workout, finishState) {
+        when (val finish = finishState) {
+            is FinishState.Done -> onFinished(finish.workoutId)
+            FinishState.InProgress -> Unit
+            FinishState.Idle -> if (!state.loading && state.workout == null) onClose()
+        }
     }
     LaunchedEffect(picked, state.workout?.workout?.id) {
         if (picked != null && state.workout != null) {
@@ -152,6 +159,7 @@ fun WorkoutScreen(
                             group = group,
                             lastPerformance = state.lastPerformance,
                             targets = state.targets,
+                            progression = state.progression,
                             unit = state.unit,
                             actions = actions,
                         )
@@ -220,10 +228,9 @@ fun WorkoutScreen(
 
     if (finishing) {
         FinishDialog(
-            initialNote = workout.workout.note,
-            onFinish = { note ->
+            onFinish = {
                 finishing = false
-                viewModel.finish(note)
+                viewModel.finish()
             },
             onDiscard = {
                 finishing = false

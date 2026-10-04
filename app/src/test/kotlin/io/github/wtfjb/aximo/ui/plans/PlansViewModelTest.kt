@@ -49,7 +49,7 @@ class PlansViewModelTest {
     private val routines = FakeRoutineRepository(listOf(push, pull))
     private val history = mapOf(1L to listOf(SetEntry(workoutExerciseId = 9, position = 0, weightKg = 80.0, reps = 8, completedAt = now)))
     private val workouts = FakeWorkoutRepository(mapOf(1L to bench, 2L to row), history)
-    private val starter = WorkoutStarter(workouts, routines, TimeSource { now })
+    private val starter = WorkoutStarter(workouts, routines, io.github.wtfjb.aximo.ui.workout.FakeProgressionRepository(), TimeSource { now })
     private val vm by lazy { PlansViewModel(routines, FakeExerciseRepository(listOf(bench, row)), workouts, starter) }
 
     @Test

@@ -3,21 +3,25 @@ package io.github.wtfjb.aximo.di
 import io.github.wtfjb.aximo.MainViewModel
 import io.github.wtfjb.aximo.data.db.AximoDatabase
 import io.github.wtfjb.aximo.data.repository.RoomExerciseRepository
+import io.github.wtfjb.aximo.data.repository.RoomProgressionRepository
 import io.github.wtfjb.aximo.data.repository.RoomRoutineRepository
 import io.github.wtfjb.aximo.data.repository.RoomWorkoutRepository
 import io.github.wtfjb.aximo.data.settings.DataStoreSettingsRepository
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
+import io.github.wtfjb.aximo.domain.repository.ProgressionRepository
 import io.github.wtfjb.aximo.domain.rest.RestTimerController
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
 import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.time.TimeSource
+import io.github.wtfjb.aximo.domain.workout.WorkoutFinisher
 import io.github.wtfjb.aximo.domain.workout.WorkoutStarter
 import io.github.wtfjb.aximo.rest.AndroidRestTimerEffects
 import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
 import io.github.wtfjb.aximo.ui.plans.PlansViewModel
 import io.github.wtfjb.aximo.ui.routine.RoutineEditViewModel
+import io.github.wtfjb.aximo.ui.summary.SummaryViewModel
 import io.github.wtfjb.aximo.ui.today.TodayViewModel
 import io.github.wtfjb.aximo.ui.workout.WorkoutViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +39,9 @@ val appModule = module {
     single<RoutineRepository> { RoomRoutineRepository(get<AximoDatabase>().routineDao()) }
     single<WorkoutRepository> { RoomWorkoutRepository(get<AximoDatabase>().workoutDao()) }
     single { TimeSource.System }
-    single { WorkoutStarter(get(), get(), get()) }
+    single<ProgressionRepository> { RoomProgressionRepository(get<AximoDatabase>().progressionDao()) }
+    single { WorkoutStarter(get(), get(), get(), get()) }
+    single { WorkoutFinisher(get(), get(), get(), get()) }
     // One rest timer for the whole app; its scope lives as long as the app.
     single {
         RestTimerController(
@@ -50,5 +56,6 @@ val appModule = module {
     viewModel { TodayViewModel(get(), get(), get()) }
     viewModel { PlansViewModel(get(), get(), get(), get()) }
     viewModel { (routineId: Long) -> RoutineEditViewModel(get(), get(), routineId) }
-    viewModel { WorkoutViewModel(get(), get(), get(), get(), get()) }
+    viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
 }

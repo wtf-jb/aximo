@@ -59,6 +59,13 @@ class RoomWorkoutRepository(private val dao: WorkoutDao) : WorkoutRepository {
 
     override suspend fun discardWorkout(workoutId: Long) = dao.delete(workoutId)
 
+    override suspend fun getWorkout(workoutId: Long): WorkoutDetail? = dao.getWithDetails(workoutId)?.toDomain()
+
+    override suspend fun rateWorkout(workoutId: Long, rating: Int?, note: String) = dao.rate(workoutId, rating, note.trim())
+
+    override suspend fun setsBefore(exerciseId: Long, before: Instant): List<SetEntry> =
+        dao.setsBefore(exerciseId, before).map { it.toDomain() }
+
     override suspend fun lastSessionSets(exerciseId: Long, excludeWorkoutId: Long): List<SetEntry> =
         dao.lastSessionSets(exerciseId, excludeWorkoutId).map { it.toDomain() }
 

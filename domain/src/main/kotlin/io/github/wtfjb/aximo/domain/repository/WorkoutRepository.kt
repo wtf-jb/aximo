@@ -32,6 +32,15 @@ interface WorkoutRepository {
 
     suspend fun finishWorkout(workoutId: Long, endedAt: Instant, note: String)
 
+    /** Any workout (running or finished) with exercises and sets, or null. */
+    suspend fun getWorkout(workoutId: Long): WorkoutDetail?
+
+    /** Rating (1–5 or null) and note of a workout, set on the finish screen. */
+    suspend fun rateWorkout(workoutId: Long, rating: Int?, note: String)
+
+    /** All sets of the exercise from finished workouts that started before [before]. */
+    suspend fun setsBefore(exerciseId: Long, before: Instant): List<SetEntry>
+
     /** Deletes the workout with all its sets. */
     suspend fun discardWorkout(workoutId: Long)
 

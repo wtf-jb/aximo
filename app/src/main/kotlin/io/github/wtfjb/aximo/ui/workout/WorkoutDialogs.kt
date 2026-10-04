@@ -1,7 +1,6 @@
 package io.github.wtfjb.aximo.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -99,10 +98,9 @@ fun NoteDialog(title: String, initial: String, onConfirm: (String) -> Unit, onDi
     )
 }
 
-/** "Beenden": optional workout note, finish or discard. Discarding asks once more. */
+/** "Beenden": finish (rating and note follow on the summary) or discard. Discarding asks once more. */
 @Composable
-fun FinishDialog(initialNote: String, onFinish: (String) -> Unit, onDiscard: () -> Unit, onDismiss: () -> Unit) {
-    var note by remember { mutableStateOf(initialNote) }
+fun FinishDialog(onFinish: () -> Unit, onDiscard: () -> Unit, onDismiss: () -> Unit) {
     var confirmDiscard by remember { mutableStateOf(false) }
 
     if (confirmDiscard) {
@@ -126,23 +124,15 @@ fun FinishDialog(initialNote: String, onFinish: (String) -> Unit, onDiscard: () 
         containerColor = MaterialTheme.colorScheme.surface,
         title = { Text(text = stringResource(R.string.workout_finish_title), style = MaterialTheme.typography.titleMedium) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.s12)) {
-                LabeledTextField(
-                    label = stringResource(R.string.workout_finish_note),
-                    value = note,
-                    onValueChange = { note = it },
-                    singleLine = false,
+            TextButton(onClick = { confirmDiscard = true }) {
+                Text(
+                    text = stringResource(R.string.workout_discard),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
-                TextButton(onClick = { confirmDiscard = true }) {
-                    Text(
-                        text = stringResource(R.string.workout_discard),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
-                }
             }
         },
-        confirmButton = { InverseButton(text = stringResource(R.string.workout_finish), onClick = { onFinish(note) }) },
+        confirmButton = { InverseButton(text = stringResource(R.string.workout_finish), onClick = onFinish) },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.workout_continue), style = MaterialTheme.typography.labelLarge)

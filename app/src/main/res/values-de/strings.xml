@@ -213,4 +213,38 @@
     <string name="routine_apply">Übernehmen</string>
     <string name="routine_superset_entry">%1$s · %2$s</string>
     <string name="workout_target">Ziel %1$s</string>
+
+    <string name="workout_progression_weight">Progression: %1$s %2$s</string>
+    <string name="workout_progression_weight_delta">Progression: %1$s %2$s (%3$s)</string>
+    <plurals name="workout_progression_reps">
+        <item quantity="one">Progression: %d Wdh.</item>
+        <item quantity="other">Progression: %d Wdh.</item>
+    </plurals>
+    <string name="summary_done">%1$s geschafft</string>
+    <string name="summary_done_free">Workout geschafft</string>
+    <string name="summary_when">%1$s · %2$s–%3$s</string>
+    <string name="summary_duration">Dauer</string>
+    <string name="summary_volume">Volumen (%1$s)</string>
+    <string name="summary_working_sets">Arbeitssätze</string>
+    <string name="summary_records">Bestwerte</string>
+    <string name="summary_new_records">Neue Bestwerte</string>
+    <string name="summary_record_e1rm">%1$s · e1RM</string>
+    <string name="summary_record_weight">%1$s · Gewicht</string>
+    <string name="summary_record_reps">%1$s · Wdh. bei Gewicht</string>
+    <string name="summary_record_volume">%1$s · Volumen</string>
+    <string name="summary_reps_at_weight">%1$s × %2$s</string>
+    <string name="summary_next_time">Fürs nächste Mal</string>
+    <string name="summary_stays">bleibt %1$s</string>
+    <plurals name="summary_reps_target">
+        <item quantity="one">%d Wdh.</item>
+        <item quantity="other">%d Wdh.</item>
+    </plurals>
+    <string name="summary_how">Wie lief\'s?</string>
+    <string name="summary_mood_1">Zäh</string>
+    <string name="summary_mood_2">Mäßig</string>
+    <string name="summary_mood_3">Okay</string>
+    <string name="summary_mood_4">Gut</string>
+    <string name="summary_mood_5">Stark</string>
+    <string name="summary_save">Speichern</string>
+    <string name="summary_arrow_description">wird zu</string>
 </resources>

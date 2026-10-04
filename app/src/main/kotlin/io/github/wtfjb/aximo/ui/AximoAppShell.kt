@@ -25,6 +25,8 @@ import io.github.wtfjb.aximo.ui.navigation.ExerciseEditRoute
 import io.github.wtfjb.aximo.ui.navigation.ExerciseListRoute
 import io.github.wtfjb.aximo.ui.navigation.ExercisePickerRoute
 import io.github.wtfjb.aximo.ui.navigation.RoutineEditRoute
+import io.github.wtfjb.aximo.ui.navigation.SummaryRoute
+import io.github.wtfjb.aximo.ui.summary.SummaryScreen
 import io.github.wtfjb.aximo.ui.routine.RoutineEditScreen
 import io.github.wtfjb.aximo.ui.navigation.WorkoutRoute
 import io.github.wtfjb.aximo.ui.workout.PickedExercises
@@ -115,6 +117,17 @@ fun AximoAppShell(
                     },
                     onAddExercise = { navController.navigate(ExercisePickerRoute) },
                     onClose = { navController.popBackStack() },
+                    onFinished = { workoutId ->
+                        navController.navigate(SummaryRoute(workoutId)) {
+                            popUpTo<WorkoutRoute> { inclusive = true }
+                        }
+                    },
+                )
+            }
+            composable<SummaryRoute> { entry ->
+                SummaryScreen(
+                    workoutId = entry.toRoute<SummaryRoute>().workoutId,
+                    onDone = { navController.popBackStack() },
                 )
             }
             composable<RoutineEditRoute> { entry ->
