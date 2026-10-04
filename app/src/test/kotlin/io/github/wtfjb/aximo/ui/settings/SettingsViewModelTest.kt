@@ -43,6 +43,7 @@ class SettingsViewModelTest {
     // Lazy: viewModelScope must be created after MainDispatcherRule has replaced Dispatchers.Main.
     private val backup = FakeBackupRepository()
     private val documents = FakeDocumentStore()
+    private val devData = FakeDevData()
     private val workouts = FakeWorkoutRepository(emptyMap())
     private val exercises = FakeExerciseRepository()
     private val aiProfiles = FakeAiProfileRepository()
@@ -55,7 +56,7 @@ class SettingsViewModelTest {
     private val vm by lazy {
         SettingsViewModel(
             settings, backup, workouts, FakeRoutineRepository(), documents, CatalogSeeder(exercises, settings) { it.name },
-            aiProfiles, aiPreferences, reviewService, { "weeks=${it.weeks}" },
+            devData, aiProfiles, aiPreferences, reviewService, { "weeks=${it.weeks}" },
         )
     }
 
@@ -216,5 +217,35 @@ class SettingsViewModelTest {
 
         vm.addStandardExercises()
         assertEquals(0, vm.uiState.value.catalogAdded)
+    }
+
+    @Test
+    fun loadTestDataRunsTheToolAndReportsIt() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.loadTestData()
+
+        assertEquals(1, devData.loaded)
+        assertEquals(DevState(busy = false, message = DevMessage.LOADED), vm.uiState.value.dev)
+    }
+
+    @Test
+    fun clearAllDataRunsTheToolAndReportsIt() = runTest(UnconfinedTestDispatcher()) {
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.clearAllData()
+
+        assertEquals(1, devData.cleared)
+        assertEquals(DevMessage.CLEARED, vm.uiState.value.dev.message)
+    }
+
+    @Test
+    fun devToolFailureIsShownNotThrown() = runTest(UnconfinedTestDispatcher()) {
+        devData.failure = IllegalStateException("db locked")
+        vm.uiState.launchIn(backgroundScope)
+
+        vm.loadTestData()
+
+        assertEquals(DevMessage.FAILED, vm.uiState.value.dev.message)
     }
 }

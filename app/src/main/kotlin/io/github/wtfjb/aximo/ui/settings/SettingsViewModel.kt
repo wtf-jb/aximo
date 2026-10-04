@@ -12,6 +12,7 @@ import io.github.wtfjb.aximo.domain.review.ReviewService
 import io.github.wtfjb.aximo.domain.review.WeeklyReviewSetting
 import io.github.wtfjb.aximo.domain.backup.BackupRepository
 import io.github.wtfjb.aximo.domain.backup.SetsCsv
+import io.github.wtfjb.aximo.domain.devdata.DevDataRepository
 import io.github.wtfjb.aximo.domain.exercise.CatalogSeeder
 import io.github.wtfjb.aximo.domain.exercise.ExerciseDraft
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
@@ -22,6 +23,7 @@ import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.settings.WeightSteps
 import io.github.wtfjb.aximo.domain.units.WeightUnit
 import io.github.wtfjb.aximo.domain.workout.SetRating
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,10 +40,16 @@ enum class BackupMessage { EXPORTED, CSV_EXPORTED, RESTORED, INVALID_FILE, NEWER
 
 data class BackupState(val busy: Boolean = false, val message: BackupMessage? = null)
 
+/** Result of the developer tools (debug builds only). */
+enum class DevMessage { LOADED, CLEARED, FAILED }
+
+data class DevState(val busy: Boolean = false, val message: DevMessage? = null)
+
 data class SettingsUiState(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val training: TrainingSettings = TrainingSettings(),
     val backup: BackupState = BackupState(),
+    val dev: DevState = DevState(),
     /** How many standard exercises the last tap added, null before the first tap. */
     val catalogAdded: Int? = null,
     /** The active AI provider profile, null without one (B-01). */
@@ -70,6 +78,7 @@ class SettingsViewModel(
     private val routines: RoutineRepository,
     private val documents: DocumentStore,
     private val catalog: CatalogSeeder,
+    private val devData: DevDataRepository,
     aiProfiles: AiProfileRepository,
     private val aiPreferences: AiPreferences,
     private val reviewService: ReviewService,
@@ -81,16 +90,17 @@ class SettingsViewModel(
     private val ai = combine(aiPreferences.weeklyReview, aiDialogs) { setting, dialogs -> dialogs.copy(weeklyReview = setting) }
 
     private val backup = MutableStateFlow(BackupState())
+    private val dev = MutableStateFlow(DevState())
     private val catalogAdded = MutableStateFlow<Int?>(null)
 
     val uiState: StateFlow<SettingsUiState> = combine(
         settings.themeMode,
         settings.training,
-        backup,
+        combine(backup, dev) { backup, dev -> backup to dev },
         catalogAdded,
         combine(aiProfiles.observeProfiles(), ai) { profiles, ai -> AiProfiles.active(profiles) to ai },
-    ) { theme, training, backup, added, (profile, ai) ->
-        SettingsUiState(theme, training, backup, added, profile, ai)
+    ) { theme, training, (backup, dev), added, (profile, ai) ->
+        SettingsUiState(theme, training, backup, dev, added, profile, ai)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
     fun setThemeMode(mode: ThemeMode) {
@@ -171,6 +181,28 @@ class SettingsViewModel(
     /** Replaces all data with the backup in the picked file. The screen asks for confirmation first. */
     fun restore(uri: String) = runBackup(BackupMessage.RESTORED) {
         backupRepository.restoreJson(documents.read(uri))
+    }
+
+    /** Debug tool: replaces all training data with generated sample data. The screen asks first. */
+    fun loadTestData() = runDev(DevMessage.LOADED) { devData.loadTestData() }
+
+    /** Debug tool: deletes all user data. The screen asks first. */
+    fun clearAllData() = runDev(DevMessage.CLEARED) { devData.clearAll() }
+
+    private fun runDev(success: DevMessage, action: suspend () -> Unit) {
+        if (dev.value.busy) return
+        dev.value = DevState(busy = true)
+        viewModelScope.launch {
+            val message = try {
+                action()
+                success
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                DevMessage.FAILED
+            }
+            dev.value = DevState(busy = false, message = message)
+        }
     }
 
     private fun runBackup(success: BackupMessage, action: suspend () -> Unit) {

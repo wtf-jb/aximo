@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.wtfjb.aximo.BuildConfig
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.ai.AiProviderProfile
 import io.github.wtfjb.aximo.ui.ai.label
@@ -65,7 +66,7 @@ import java.time.LocalDate
 import kotlinx.datetime.DayOfWeek
 
 /** Which dialog is open. */
-private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, IMPORT, REVIEW_DAY, REVIEW_HOUR }
+private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, IMPORT, REVIEW_DAY, REVIEW_HOUR, LOAD_TEST_DATA, CLEAR_ALL }
 
 /**
  * Settings (A-09, mockup Einstellungen.html) with export and import (A-08)
@@ -76,6 +77,7 @@ private enum class SettingsDialog { LANGUAGE, REST, STEPS, WEEKLY_GOAL, IMPORT, 
 fun SettingsScreen(
     onBack: () -> Unit,
     onOpenAiProfiles: () -> Unit,
+    onOpenThemeShowcase: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -196,6 +198,18 @@ fun SettingsScreen(
             onImport = { dialog = SettingsDialog.IMPORT },
         )
         Hint(stringResource(R.string.settings_backup_hint))
+
+        // Tools for testing; they replace or delete data, so release builds don't have them.
+        if (BuildConfig.DEBUG) {
+            SectionLabel(stringResource(R.string.settings_section_developer))
+            DeveloperCard(
+                state = state.dev,
+                onOpenThemeShowcase = onOpenThemeShowcase,
+                onLoadTestData = { dialog = SettingsDialog.LOAD_TEST_DATA },
+                onClearAll = { dialog = SettingsDialog.CLEAR_ALL },
+            )
+            Hint(stringResource(R.string.settings_developer_hint))
+        }
     }
 
     when (dialog) {
@@ -242,6 +256,26 @@ fun SettingsScreen(
             onConfirm = {
                 dialog = null
                 importJson.launch(IMPORT_TYPES)
+            },
+            onDismiss = { dialog = null },
+        )
+        SettingsDialog.LOAD_TEST_DATA -> ConfirmDialog(
+            title = R.string.settings_test_data_title,
+            body = R.string.settings_test_data_body,
+            confirm = R.string.settings_test_data_confirm,
+            onConfirm = {
+                dialog = null
+                viewModel.loadTestData()
+            },
+            onDismiss = { dialog = null },
+        )
+        SettingsDialog.CLEAR_ALL -> ConfirmDialog(
+            title = R.string.settings_clear_title,
+            body = R.string.settings_clear_body,
+            confirm = R.string.settings_clear_confirm,
+            onConfirm = {
+                dialog = null
+                viewModel.clearAllData()
             },
             onDismiss = { dialog = null },
         )
@@ -379,6 +413,47 @@ private fun BackupMessage.text(): Int = when (this) {
 
 private fun BackupMessage.isError(): Boolean =
     this == BackupMessage.INVALID_FILE || this == BackupMessage.NEWER_VERSION || this == BackupMessage.FAILED
+
+@Composable
+private fun DeveloperCard(state: DevState, onOpenThemeShowcase: () -> Unit, onLoadTestData: () -> Unit, onClearAll: () -> Unit) {
+    SettingsCard {
+        ValueRow(stringResource(R.string.showcase_open), "", onClick = onOpenThemeShowcase)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        ValueRow(stringResource(R.string.settings_test_data), "", onClick = onLoadTestData)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        ValueRow(stringResource(R.string.settings_clear), "", onClick = onClearAll)
+        val message = when {
+            state.busy -> R.string.settings_dev_busy
+            state.message == DevMessage.LOADED -> R.string.settings_test_data_done
+            state.message == DevMessage.CLEARED -> R.string.settings_clear_done
+            state.message == DevMessage.FAILED -> R.string.settings_dev_failed
+            else -> null
+        }
+        if (message != null) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Text(
+                text = stringResource(message),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (state.message == DevMessage.FAILED) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .padding(vertical = Spacing.s12)
+                    .semantics { liveRegion = LiveRegionMode.Polite },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ConfirmDialog(title: Int, body: Int, confirm: Int, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(text = stringResource(title), style = MaterialTheme.typography.titleMedium) },
+        text = { Text(text = stringResource(body), style = MaterialTheme.typography.bodyMedium) },
+        confirmButton = { InverseButton(text = stringResource(confirm), onClick = onConfirm) },
+        dismissButton = { CancelButton(onDismiss) },
+    )
+}
 
 /** Import replaces everything, so it is confirmed before the file is picked. */
 @Composable

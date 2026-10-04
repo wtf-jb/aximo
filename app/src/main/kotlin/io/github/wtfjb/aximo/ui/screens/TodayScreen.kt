@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.wtfjb.aximo.BuildConfig
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.ui.components.CircleIconButton
 import io.github.wtfjb.aximo.ui.components.PrimaryButton
@@ -35,7 +34,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun TodayScreen(
     onOpenWorkout: () -> Unit,
-    onOpenThemeShowcase: () -> Unit,
     onOpenCardio: (Long) -> Unit,
     onOpenFinishedWorkout: (Long) -> Unit,
     onOpenSettings: () -> Unit,
@@ -75,11 +73,5 @@ fun TodayScreen(
         state.week?.let { WeekCard(it, state.weeklyGoal) }
         ReviewHintCard(onOpen = onOpenCoach)
         RecentList(items = state.recent, onOpenCardio = onOpenCardio, onOpenWorkout = onOpenFinishedWorkout)
-        if (BuildConfig.DEBUG) {
-            SecondaryButton(
-                text = stringResource(R.string.showcase_open),
-                onClick = onOpenThemeShowcase,
-            )
-        }
     }
 }

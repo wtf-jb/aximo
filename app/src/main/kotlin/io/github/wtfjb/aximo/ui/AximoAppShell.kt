@@ -106,7 +106,6 @@ fun AximoAppShell(
             composable<TodayRoute> {
                 TodayScreen(
                     onOpenWorkout = { navController.navigate(WorkoutRoute) { launchSingleTop = true } },
-                    onOpenThemeShowcase = { navController.navigate(ThemeShowcaseRoute) },
                     onOpenCardio = { id -> navController.navigate(CardioRoute(id)) },
                     onOpenFinishedWorkout = { id -> navController.navigate(SummaryRoute(id)) },
                     onOpenSettings = { navController.navigate(SettingsRoute) },
@@ -233,6 +232,7 @@ fun AximoAppShell(
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
                     onOpenAiProfiles = { navController.navigate(AiProfilesRoute) },
+                    onOpenThemeShowcase = { navController.navigate(ThemeShowcaseRoute) },
                 )
             }
             composable<AiProfilesRoute> {
