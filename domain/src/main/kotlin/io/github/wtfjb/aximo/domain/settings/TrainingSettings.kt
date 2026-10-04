@@ -36,9 +36,12 @@ data class TrainingSettings(
     val restSeconds: Int = Exercise.DEFAULT_REST_SECONDS,
     val steps: WeightSteps = WeightSteps.standard(unit),
     val rating: SetRating = SetRating.RIR,
+    /** Sessions per week the user aims for, shown on "Heute"; null = no goal. */
+    val weeklyGoal: Int? = null,
 ) {
     init {
         require(restSeconds >= 0) { "restSeconds must not be negative" }
+        require(weeklyGoal == null || weeklyGoal in WEEKLY_GOAL_CHOICES) { "weeklyGoal must be 1–7" }
     }
 
     /**
@@ -54,5 +57,8 @@ data class TrainingSettings(
     companion object {
         /** Choices for the default rest, in seconds. */
         val REST_CHOICES = listOf(30, 45, 60, 90, 120, 150, 180, 240, 300)
+
+        /** Choices for the weekly goal (sessions per week). */
+        val WEEKLY_GOAL_CHOICES = 1..7
     }
 }

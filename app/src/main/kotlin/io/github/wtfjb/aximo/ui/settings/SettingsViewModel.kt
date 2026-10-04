@@ -67,6 +67,9 @@ class SettingsViewModel(
 
     fun setRating(rating: SetRating) = updateTraining { it.copy(rating = rating) }
 
+    /** null = no goal. */
+    fun setWeeklyGoal(goal: Int?) = updateTraining { it.copy(weeklyGoal = goal) }
+
     /**
      * Steps as typed in the display unit ("2,5", "2"). Returns false and changes
      * nothing if one of them is not a positive number.

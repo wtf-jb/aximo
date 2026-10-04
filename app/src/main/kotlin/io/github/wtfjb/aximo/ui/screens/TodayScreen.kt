@@ -70,7 +70,7 @@ fun TodayScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
-        state.week?.let { WeekCard(it) }
+        state.week?.let { WeekCard(it, state.weeklyGoal) }
         RecentList(items = state.recent, onOpenCardio = onOpenCardio, onOpenWorkout = onOpenFinishedWorkout)
         if (BuildConfig.DEBUG) {
             SecondaryButton(

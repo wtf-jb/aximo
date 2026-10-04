@@ -125,15 +125,19 @@ private fun PreviewRow(item: PreviewItem) {
     }
 }
 
-/** "Diese Woche": Monday to Sunday with strength and cardio days and the session count. */
+/** "Diese Woche": Monday to Sunday with strength and cardio days and the session count ("3 von 4 Einheiten" with a goal). */
 @Composable
-fun WeekCard(week: WeekOverview) {
+fun WeekCard(week: WeekOverview, goal: Int?) {
     Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Spacing.s18), verticalArrangement = Arrangement.spacedBy(Spacing.s14)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = stringResource(R.string.today_week_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
                 Text(
-                    text = pluralStringResource(R.plurals.today_week_sessions, week.sessions, week.sessions),
+                    text = if (goal != null) {
+                        pluralStringResource(R.plurals.today_week_sessions_goal, goal, week.sessions, goal)
+                    } else {
+                        pluralStringResource(R.plurals.today_week_sessions, week.sessions, week.sessions)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

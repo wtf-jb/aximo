@@ -503,4 +503,10 @@
         <item quantity="one">%d exercise added.</item>
         <item quantity="other">%d exercises added.</item>
     </plurals>
+    <plurals name="today_week_sessions_goal">
+        <item quantity="one">%1$d of %2$d session</item>
+        <item quantity="other">%1$d of %2$d sessions</item>
+    </plurals>
+    <string name="settings_weekly_goal">Weekly goal</string>
+    <string name="settings_weekly_goal_none">No goal</string>
 </resources>

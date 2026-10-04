@@ -80,10 +80,12 @@
   - Domain: `CatalogExercise` (38 gängige Kraft-/Bodyweight-Übungen mit Muskelgruppen, Equipment, Wdh.-Bereich), `ExerciseCatalog`, `CatalogSeeder` (beim ersten Start, nur ohne Kraft-/Bodyweight-Übungen; „fehlende ergänzen“ nach `catalogId`)
   - App: Namen DE/EN als Strings, Anlage beim App-Start; Einstellungen „Standard-Übungen ergänzen“
   - Tests: Domain, Seeder, ViewModel
+- Feinschliff 2: Wochenziel, ebenfalls in PR #14:
+  - `TrainingSettings.weeklyGoal` (kein Ziel oder 1–7 Einheiten), DataStore und Backup
+  - „Heute“: „3 von 4 Einheiten“; Einstellungen: Zeile „Wochenziel“
 
 ## Nächster Schritt
 - Jonas hat entschieden (04.10.): erst Prio-A-Feinschliff, Prio B danach (braucht Freigabe der `INTERNET`-Permission)
-- Feinschliff 2: Wochenziel auf „Heute“ („3 von 4 Einheiten“, Einstellung)
 - Feinschliff 3: Drag-and-drop in Routinen
 
 ## APK aufs Handy

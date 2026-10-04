@@ -14,6 +14,7 @@ import io.github.wtfjb.aximo.domain.repository.ProgressionRepository
 import io.github.wtfjb.aximo.domain.repository.RoutineRepository
 import io.github.wtfjb.aximo.domain.repository.WorkoutRepository
 import io.github.wtfjb.aximo.domain.routine.RoutineLogic
+import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.stats.StatsCalendar
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.today.NextWorkout
@@ -43,6 +44,8 @@ data class TodayUiState(
     val next: NextWorkoutUi? = null,
     /** "Diese Woche", null until loaded. */
     val week: WeekOverview? = null,
+    /** Sessions per week from the settings, null = no goal. */
+    val weeklyGoal: Int? = null,
     /** "Zuletzt": finished workouts and cardio entries, newest first. */
     val recent: List<RecentItem> = emptyList(),
 ) {
@@ -61,6 +64,7 @@ class TodayViewModel(
     private val progression: ProgressionRepository,
     private val starter: WorkoutStarter,
     private val time: TimeSource,
+    settings: SettingsRepository,
     private val zone: TimeZone = TimeZone.currentSystemDefault(),
 ) : ViewModel() {
 
@@ -89,13 +93,14 @@ class TodayViewModel(
     ) { routine, all, _ -> routine to all }
         .map { (routine, all) -> routine?.let { nextWorkout(it, all.associateBy { exercise -> exercise.id }) } }
 
-    private val week = combine(workouts.observeFinished(), cardio.observeAll()) { finished, entries ->
-        WeekBar.overview(
+    private val week = combine(workouts.observeFinished(), cardio.observeAll(), settings.training) { finished, entries, training ->
+        val overview = WeekBar.overview(
             strength = finished.map { it.workout.startedAt },
             cardio = entries.map { it.startedAt },
             today = StatsCalendar.localDate(time.now(), zone),
             zone = zone,
         )
+        overview to training.weeklyGoal
     }
 
     val uiState: StateFlow<TodayUiState> = combine(
@@ -103,11 +108,12 @@ class TodayViewModel(
         next,
         week,
         recent,
-    ) { active, nextWorkout, weekOverview, recentItems ->
+    ) { active, nextWorkout, (weekOverview, goal), recentItems ->
         TodayUiState(
             hasActiveWorkout = active != null,
             next = nextWorkout,
             week = weekOverview,
+            weeklyGoal = goal,
             recent = recentItems,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TodayUiState())

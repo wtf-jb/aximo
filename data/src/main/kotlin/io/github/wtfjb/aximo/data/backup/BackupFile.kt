@@ -134,4 +134,5 @@ data class SettingsRow(
     val stepDumbbellKg: Double,
     // Added after the first release of schema 1; older files default to RIR.
     val setRating: String = "RIR",
+    val weeklyGoal: Int? = null,
 )

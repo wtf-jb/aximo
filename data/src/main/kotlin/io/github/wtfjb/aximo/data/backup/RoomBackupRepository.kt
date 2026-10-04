@@ -197,7 +197,7 @@ private fun CardioRow.toEntity() = CardioEntryEntity(
     enumValueOf(source), externalId,
 )
 
-private fun TrainingSettings.toRow() = SettingsRow(unit.name, restSeconds, steps.barbellKg, steps.dumbbellKg, rating.name)
+private fun TrainingSettings.toRow() = SettingsRow(unit.name, restSeconds, steps.barbellKg, steps.dumbbellKg, rating.name, weeklyGoal)
 
 /** Invalid settings in a file are skipped; the data is what matters. */
 private fun SettingsRow.toSettings(): TrainingSettings? = runCatching {
@@ -206,5 +206,6 @@ private fun SettingsRow.toSettings(): TrainingSettings? = runCatching {
         restSeconds = restSeconds,
         steps = WeightSteps(stepBarbellKg, stepDumbbellKg),
         rating = enumValueOf<SetRating>(setRating),
+        weeklyGoal = weeklyGoal,
     )
 }.getOrNull()

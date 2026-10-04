@@ -64,8 +64,10 @@ class SettingsViewModelTest {
         vm.setRestSeconds(180)
         vm.setThemeMode(ThemeMode.DARK)
         vm.setRating(SetRating.RPE)
+        vm.setWeeklyGoal(4)
 
         assertEquals(SetRating.RPE, settings.training.value.rating)
+        assertEquals(4, settings.training.value.weeklyGoal)
         assertEquals(180, settings.training.value.restSeconds)
         assertEquals(ThemeMode.DARK, vm.uiState.value.themeMode)
     }

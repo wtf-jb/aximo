@@ -75,7 +75,7 @@ val appModule = module {
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), get(), exerciseId) }
     viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), exerciseId) }
-    viewModel { TodayViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { TodayViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (entryId: Long) ->
         val context = androidContext()
         CardioViewModel(get(), get(), get(), { activity -> context.getString(activity.nameRes()) }, entryId)

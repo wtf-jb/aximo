@@ -491,4 +491,10 @@
         <item quantity="one">%d Übung ergänzt.</item>
         <item quantity="other">%d Übungen ergänzt.</item>
     </plurals>
+    <plurals name="today_week_sessions_goal">
+        <item quantity="one">%1$d von %2$d Einheit</item>
+        <item quantity="other">%1$d von %2$d Einheiten</item>
+    </plurals>
+    <string name="settings_weekly_goal">Wochenziel</string>
+    <string name="settings_weekly_goal_none">Kein Ziel</string>
 </resources>
