@@ -63,3 +63,16 @@ fun formatSetValue(weightKg: Double, reps: Int, bodyweight: Boolean, unit: io.gi
         else -> reps.toString()
     }
 }
+
+/** Weekday and date in the device locale, e.g. "Samstag, 3. Oktober" / "Saturday, October 3". */
+fun formatLongDate(date: kotlinx.datetime.LocalDate, locale: Locale = Locale.getDefault()): String {
+    val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM")
+    val javaDate = java.time.LocalDate.of(date.year, date.month.ordinal + 1, date.day)
+    return java.time.format.DateTimeFormatter.ofPattern(pattern, locale).format(javaDate)
+}
+
+/** Short weekday, e.g. "Mo" / "Mon". */
+fun formatShortWeekday(date: kotlinx.datetime.LocalDate, locale: Locale = Locale.getDefault()): String {
+    val javaDate = java.time.LocalDate.of(date.year, date.month.ordinal + 1, date.day)
+    return javaDate.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, locale).removeSuffix(".")
+}

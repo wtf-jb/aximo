@@ -22,13 +22,6 @@ object AppIcons {
         )
     }
     val Stats by lazy { lineIcon("Stats", "M5 20V11M12 20V4M19 20v-6") }
-    val Coach by lazy {
-        lineIcon(
-            "Coach",
-            "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z",
-            "M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z",
-        )
-    }
     val Back by lazy { lineIcon("Back", "M19 12H5M12 19l-7-7 7-7") }
     val TrendUp by lazy { lineIcon("TrendUp", "M3 17l6-6 4 4 8-8", "M15 7h6v6") }
     val Close by lazy { lineIcon("Close", "M18 6 6 18M6 6l12 12") }

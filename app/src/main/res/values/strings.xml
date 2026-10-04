@@ -6,8 +6,6 @@
     <string name="nav_today">Today</string>
     <string name="nav_plans">Plans</string>
     <string name="nav_stats">Stats</string>
-    <string name="nav_coach">Coach</string>
-    <string name="placeholder_body">Coming in a later step.</string>
 
     <!-- Theme showcase (debug builds only) -->
     <string name="showcase_open">Theme showcase</string>
@@ -186,7 +184,6 @@
         <item quantity="one">%d exercise</item>
         <item quantity="other">%d exercises</item>
     </plurals>
-    <string name="today_start_routine">Start %1$s</string>
 
     <string name="routine_edit_title">Edit routine</string>
     <string name="routine_new_title">New routine</string>
@@ -438,4 +435,22 @@
     <string name="settings_backup_invalid">This file is not a valid Aximo backup. Nothing was changed.</string>
     <string name="settings_backup_newer">This backup comes from a newer app version. Update Aximo first. Nothing was changed.</string>
     <string name="settings_backup_failed">The file could not be read or written.</string>
+    <string name="today_next_label">NEXT WORKOUT</string>
+    <string name="today_next_minutes">approx. %1$d min</string>
+    <string name="today_next_start">Start workout</string>
+    <plurals name="today_next_exercises">
+        <item quantity="one">%d exercise</item>
+        <item quantity="other">%d exercises</item>
+    </plurals>
+    <plurals name="today_next_reps">
+        <item quantity="one">%d rep</item>
+        <item quantity="other">%d reps</item>
+    </plurals>
+    <string name="today_week_title">This week</string>
+    <plurals name="today_week_sessions">
+        <item quantity="one">%d session</item>
+        <item quantity="other">%d sessions</item>
+    </plurals>
+    <string name="today_week_day_strength">%1$s: strength</string>
+    <string name="today_week_day_cardio">%1$s: cardio</string>
 </resources>
