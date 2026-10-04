@@ -11,13 +11,14 @@
   - Theme-Showcase (nur Debug, Button auf „Heute“)
   - Platzhalter-Test in `:domain` (`ThemeModeTest`)
   - CI: `.github/workflows/android.yml` (Test + assembleDebug, Artefakt `app-debug`, Pre-Releases `debug-latest` / `pr-N`)
-
-## In Arbeit
-- Schritt 2 Domain-Modell und Room-Datenbank (Branch `claude/untitled-session-70idaq`, PR #2):
+- Schritt 2 Domain-Modell und Room-Datenbank, PR #2 (CI grün, gemergt):
   - Domain-Modelle für alle Prio-A-Entitäten aus requirements.md Abschnitt 6 mit Validierung, `WeightUnit` (kg/lbs)
   - Repository-Interfaces `ExerciseRepository`, `RoutineRepository` in `:domain`
   - Room-DB `AximoDatabase` v1 (alle Prio-A-Tabellen), DAOs, Mapper, Room-Repositories, Koin-Verdrahtung
   - Tests: Domain (Validierung, Einheiten), Room via Robolectric (Übungen, Routinen, Workouts/Kaskaden)
+
+## In Arbeit
+- –
 
 ## Nächster Schritt
 - 3. Übungsverwaltung (A-01) und Übungsauswahl-Screen (`Uebungen.html`)
