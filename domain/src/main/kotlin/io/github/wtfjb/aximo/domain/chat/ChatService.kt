@@ -18,6 +18,7 @@ import io.github.wtfjb.aximo.domain.review.AiReviewRepository
 import io.github.wtfjb.aximo.domain.review.PlanExerciseRef
 import io.github.wtfjb.aximo.domain.review.SuggestionApplier
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionChecks
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.stats.StatsCalendar
@@ -97,12 +98,13 @@ class ChatService(
             droppedInPlans += result.dropped
             result.plan?.let { suggestion.copy(change = it) }
         }
-        val valid = SuggestionApplier.applicable(resolved, routines.observeRoutinesWithExercises().first(), allExercises)
+        val applicable = SuggestionApplier.applicable(resolved, routines.observeRoutinesWithExercises().first(), allExercises)
+        val valid = SuggestionChecks.plausible(applicable, payload.context.review, allExercises)
         val answer = ChatMessage(
             role = ChatRole.COACH,
             text = generated.reply,
             createdAt = time.now(),
-            suggestions = valid.map { AiSuggestion(change = it.change, rationale = it.rationale) },
+            suggestions = valid.map { AiSuggestion(change = it.change, rationale = it.rationale, reason = it.reason) },
             droppedSuggestions = generated.dropped + droppedInPlans + (generated.suggestions.size - valid.size),
         )
         chats.saveExchange(payload.messages.last(), answer)

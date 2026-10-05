@@ -12,6 +12,7 @@ import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 
 /** Builds the [ReviewContext] from finished workouts and the current routines (B-02). */
@@ -57,13 +58,14 @@ object ReviewContextBuilder {
 
         val trends = ExerciseStats.trainedExercises(inPeriod)
             .filter { it.type != ExerciseType.CARDIO }
-            .mapNotNull { trend(inPeriod, it) }
+            .mapNotNull { trend(inPeriod, it, routines, today, zone) }
             .sortedByDescending { it.sessions }
             .take(MAX_EXERCISES)
 
         val volume = MuscleVolume.perWeek(MuscleVolume.setsPerRegion(inPeriod), weeks).map { (region, sets) ->
-            RegionVolume(region, round1(sets), MuscleVolume.TARGET_MIN, MuscleVolume.TARGET_MAX)
+            RegionVolume(region, round1(sets), MuscleVolume.TARGET_MIN, MuscleVolume.TARGET_MAX, ExerciseSignals.volumeStatus(sets))
         }
+        val sessionDates = inPeriod.map { date(it) }.distinct().sorted()
 
         val effort = EffortTrend(
             avgRirFirstHalf = averageRir(inPeriod.filter { date(it) < half }),
@@ -80,6 +82,8 @@ object ReviewContextBuilder {
             exercises = trends,
             volume = volume,
             effort = effort,
+            daysSinceLastSession = sessionDates.lastOrNull()?.let { daysBetween(it, today) },
+            longestBreakDays = sessionDates.zipWithNext { a, b -> daysBetween(a, b) }.maxOrNull() ?: 0,
             available = exercises
                 .filter { !it.archived && it.type != ExerciseType.CARDIO }
                 .take(MAX_AVAILABLE)
@@ -87,7 +91,13 @@ object ReviewContextBuilder {
         )
     }
 
-    private fun trend(workouts: List<WorkoutDetail>, exercise: Exercise): ExerciseTrend? {
+    private fun trend(
+        workouts: List<WorkoutDetail>,
+        exercise: Exercise,
+        routines: List<RoutineWithExercises>,
+        today: LocalDate,
+        zone: TimeZone,
+    ): ExerciseTrend? {
         val metric = ExerciseStats.metricFor(exercise.type)
         val sessions = ExerciseStats.sessions(workouts, exercise.id)
         val points = ExerciseStats.points(sessions, metric)
@@ -96,6 +106,17 @@ object ReviewContextBuilder {
         val lastSets = ProgressionRules.workingSets(sessions.last().sets)
         val top = lastSets.maxWithOrNull(compareBy({ it.weightKg }, { it.reps }))
         val rirs = sessions.flatMap { ProgressionRules.workingSets(it.sets) }.mapNotNull { Effort.rir(it) }
+
+        // Dates of the sessions that have a value; the gap of the last two tells a comeback from a decline.
+        val dates = points.map { StatsCalendar.localDate(it.startedAt, zone) }
+        val gapDays = if (dates.size >= 2) daysBetween(dates[dates.size - 2], dates.last()) else null
+        // The target comes from the routine of the last session, not from any routine that contains the exercise.
+        val target = sessions.last().routineId
+            ?.let { id -> routines.firstOrNull { it.routine.id == id } }
+            ?.exercises?.firstOrNull { it.exerciseId == exercise.id }
+        val workingPerSession = sessions.map { ProgressionRules.workingSets(it.sets) }
+        val recentRirs = workingPerSession.takeLast(ExerciseSignals.EFFORT_SESSIONS).flatten().mapNotNull { Effort.rir(it) }
+        val rirVsTarget = ExerciseSignals.rirVsTarget(workingPerSession, target?.targetRir)
         return ExerciseTrend(
             exerciseId = exercise.id,
             name = exercise.name,
@@ -108,6 +129,18 @@ object ReviewContextBuilder {
             lastTopWeightKg = top?.weightKg ?: 0.0,
             lastTopReps = top?.reps ?: 0,
             avgRir = rirs.takeIf { it.isNotEmpty() }?.let { round1(it.average()) },
+            recent = values.takeLast(ExerciseSignals.RECENT_VALUES).map { round1(it) },
+            changePct = ExerciseSignals.changePct(values)?.let { round1(it) },
+            dropFromBestPct = round1(ExerciseSignals.dropFromBestPct(values)),
+            daysSinceLast = daysBetween(dates.last(), today),
+            status = ExerciseSignals.status(values, metric, gapDays),
+            newBest = ExerciseSignals.newBest(values),
+            repMax = target?.repMax,
+            targetRir = target?.targetRir,
+            sessionsAtRepCeiling = target?.let { ExerciseSignals.sessionsAtRepCeiling(workingPerSession, it.repMax) } ?: 0,
+            recentAvgRir = recentRirs.takeIf { it.isNotEmpty() }?.let { round1(it.average()) },
+            rirVsTarget = rirVsTarget?.let { round1(it) },
+            effort = ExerciseSignals.effort(rirVsTarget),
         )
     }
 
@@ -133,6 +166,8 @@ object ReviewContextBuilder {
         }.mapNotNull { Effort.rir(it) }
         return rirs.takeIf { it.isNotEmpty() }?.let { round1(it.average()) }
     }
+
+    private fun daysBetween(from: LocalDate, to: LocalDate): Int = from.daysUntil(to)
 
     private fun round1(value: Double): Double = kotlin.math.round(value * 10) / 10
 

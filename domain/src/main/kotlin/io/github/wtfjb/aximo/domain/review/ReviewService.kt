@@ -22,7 +22,7 @@ data class GeneratedReview(
     val dropped: Int = 0,
 )
 
-data class GeneratedSuggestion(val change: SuggestionChange, val rationale: String)
+data class GeneratedSuggestion(val change: SuggestionChange, val rationale: String, val reason: SuggestionReason? = null)
 
 /** Builds the prompt, calls the provider and parses the JSON answer; lives in `:ai`. */
 fun interface ReviewGenerator {
@@ -77,17 +77,19 @@ class ReviewService(
         val provider = factory.create(profile, profiles.apiKey(profile.id))
         val generated = generator.generate(provider, context, language)
 
-        val valid = SuggestionApplier.applicable(
+        val allExercises = exercises.observeExercises(includeArchived = true).first()
+        val applicable = SuggestionApplier.applicable(
             // New plans come only from the chat (B-05); the review prompt does not offer them.
             generated.suggestions.filter { it.change is SuggestionChange.RoutineChange },
             routines.observeRoutinesWithExercises().first(),
-            exercises.observeExercises(includeArchived = true).first(),
+            allExercises,
         )
+        val valid = SuggestionChecks.plausible(applicable, context, allExercises)
         val review = AiReview(
             createdAt = time.now(),
             weeks = context.weeks,
             summary = generated.summary,
-            suggestions = valid.map { AiSuggestion(change = it.change, rationale = it.rationale) },
+            suggestions = valid.map { AiSuggestion(change = it.change, rationale = it.rationale, reason = it.reason) },
             droppedSuggestions = generated.dropped + (generated.suggestions.size - valid.size),
         )
         return reviews.saveReview(review)
