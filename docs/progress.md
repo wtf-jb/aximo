@@ -160,8 +160,10 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Workout: (i) in der Übungskarte öffnet das Übungsdetail im Tab „Info“
   - App-Icon #25 „Weich mit Abstand“ (Adaptive Icon + Monochrome, Quelle `docs/design/app-icon.svg`)
 
+- README mit Screenshots (`docs/screenshots`, erzeugt per `ReadmeScreenshots`-Test mit `-Pscreenshots`) und drei UI-Fixes aus den Screenshots (PR #31, gemergt)
+
 ## In Arbeit
-- README mit Screenshots (`docs/screenshots`, erzeugt per `ReadmeScreenshots`-Test mit `-Pscreenshots`) und drei UI-Fixes aus den Screenshots, PR #31
+- Coach-Signale (Branch `claude/untitled-session-70idaq`): Trend je Übung im Code klassifiziert (Rückgang/Stagnation/Fortschritt/Wiedereinstieg), Rep-Decke, RIR gegen Ziel, Plausibilitätsprüfung der Vorschläge, `reason` → Chip. Regeln in `docs/decisions.md` (2026-10-05), Auftrag in `docs/prompts/02-coach-signals.md`
 
 ## Nächster Schritt
 - B-07 Auto-Backup (Periodischer JSON-Export in frei wählbaren Ordner, Intervall konfigurierbar, Rotation der letzten N Backups; Anforderung siehe `docs/requirements.md`)
