@@ -40,7 +40,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.domain.review.AiReview
 import io.github.wtfjb.aximo.domain.review.ReviewException
+import io.github.wtfjb.aximo.domain.review.AiSuggestion
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import io.github.wtfjb.aximo.ui.ai.label
 import io.github.wtfjb.aximo.ui.components.InverseButton
@@ -274,7 +276,7 @@ internal fun SuggestionCard(item: SuggestionItem, onApply: () -> Unit, onDiscard
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.s8)) {
                 Surface(shape = Radii.full, color = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer) {
                     Text(
-                        text = stringResource(change.category()),
+                        text = stringResource(item.suggestion.category()),
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(horizontal = Spacing.s8, vertical = Spacing.s4),
                     )
@@ -435,7 +437,16 @@ internal fun ErrorText(error: CoachError?) {
     )
 }
 
-internal fun SuggestionChange.category(): Int = when (this) {
+/** The chip shows why the AI proposes the change; without a reason, the kind of change decides. */
+internal fun AiSuggestion.category(): Int = when (reason) {
+    SuggestionReason.VOLUME_LOW, SuggestionReason.VOLUME_HIGH -> R.string.coach_category_volume
+    SuggestionReason.PROGRESS, SuggestionReason.STAGNATION, SuggestionReason.REGRESSION,
+    SuggestionReason.RETURNING, SuggestionReason.REP_CEILING -> R.string.coach_category_performance
+    SuggestionReason.EFFORT_HIGH, SuggestionReason.EFFORT_LOW -> R.string.coach_category_effort
+    SuggestionReason.OTHER, null -> change.category()
+}
+
+private fun SuggestionChange.category(): Int = when (this) {
     is SuggestionChange.SetCount, is SuggestionChange.AddExercise, is SuggestionChange.RemoveExercise -> R.string.coach_category_volume
     is SuggestionChange.RepRange, is SuggestionChange.TargetRir,
     is SuggestionChange.ReplaceExercise, is SuggestionChange.MoveExercise -> R.string.coach_category_exercise

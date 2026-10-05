@@ -615,6 +615,8 @@
     <string name="coach_routine">Routine %1$s</string>
     <string name="coach_category_volume">VOLUME</string>
     <string name="coach_category_exercise">EXERCISE</string>
+    <string name="coach_category_performance">PERFORMANCE</string>
+    <string name="coach_category_effort">EFFORT</string>
     <string name="coach_title_more_sets">More sets</string>
     <string name="coach_title_fewer_sets">Fewer sets</string>
     <string name="coach_title_reps">Adjust rep range</string>

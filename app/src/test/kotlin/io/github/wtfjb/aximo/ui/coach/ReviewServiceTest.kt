@@ -19,6 +19,7 @@ import io.github.wtfjb.aximo.domain.review.GeneratedSuggestion
 import io.github.wtfjb.aximo.domain.review.ReviewException
 import io.github.wtfjb.aximo.domain.review.ReviewService
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
@@ -137,6 +138,27 @@ class ReviewServiceTest {
         assertEquals(listOf("mehr", "dips"), review.suggestions.map { it.rationale })
         assertEquals(4, review.droppedSuggestions)
         assertEquals(now, review.createdAt)
+    }
+
+    @Test
+    fun dropsImplausibleSuggestionsAndKeepsTheReason() = runTest {
+        profiles.saveProfile(FakeAiProfileRepository.profile("Ollama"), ApiKeyChange.Keep)
+        // Two sessions with one set each: chest is far below 10–20 sets per week.
+        workouts.allFinished.value = listOf(finishedBench(3), finishedBench(10))
+        answer = GeneratedReview(
+            "s",
+            listOf(
+                GeneratedSuggestion(SuggestionChange.SetCount(1, bench.id, 3, 2), "weniger", SuggestionReason.STAGNATION),
+                GeneratedSuggestion(SuggestionChange.RepRange(1, bench.id, 6, 8, 8, 10), "mehr Wdh.", SuggestionReason.REP_CEILING),
+            ),
+        )
+
+        service.createReview("de")
+
+        val review = reviews.latest.value!!
+        assertEquals(listOf("mehr Wdh."), review.suggestions.map { it.rationale })
+        assertEquals(listOf(SuggestionReason.REP_CEILING), review.suggestions.map { it.reason })
+        assertEquals(1, review.droppedSuggestions)
     }
 
     @Test
