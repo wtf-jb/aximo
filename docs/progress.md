@@ -171,7 +171,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
-- App-Icon: Favorit „Scheiben laden“ (#15) steht in `decisions.md`; Runde 4 mit Varianten (#19–24) auf der Canvas https://claude.ai/artifact/UznX6mypaAib7t6sdxD78d. Finale Variante wählen, dann baue ich das Adaptive Icon ein
+- App-Icon: Motiv #25 „Weich mit Abstand“ gewählt (Canvas https://claude.ai/artifact/UznX6mypaAib7t6sdxD78d, Runde 5). Nächster Schritt: als Adaptive Icon + Monochrome-Layer einbauen
 - Info-Icon im Workout testen (APK vom PR): Workout starten, in einer Übungskarte das (i) neben „⋯“ antippen → Übungsdetail öffnet direkt im Tab „Info“ (Fotos, Anleitung); Zurück → wieder im Workout, nichts verloren
 - Katalog mit Fotos und deutschen Texten testen (APK vom PR): Übungen → „Aus Katalog hinzufügen“ → Namen sind deutsch, Suche nach „Kniebeuge“ und „squat“ findet beide; Eintrag antippen → zwei Fotos (Start/Ende) über der Anleitung; Info-Tab einer Startübung (z. B. Bankdrücken) zeigt Fotos und deutsche Anleitung. Gerätesprache Englisch → englische Texte. Übersetzungsfehler gern als Liste melden
 - Notizfeld im Abschluss, Textfeld in „Per Text erfassen“ und Einschränkungen in „Mit KI erstellen“: im hellen Theme jetzt weiß statt unsichtbar
