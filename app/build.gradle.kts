@@ -46,6 +46,11 @@ android {
         compose = true
         buildConfig = true
     }
+
+    testOptions {
+        // Robolectric renders the app for the README screenshots.
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -74,4 +79,18 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    // README screenshots: the real app rendered on the JVM (see ReadmeScreenshots).
+    testImplementation(libs.robolectric)
+    testImplementation(platform(libs.compose.bom))
+    testImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
+}
+
+// `./gradlew :app:testDebugUnitTest -Pscreenshots --tests '*ReadmeScreenshots*'` writes the
+// README images to docs/screenshots. Without -Pscreenshots the test is skipped.
+tasks.withType<Test>().configureEach {
+    if (project.hasProperty("screenshots")) {
+        systemProperty("aximo.screenshots.dir", rootProject.file("docs/screenshots").absolutePath)
+        outputs.upToDateWhen { false }
+    }
 }
