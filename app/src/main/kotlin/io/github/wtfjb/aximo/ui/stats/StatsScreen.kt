@@ -388,6 +388,8 @@ private fun VolumeRow(item: RegionVolume) {
             text = value,
             style = MaterialTheme.typography.labelLarge,
             textAlign = androidx.compose.ui.text.style.TextAlign.End,
+            maxLines = 1,
+            softWrap = false,
             modifier = Modifier.width(Sizes.volumeValueColumn),
         )
     }

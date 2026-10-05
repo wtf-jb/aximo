@@ -161,7 +161,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - App-Icon #25 „Weich mit Abstand“ (Adaptive Icon + Monochrome, Quelle `docs/design/app-icon.svg`)
 
 ## In Arbeit
-- README mit Screenshots (`docs/screenshots`, erzeugt per `ReadmeScreenshots`-Test mit `-Pscreenshots`)
+- README mit Screenshots (`docs/screenshots`, erzeugt per `ReadmeScreenshots`-Test mit `-Pscreenshots`) und drei UI-Fixes aus den Screenshots, PR #31
 
 ## Nächster Schritt
 - B-07 Auto-Backup (Periodischer JSON-Export in frei wählbaren Ordner, Intervall konfigurierbar, Rotation der letzten N Backups; Anforderung siehe `docs/requirements.md`)
@@ -172,7 +172,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
-- Auf den README-Screenshots aufgefallen (Robolectric-Rendering, bitte auf dem Pixel gegenprüfen): (1) „Freies Training“ auf Heute hat im hellen Theme keinen sichtbaren Hintergrund; (2) im dunklen Theme sind die leeren Tage der Wochenleiste kaum zu sehen; (3) Statistik → Sätze pro Muskelgruppe: Werte wie „11,7“ brechen um. Sag Bescheid, dann behebe ich sie
+- UI-Fixes testen (APK von main nach PR #31): „Heute“ → „Freies Training“ hat im hellen Theme eine weiße Fläche; dunkles Theme → leere Tage in „Diese Woche“ als dunkelgraue Kreise sichtbar; Statistik → „Sätze pro Muskelgruppe“: Werte wie „11,7“ einzeilig
 - App-Icon testen (APK von main): neues Icon „Scheiben laden“ auf dem Homescreen (dunkel, Koralle-Scheibe mit Lücke), in der App-Übersicht und beim Start (Splash). Themed Icons an (Hintergrund & Stil → Designsymbole) → einfarbig, Lücke sichtbar. Ggf. alte Debug-App neu installieren, falls der Launcher das alte Icon cached
 - Info-Icon im Workout testen (APK von main): Workout starten, in einer Übungskarte das (i) neben „⋯“ antippen → Übungsdetail öffnet direkt im Tab „Info“ (Fotos, Anleitung); Zurück → wieder im Workout, nichts verloren
 - Katalog mit Fotos und deutschen Texten testen (APK von main): Übungen → „Aus Katalog hinzufügen“ → Namen sind deutsch, Suche nach „Kniebeuge“ und „squat“ findet beide; Eintrag antippen → zwei Fotos (Start/Ende) über der Anleitung; Info-Tab einer Startübung (z. B. Bankdrücken) zeigt Fotos und deutsche Anleitung. Gerätesprache Englisch → englische Texte. Übersetzungsfehler gern als Liste melden

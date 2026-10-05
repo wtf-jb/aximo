@@ -183,7 +183,7 @@ private fun DayCell(day: WeekDay, modifier: Modifier = Modifier) {
                     Text(text = day.date.day.toString(), style = MaterialTheme.typography.labelLarge)
                 }
             } else {
-                Box(circle.background(MaterialTheme.extendedColors.track))
+                Box(circle.background(MaterialTheme.colorScheme.surfaceVariant))
             }
         }
     }
