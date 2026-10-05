@@ -118,6 +118,7 @@
     <string name="workout_meta">%1$s · %2$s</string>
     <string name="workout_superset">SUPERSET %1$s</string>
     <string name="workout_exercise_options">Options for %1$s</string>
+    <string name="workout_exercise_info">Info about %1$s</string>
     <string name="workout_exercise_note">Note</string>
     <string name="workout_exercise_remove">Remove</string>
     <string name="workout_last">Last %1$s</string>

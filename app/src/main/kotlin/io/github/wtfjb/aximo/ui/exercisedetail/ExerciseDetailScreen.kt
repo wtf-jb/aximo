@@ -60,7 +60,8 @@ fun ExerciseDetailScreen(
     exerciseId: Long,
     onBack: () -> Unit,
     onEdit: (Long) -> Unit,
-    viewModel: ExerciseDetailViewModel = koinViewModel { parametersOf(exerciseId) },
+    initialTab: DetailTab = DetailTab.HISTORY,
+    viewModel: ExerciseDetailViewModel = koinViewModel { parametersOf(exerciseId, initialTab) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val exercise = state.exercise

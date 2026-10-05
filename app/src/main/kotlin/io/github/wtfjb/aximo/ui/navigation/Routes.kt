@@ -56,7 +56,8 @@ import kotlinx.serialization.Serializable
 @Serializable data object ExercisePickerRoute
 
 /** Progress, history and records of one exercise (A-07). */
-@Serializable data class ExerciseDetailRoute(val exerciseId: Long)
+/** [showInfo] opens the info tab instead of the history (from a running workout). */
+@Serializable data class ExerciseDetailRoute(val exerciseId: Long, val showInfo: Boolean = false)
 
 /** A finished workout, opened from "Zuletzt". */
 @Serializable data class WorkoutDetailRoute(val workoutId: Long)

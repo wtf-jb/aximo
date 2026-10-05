@@ -56,6 +56,8 @@ class WorkoutActions(
     val onAddSet: (WorkoutExerciseDetail) -> Unit,
     val onNote: (WorkoutExerciseDetail) -> Unit,
     val onRemove: (WorkoutExerciseDetail) -> Unit,
+    /** Opens the exercise detail on its info tab (photos, instructions). */
+    val onInfo: (WorkoutExerciseDetail) -> Unit,
 )
 
 /** One card: a single exercise, or a superset with its exercises one below the other. */
@@ -154,6 +156,14 @@ private fun ExerciseBlock(
                     ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            IconButton(onClick = { actions.onInfo(detail) }, modifier = Modifier.size(Sizes.touch)) {
+                Icon(
+                    imageVector = AppIcons.Info,
+                    contentDescription = stringResource(R.string.workout_exercise_info, exercise.name),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(Sizes.icon),
                 )
             }
             ExerciseMenu(detail = detail, actions = actions)

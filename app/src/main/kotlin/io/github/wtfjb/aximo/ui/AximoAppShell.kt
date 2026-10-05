@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import io.github.wtfjb.aximo.domain.settings.ThemeMode
 import io.github.wtfjb.aximo.ui.navigation.AppNavigationBar
+import io.github.wtfjb.aximo.ui.exercisedetail.DetailTab
 import io.github.wtfjb.aximo.ui.exercisedetail.ExerciseDetailScreen
 import io.github.wtfjb.aximo.ui.exercises.ExerciseEditScreen
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListScreen
@@ -145,8 +146,10 @@ fun AximoAppShell(
                 StatsScreen(onOpenExercise = { id -> navController.navigate(ExerciseDetailRoute(id)) })
             }
             composable<ExerciseDetailRoute> { entry ->
+                val route = entry.toRoute<ExerciseDetailRoute>()
                 ExerciseDetailScreen(
-                    exerciseId = entry.toRoute<ExerciseDetailRoute>().exerciseId,
+                    exerciseId = route.exerciseId,
+                    initialTab = if (route.showInfo) DetailTab.INFO else DetailTab.HISTORY,
                     onBack = { navController.popBackStack() },
                     onEdit = { id -> navController.navigate(ExerciseEditRoute(id)) },
                 )
@@ -176,6 +179,7 @@ fun AximoAppShell(
                     onAddExercise = { navController.navigate(ExercisePickerRoute) },
                     onLogText = { navController.navigate(LoggingRoute) },
                     onClose = { navController.popBackStack() },
+                    onExerciseInfo = { id -> navController.navigate(ExerciseDetailRoute(id, showInfo = true)) },
                     onFinished = { workoutId ->
                         navController.navigate(SummaryRoute(workoutId)) {
                             popUpTo<WorkoutRoute> { inclusive = true }

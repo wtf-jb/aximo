@@ -71,6 +71,7 @@ import io.github.wtfjb.aximo.domain.workout.WorkoutStarter
 import io.github.wtfjb.aximo.rest.AndroidRestTimerEffects
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.ui.cardio.CardioViewModel
+import io.github.wtfjb.aximo.ui.exercisedetail.DetailTab
 import io.github.wtfjb.aximo.ui.exercisedetail.ExerciseDetailViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
@@ -167,7 +168,7 @@ val appModule = module {
     }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), get(), exerciseId) }
-    viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), get(), exerciseId) }
+    viewModel { (exerciseId: Long, initialTab: DetailTab) -> ExerciseDetailViewModel(get(), get(), get(), get(), get(), exerciseId, initialTab) }
     viewModel { CatalogViewModel(get(), get(), get()) }
     viewModel { CalendarViewModel(get(), get(), get(), get(), get()) }
     viewModel { TodayViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }

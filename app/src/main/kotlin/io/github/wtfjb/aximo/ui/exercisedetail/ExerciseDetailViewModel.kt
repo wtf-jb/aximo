@@ -61,9 +61,10 @@ class ExerciseDetailViewModel(
     private val progression: ProgressionRepository,
     catalog: CatalogRepository,
     private val exerciseId: Long,
+    initialTab: DetailTab = DetailTab.HISTORY,
 ) : ViewModel() {
 
-    private val tab = MutableStateFlow(DetailTab.HISTORY)
+    private val tab = MutableStateFlow(initialTab)
     private val suggestion = MutableStateFlow<ProgressionState?>(null)
     private val libraryEntry = MutableStateFlow<CatalogEntry?>(null)
 

@@ -28,6 +28,7 @@ object AppIcons {
     val Search by lazy { lineIcon("Search", "M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z", "M21 21l-4.3-4.3") }
     val Check by lazy { lineIcon("Check", "M20 6 9 17l-5-5") }
     /** Three dots, drawn as round-capped dots (zero-length strokes, 3 px wide look). */
+    val Info by lazy { lineIcon("Info", "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z", "M12 16v-4M12 8h.01") }
     val More by lazy { lineIcon("More", "M5 12h.01M12 12h.01M19 12h.01") }
     val ArrowRight by lazy { lineIcon("ArrowRight", "M5 12h14M13 6l6 6-6 6") }
     val Minus by lazy { lineIcon("Minus", "M5 12h14") }

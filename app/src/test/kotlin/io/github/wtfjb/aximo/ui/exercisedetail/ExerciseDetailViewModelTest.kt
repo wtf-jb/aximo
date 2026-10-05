@@ -67,6 +67,19 @@ class ExerciseDetailViewModelTest {
     }
 
     @Test
+    fun opensOnTheRequestedTab() = runTest(UnconfinedTestDispatcher()) {
+        val fromWorkout = ExerciseDetailViewModel(
+            FakeExerciseRepository(listOf(exercise)), workouts, FakeRoutineRepository(), progression, { library },
+            exerciseId = 1, initialTab = DetailTab.INFO,
+        )
+        fromWorkout.uiState.launchIn(backgroundScope)
+        vm.uiState.launchIn(backgroundScope)
+
+        assertEquals(DetailTab.INFO, fromWorkout.uiState.value.tab)
+        assertEquals(DetailTab.HISTORY, vm.uiState.value.tab)
+    }
+
+    @Test
     fun ownExercisesHaveNoInstructions() = runTest(UnconfinedTestDispatcher()) {
         vm.uiState.launchIn(backgroundScope)
 
