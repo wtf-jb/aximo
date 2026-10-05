@@ -154,14 +154,14 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Entwickler-Werkzeuge (PR #26, gemergt): Theme-Showcase, „Testdaten laden“ (~3 Jahre), „Alle Daten löschen“ in Einstellungen → Entwickler (nur Debug)
 - Kalender (PR #27 + #28, gemergt): Kalender-Icon auf „Heute“ → Monatsansicht (Kraft dunkel, Cardio getönt), Tag antippen → Einträge, Monate per Wisch oder Pfeil; Domain `TrainingCalendar`
 
+- Kalorien, Katalog-Fotos + deutscher Katalog, Info im Workout, App-Icon, Eingabefelder-Fix (PR #29, gemergt):
+  - Kalorien: `CalorieEstimate` brutto nach Compendium, Körpergewicht in den Einstellungen und im Backup; Kachel im Abschluss, Zeile bei „Cardio erfassen“
+  - Katalog: zwei Fotos je Übung (`assets/exercise_images`), Namen und Anleitungen auf Deutsch
+  - Workout: (i) in der Übungskarte öffnet das Übungsdetail im Tab „Info“
+  - App-Icon #25 „Weich mit Abstand“ (Adaptive Icon + Monochrome, Quelle `docs/design/app-icon.svg`)
+
 ## In Arbeit
-- App-Icon #25 „Weich mit Abstand“ eingebaut (Adaptive Icon + Monochrome, `res/drawable/ic_launcher_*.xml`, Quelle `docs/design/app-icon.svg`); läuft mit im PR #29
-- Kalorienschätzung (Branch `claude/untitled-session-70idaq`, PR gegen main):
-  - Domain: `CalorieEstimate` (netto, konservativ, auf 10 kcal abgerundet; Kraft MET 3,5 × Dauer, Laufen/Gehen pro km, Rad/Rudern nach Tempo, Rest MET 4), `TrainingSettings.bodyWeightKg`
-  - Data: Körpergewicht im DataStore und im Backup (`bodyWeightKg`, ältere Dateien = keins)
-  - UI: Einstellungen → Allgemein → „Körpergewicht“; Abschluss-Screen Kachel „≈ N kcal“; „Cardio erfassen“ Zeile unter der Pace. Ohne Gewicht Hinweis auf die Einstellungen
-  - Tests: Domain, DataStore/Backup, ViewModels (Einstellungen, Abschluss, Cardio)
-  - Formeln und Gründe: `docs/decisions.md`
+- nichts
 
 ## Nächster Schritt
 - B-07 Auto-Backup (Periodischer JSON-Export in frei wählbaren Ordner, Intervall konfigurierbar, Rotation der letzten N Backups; Anforderung siehe `docs/requirements.md`)
@@ -172,11 +172,11 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
-- App-Icon testen (APK vom PR): neues Icon „Scheiben laden“ auf dem Homescreen (dunkel, Koralle-Scheibe mit Lücke), in der App-Übersicht und beim Start (Splash). Themed Icons an (Hintergrund & Stil → Designsymbole) → einfarbig, Lücke sichtbar. Ggf. alte Debug-App neu installieren, falls der Launcher das alte Icon cached
-- Info-Icon im Workout testen (APK vom PR): Workout starten, in einer Übungskarte das (i) neben „⋯“ antippen → Übungsdetail öffnet direkt im Tab „Info“ (Fotos, Anleitung); Zurück → wieder im Workout, nichts verloren
-- Katalog mit Fotos und deutschen Texten testen (APK vom PR): Übungen → „Aus Katalog hinzufügen“ → Namen sind deutsch, Suche nach „Kniebeuge“ und „squat“ findet beide; Eintrag antippen → zwei Fotos (Start/Ende) über der Anleitung; Info-Tab einer Startübung (z. B. Bankdrücken) zeigt Fotos und deutsche Anleitung. Gerätesprache Englisch → englische Texte. Übersetzungsfehler gern als Liste melden
+- App-Icon testen (APK von main): neues Icon „Scheiben laden“ auf dem Homescreen (dunkel, Koralle-Scheibe mit Lücke), in der App-Übersicht und beim Start (Splash). Themed Icons an (Hintergrund & Stil → Designsymbole) → einfarbig, Lücke sichtbar. Ggf. alte Debug-App neu installieren, falls der Launcher das alte Icon cached
+- Info-Icon im Workout testen (APK von main): Workout starten, in einer Übungskarte das (i) neben „⋯“ antippen → Übungsdetail öffnet direkt im Tab „Info“ (Fotos, Anleitung); Zurück → wieder im Workout, nichts verloren
+- Katalog mit Fotos und deutschen Texten testen (APK von main): Übungen → „Aus Katalog hinzufügen“ → Namen sind deutsch, Suche nach „Kniebeuge“ und „squat“ findet beide; Eintrag antippen → zwei Fotos (Start/Ende) über der Anleitung; Info-Tab einer Startübung (z. B. Bankdrücken) zeigt Fotos und deutsche Anleitung. Gerätesprache Englisch → englische Texte. Übersetzungsfehler gern als Liste melden
 - Notizfeld im Abschluss, Textfeld in „Per Text erfassen“ und Einschränkungen in „Mit KI erstellen“: im hellen Theme jetzt weiß statt unsichtbar
-- Kalorien testen (APK vom PR): Abschluss eines Workouts bzw. „Cardio erfassen“ ohne Körpergewicht → Hinweis; Einstellungen → „Körpergewicht“ eintragen (auch in lbs), dann zeigt der Abschluss „≈ N kcal“ und Cardio live die Schätzung (Formeln überarbeitet, brutto nach Compendium: Laufen 10 km in 60 min bei 80 kg ≈ 840 kcal, 60 min Kraft ≈ 420 kcal mit freien Gewichten, ≈ 500 mit Kniebeuge/Kreuzheben, ≈ 290 nur Maschine/Bodyweight). Feld leeren → Schätzung weg. Formeln ggf. in `decisions.md` kommentieren
+- Kalorien testen (APK von main): Abschluss eines Workouts bzw. „Cardio erfassen“ ohne Körpergewicht → Hinweis; Einstellungen → „Körpergewicht“ eintragen (auch in lbs), dann zeigt der Abschluss „≈ N kcal“ und Cardio live die Schätzung (Formeln überarbeitet, brutto nach Compendium: Laufen 10 km in 60 min bei 80 kg ≈ 840 kcal, 60 min Kraft ≈ 420 kcal mit freien Gewichten, ≈ 500 mit Kniebeuge/Kreuzheben, ≈ 290 nur Maschine/Bodyweight). Feld leeren → Schätzung weg. Formeln ggf. in `decisions.md` kommentieren
 - Kalender testen (APK von main): „Heute“ → Kalender-Icon; Tage mit Training markiert, Tag antippen, Zeile öffnen, Monate zurückblättern
 - Entwickler-Werkzeuge testen (APK von main): Einstellungen ganz unten → „Testdaten laden“ (Rückfrage), danach Statistik, Pläne, Verlauf und Coach durchklicken; „Alle Daten löschen“ leert alles, die Standardübungen sind wieder da; „Theme-Showcase“ öffnet sich dort, auf „Heute“ ist der Button weg
 - Modellauswahl im KI-Profil testen (APK von main): Einstellungen → KI-Coach → Profil. Nach Base-URL und Key erscheint „N Modelle verfügbar“, über den Pfeil auswählen; falscher Key → Fehlermeldung + „Erneut laden“; bestehendes Profil öffnen → Liste lädt mit gespeichertem Key; ohne Key keine Liste (auch Ollama im LAN: Modell tippen)
