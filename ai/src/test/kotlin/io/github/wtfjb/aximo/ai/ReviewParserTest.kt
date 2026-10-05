@@ -104,6 +104,21 @@ class ReviewParserTest {
     }
 
     @Test
+    fun invalidAnswerShowsItsStartAsDetail() {
+        val long = "Sorry,\n  I   can't. " + "x".repeat(300)
+        val error = try {
+            ReviewParser.parse(long)
+            null
+        } catch (e: AiException) {
+            e
+        }
+        val detail = error?.detail.orEmpty()
+        assertTrue(detail, detail.startsWith("Sorry, I can't. xxx"))
+        assertTrue(detail, detail.endsWith(" …"))
+        assertEquals(202, detail.length)
+    }
+
+    @Test
     fun missingSuggestionsIsEmpty() {
         assertTrue(ReviewParser.parse("""{"summary":"Alles im Plan."}""").suggestions.isEmpty())
     }

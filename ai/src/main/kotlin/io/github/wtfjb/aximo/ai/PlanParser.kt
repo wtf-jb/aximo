@@ -4,7 +4,6 @@ import io.github.wtfjb.aximo.ai.JsonRead.int
 import io.github.wtfjb.aximo.ai.JsonRead.long
 import io.github.wtfjb.aximo.ai.JsonRead.nullableInt
 import io.github.wtfjb.aximo.ai.JsonRead.string
-import io.github.wtfjb.aximo.domain.ai.AiException
 import io.github.wtfjb.aximo.domain.plan.GeneratedPlan
 import io.github.wtfjb.aximo.domain.plan.GeneratedPlanExercise
 import io.github.wtfjb.aximo.domain.plan.GeneratedRoutine
@@ -20,10 +19,10 @@ import kotlinx.serialization.json.JsonObject
 object PlanParser {
 
     fun parse(text: String): GeneratedPlan {
-        val root = JsonRead.extractObject(text) ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
+        val root = JsonRead.extractObject(text) ?: throw JsonRead.invalid(text)
         val summary = root.string("summary")?.trim()?.takeIf { it.isNotEmpty() }
-            ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
-        val raw = root["routines"] as? JsonArray ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
+            ?: throw JsonRead.invalid(text)
+        val raw = root["routines"] as? JsonArray ?: throw JsonRead.invalid(text)
 
         var dropped = 0
         val routines = raw.mapNotNull { element ->

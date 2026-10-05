@@ -16,12 +16,15 @@ data class AiMessage(val role: Role, val text: String) {
 
 /**
  * A request to the AI. [maxTokens] null lets the provider decide; the Anthropic
- * API needs a value, so its adapter uses its own default then.
+ * API needs a value, so its adapter uses its own default then. [jsonOutput]
+ * asks for a JSON object as answer where the API supports it (OpenAI-compatible
+ * `response_format`); the prompt must still ask for JSON.
  */
 data class AiRequest(
     val messages: List<AiMessage>,
     val system: String? = null,
     val maxTokens: Int? = null,
+    val jsonOutput: Boolean = false,
 ) {
     init {
         require(messages.isNotEmpty()) { "A request needs at least one message" }

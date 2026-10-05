@@ -1,5 +1,6 @@
 package io.github.wtfjb.aximo.ai
 
+import io.github.wtfjb.aximo.domain.ai.AiException
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -25,6 +26,20 @@ internal object JsonRead {
             null
         }
     }
+
+    /**
+     * INVALID_RESPONSE with the start of the answer as detail, so the user can
+     * see what the model sent instead (shown under the error message).
+     */
+    fun invalid(text: String): AiException {
+        val start = text.trim().replace(Regex("\\s+"), " ")
+        return AiException(
+            AiException.Reason.INVALID_RESPONSE,
+            detail = start.takeIf { it.isNotEmpty() }?.let { if (it.length > MAX_SNIPPET) it.take(MAX_SNIPPET) + " …" else it },
+        )
+    }
+
+    private const val MAX_SNIPPET = 200
 
     fun JsonObject.string(key: String): String? = (this[key] as? JsonPrimitive)?.takeIf { it.isString }?.content
 

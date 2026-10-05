@@ -1,6 +1,5 @@
 package io.github.wtfjb.aximo.ai
 
-import io.github.wtfjb.aximo.domain.ai.AiException
 import io.github.wtfjb.aximo.domain.review.GeneratedReview
 import io.github.wtfjb.aximo.ai.JsonRead.string
 import kotlinx.serialization.json.JsonArray
@@ -15,9 +14,9 @@ import kotlinx.serialization.json.JsonObject
 object ReviewParser {
 
     fun parse(text: String): GeneratedReview {
-        val root = JsonRead.extractObject(text) ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
+        val root = JsonRead.extractObject(text) ?: throw JsonRead.invalid(text)
         val summary = root.string("summary")?.trim()?.takeIf { it.isNotEmpty() }
-            ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
+            ?: throw JsonRead.invalid(text)
         val raw = (root["suggestions"] as? JsonArray).orEmpty()
         val parsed = raw.take(ReviewPrompt.MAX_SUGGESTIONS).map { (it as? JsonObject)?.let(SuggestionJson::parse) }
         return GeneratedReview(

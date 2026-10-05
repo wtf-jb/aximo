@@ -66,6 +66,62 @@ class OpenAiCompatibleProviderTest {
     }
 
     @Test
+    fun jsonOutputSendsResponseFormat() = runBlocking {
+        val server = MockServer { json(ok) }
+
+        provider(server).complete(request.copy(jsonOutput = true))
+
+        assertEquals("json_object", server.lastRequest.jsonBody()["response_format"]!!.jsonObject["type"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun withoutJsonOutputNoResponseFormat() = runBlocking {
+        val server = MockServer { json(ok) }
+
+        provider(server).complete(request)
+
+        assertFalse(server.lastRequest.jsonBody().containsKey("response_format"))
+    }
+
+    @Test
+    fun rejectedResponseFormatIsRetriedOnceWithout() = runBlocking {
+        val server = MockServer { request ->
+            if (request.jsonBody().containsKey("response_format")) json("""{"error":{"message":"unknown field"}}""", HttpStatusCode.BadRequest)
+            else json(ok)
+        }
+
+        assertEquals("Hallo", provider(server).complete(request.copy(jsonOutput = true)))
+        assertEquals(2, server.requests.size)
+        assertFalse(server.lastRequest.jsonBody().containsKey("response_format"))
+    }
+
+    @Test
+    fun otherErrorsAreNotRetried() = runBlocking {
+        val server = MockServer { json("""{"error":{"message":"bad key"}}""", HttpStatusCode.Unauthorized) }
+
+        try {
+            provider(server).complete(request.copy(jsonOutput = true))
+            fail("expected AiException")
+        } catch (e: AiException) {
+            assertEquals(AiException.Reason.UNAUTHORIZED, e.reason)
+        }
+        assertEquals(1, server.requests.size)
+    }
+
+    @Test
+    fun contentAsChunksJoinsTextAndSkipsThinking() = runBlocking {
+        val server = MockServer {
+            json(
+                """{"choices":[{"message":{"role":"assistant","content":[""" +
+                    """{"type":"thinking","thinking":[{"type":"text","text":"hmm"}]},""" +
+                    """{"type":"text","text":"{\"a\":"},{"type":"text","text":"1}"}]}}]}""",
+            )
+        }
+
+        assertEquals("{\"a\":1}", provider(server).complete(request))
+    }
+
+    @Test
     fun nullContentIsAnEmptyAnswer() = runBlocking {
         val server = MockServer { json("""{"choices":[{"message":{"role":"assistant","content":null}}]}""") }
 

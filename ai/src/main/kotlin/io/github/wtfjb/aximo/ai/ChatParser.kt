@@ -1,7 +1,6 @@
 package io.github.wtfjb.aximo.ai
 
 import io.github.wtfjb.aximo.ai.JsonRead.string
-import io.github.wtfjb.aximo.domain.ai.AiException
 import io.github.wtfjb.aximo.domain.chat.GeneratedReply
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -21,11 +20,11 @@ object ChatParser {
             // Small local models sometimes ignore the format and answer in plain
             // text. That is still an answer, just without suggestions.
             val plain = text.trim()
-            if (plain.isEmpty() || plain.contains('{')) throw AiException(AiException.Reason.INVALID_RESPONSE)
+            if (plain.isEmpty() || plain.contains('{')) throw JsonRead.invalid(text)
             return GeneratedReply(plain.take(MAX_REPLY_CHARS))
         }
         val reply = root.string("reply")?.trim()?.takeIf { it.isNotEmpty() }
-            ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
+            ?: throw JsonRead.invalid(text)
         val raw = (root["suggestions"] as? JsonArray).orEmpty()
         val parsed = raw.take(ChatPrompt.MAX_SUGGESTIONS).map { (it as? JsonObject)?.let(SuggestionJson::parse) }
         return GeneratedReply(

@@ -26,6 +26,7 @@ object ReviewPrompt {
     fun request(context: ReviewContext, language: String): AiRequest = AiRequest(
         system = system(language),
         messages = listOf(AiMessage(AiMessage.Role.USER, contextJson(context).toString())),
+        jsonOutput = true,
     )
 
     fun system(language: String): String {

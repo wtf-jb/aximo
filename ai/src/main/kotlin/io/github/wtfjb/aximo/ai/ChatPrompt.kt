@@ -29,6 +29,7 @@ object ChatPrompt {
     fun request(payload: ChatPayload, language: String): AiRequest = AiRequest(
         system = system(language) + "\n\nTraining data (JSON):\n" + contextJson(payload.context).toString(),
         messages = payload.messages.map(::message),
+        jsonOutput = true,
     )
 
     fun system(language: String): String {
