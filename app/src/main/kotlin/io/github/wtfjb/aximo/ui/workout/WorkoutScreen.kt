@@ -159,6 +159,7 @@ fun WorkoutScreen(
                             text = stringResource(R.string.workout_log_text),
                             onClick = onLogText,
                             modifier = Modifier.fillMaxWidth(),
+                            containerColor = MaterialTheme.colorScheme.surface,
                         )
                     }
                 }
@@ -182,6 +183,7 @@ fun WorkoutScreen(
                             text = stringResource(R.string.workout_add_exercise),
                             onClick = onAddExercise,
                             modifier = Modifier.fillMaxWidth(),
+                            containerColor = MaterialTheme.colorScheme.surface,
                         )
                     }
                     if (aiAvailable) {
@@ -190,6 +192,7 @@ fun WorkoutScreen(
                                 text = stringResource(R.string.workout_log_text),
                                 onClick = onLogText,
                                 modifier = Modifier.fillMaxWidth(),
+                                containerColor = MaterialTheme.colorScheme.surface,
                             )
                         }
                     }

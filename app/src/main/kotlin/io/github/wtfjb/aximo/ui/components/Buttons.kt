@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -45,13 +46,19 @@ fun InverseButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifi
 
 /** Helper actions inside cards ("+ Satz", "Supersatz", export). */
 @Composable
-fun SecondaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun SecondaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    // surface-sunken inside cards; on the screen background pass `surface`, else the button disappears.
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
+) {
     Button(
         onClick = onClick,
         modifier = modifier.defaultMinSize(minHeight = Sizes.touch),
         shape = MaterialTheme.shapes.small,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = containerColor,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ),
     ) {

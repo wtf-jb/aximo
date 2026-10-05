@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -29,12 +30,15 @@ fun SegmentedControl(
     selectedIndex: Int,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    // `track` on the screen background; inside a card pass `surfaceVariant` (surface-muted),
+    // because `track` equals `surface` in the dark theme and the track would disappear.
+    trackColor: Color = MaterialTheme.extendedColors.track,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.small)
-            .background(MaterialTheme.extendedColors.track)
+            .background(trackColor)
             .padding(Spacing.s4)
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(Spacing.s4),
@@ -47,7 +51,7 @@ fun SegmentedControl(
                     .defaultMinSize(minHeight = Sizes.touch - Spacing.s8)
                     .clip(MaterialTheme.shapes.small)
                     .background(
-                        if (isSelected) MaterialTheme.extendedColors.segmentActive else MaterialTheme.extendedColors.track,
+                        if (isSelected) MaterialTheme.extendedColors.segmentActive else trackColor,
                     )
                     .semantics { selected = isSelected }
                     .clickable(role = Role.Tab) { onSelect(index) },

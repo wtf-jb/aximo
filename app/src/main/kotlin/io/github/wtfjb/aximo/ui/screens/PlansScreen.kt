@@ -125,7 +125,7 @@ fun PlansScreen(
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    SecondaryButton(text = stringResource(R.string.plans_create_routine), onClick = onNewRoutine)
+                    SecondaryButton(text = stringResource(R.string.plans_create_routine), onClick = onNewRoutine, containerColor = MaterialTheme.colorScheme.surface)
                 }
             }
         }

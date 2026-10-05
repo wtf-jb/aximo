@@ -80,7 +80,7 @@ object Sizes {
     /** Sets per muscle group: bar height and the label / value columns (82 | 1fr | 28). */
     val volumeBar = 12.dp
     val volumeLabelColumn = 82.dp
-    val volumeValueColumn = 28.dp
+    val volumeValueColumn = 40.dp
 
     /** Heatmap cell height and legend swatches (16 × 10 bar, 10 × 10 dot). */
     val heatCell = 18.dp

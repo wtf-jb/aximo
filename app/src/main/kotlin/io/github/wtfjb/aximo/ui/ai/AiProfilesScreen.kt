@@ -72,7 +72,7 @@ fun AiProfilesScreen(
                 }
             }
         }
-        SecondaryButton(text = stringResource(R.string.ai_profiles_add), onClick = { onEdit(0L) }, modifier = Modifier.fillMaxWidth())
+        SecondaryButton(text = stringResource(R.string.ai_profiles_add), onClick = { onEdit(0L) }, modifier = Modifier.fillMaxWidth(), containerColor = MaterialTheme.colorScheme.surface)
         Hint(stringResource(R.string.ai_profiles_hint))
     }
 }

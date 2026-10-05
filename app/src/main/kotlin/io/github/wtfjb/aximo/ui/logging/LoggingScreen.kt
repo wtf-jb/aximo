@@ -256,7 +256,7 @@ private fun Preview(proposal: LoggingProposal, viewModel: LoggingViewModel) {
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         )
     }
-    SecondaryButton(text = stringResource(R.string.logging_edit_text), onClick = viewModel::discard, modifier = Modifier.fillMaxWidth())
+    SecondaryButton(text = stringResource(R.string.logging_edit_text), onClick = viewModel::discard, modifier = Modifier.fillMaxWidth(), containerColor = MaterialTheme.colorScheme.surface)
 }
 
 @Composable

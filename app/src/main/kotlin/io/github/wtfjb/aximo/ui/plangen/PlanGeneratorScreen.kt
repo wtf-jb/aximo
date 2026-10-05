@@ -246,7 +246,7 @@ private fun Draft(proposal: PlanProposal, viewModel: PlanGeneratorViewModel) {
             modifier = Modifier.fillMaxWidth(),
         )
     }
-    SecondaryButton(text = stringResource(R.string.plangen_again), onClick = viewModel::discard, modifier = Modifier.fillMaxWidth())
+    SecondaryButton(text = stringResource(R.string.plangen_again), onClick = viewModel::discard, modifier = Modifier.fillMaxWidth(), containerColor = MaterialTheme.colorScheme.surface)
 }
 
 @Composable
