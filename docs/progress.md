@@ -155,6 +155,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Kalender (PR #27 + #28, gemergt): Kalender-Icon auf „Heute“ → Monatsansicht (Kraft dunkel, Cardio getönt), Tag antippen → Einträge, Monate per Wisch oder Pfeil; Domain `TrainingCalendar`
 
 ## In Arbeit
+- App-Icon #25 „Weich mit Abstand“ eingebaut (Adaptive Icon + Monochrome, `res/drawable/ic_launcher_*.xml`, Quelle `docs/design/app-icon.svg`); läuft mit im PR #29
 - Kalorienschätzung (Branch `claude/untitled-session-70idaq`, PR gegen main):
   - Domain: `CalorieEstimate` (netto, konservativ, auf 10 kcal abgerundet; Kraft MET 3,5 × Dauer, Laufen/Gehen pro km, Rad/Rudern nach Tempo, Rest MET 4), `TrainingSettings.bodyWeightKg`
   - Data: Körpergewicht im DataStore und im Backup (`bodyWeightKg`, ältere Dateien = keins)
@@ -171,7 +172,7 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
-- App-Icon: Motiv #25 „Weich mit Abstand“ gewählt (Canvas https://claude.ai/artifact/UznX6mypaAib7t6sdxD78d, Runde 5). Nächster Schritt: als Adaptive Icon + Monochrome-Layer einbauen
+- App-Icon testen (APK vom PR): neues Icon „Scheiben laden“ auf dem Homescreen (dunkel, Koralle-Scheibe mit Lücke), in der App-Übersicht und beim Start (Splash). Themed Icons an (Hintergrund & Stil → Designsymbole) → einfarbig, Lücke sichtbar. Ggf. alte Debug-App neu installieren, falls der Launcher das alte Icon cached
 - Info-Icon im Workout testen (APK vom PR): Workout starten, in einer Übungskarte das (i) neben „⋯“ antippen → Übungsdetail öffnet direkt im Tab „Info“ (Fotos, Anleitung); Zurück → wieder im Workout, nichts verloren
 - Katalog mit Fotos und deutschen Texten testen (APK vom PR): Übungen → „Aus Katalog hinzufügen“ → Namen sind deutsch, Suche nach „Kniebeuge“ und „squat“ findet beide; Eintrag antippen → zwei Fotos (Start/Ende) über der Anleitung; Info-Tab einer Startübung (z. B. Bankdrücken) zeigt Fotos und deutsche Anleitung. Gerätesprache Englisch → englische Texte. Übersetzungsfehler gern als Liste melden
 - Notizfeld im Abschluss, Textfeld in „Per Text erfassen“ und Einschränkungen in „Mit KI erstellen“: im hellen Theme jetzt weiß statt unsichtbar

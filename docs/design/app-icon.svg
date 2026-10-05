@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" width="432" height="432">
+  <!-- Aximo app icon "plates with gap" (#25). Adaptive icon grid: 108 units, safe zone = circle d=66 at center. -->
+  <rect width="108" height="108" fill="#17181C"/>
+  <path d="M26 54 H82" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <rect x="34" y="45" width="8" height="18" rx="4" fill="#FFFFFF"/>
+  <rect x="44" y="38" width="8" height="32" rx="4" fill="#FFFFFF"/>
+  <rect x="60" y="30" width="9" height="48" rx="4.5" fill="#F0643F"/>
+  <rect x="71" y="49" width="5" height="10" rx="2.5" fill="#FFFFFF"/>
+</svg>
