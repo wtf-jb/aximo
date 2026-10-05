@@ -598,7 +598,7 @@ private fun SegmentRow(label: String, options: List<String>, selectedIndex: Int,
         verticalArrangement = Arrangement.spacedBy(Spacing.s8),
     ) {
         Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        SegmentedControl(options = options, selectedIndex = selectedIndex, onSelect = onSelect)
+        SegmentedControl(options = options, selectedIndex = selectedIndex, onSelect = onSelect, trackColor = MaterialTheme.colorScheme.surfaceVariant)
     }
 }
 

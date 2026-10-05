@@ -117,6 +117,7 @@ fun AiProfileEditScreen(
                         options = AiProviderKind.entries.map { stringResource(it.label()) },
                         selectedIndex = draft.kind.ordinal,
                         onSelect = { viewModel.setKind(AiProviderKind.entries[it]) },
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
                     )
                 }
                 LabeledTextField(
@@ -178,6 +179,7 @@ fun AiProfileEditScreen(
             text = stringResource(R.string.ai_profile_test),
             onClick = viewModel::testConnection,
             modifier = Modifier.fillMaxWidth(),
+            containerColor = MaterialTheme.colorScheme.surface,
         )
         TestResult(state.test)
 

@@ -503,6 +503,7 @@ private fun CardioCard(
             options = CardioMetric.entries.map { stringResource(it.label(trend.paceStyle)) },
             selectedIndex = trend.metric.ordinal,
             onSelect = { onPickMetric(CardioMetric.entries[it]) },
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
         val format: (Double) -> String = { cardioValue(it, trend.metric, trend.paceStyle) }
         val points = trend.points

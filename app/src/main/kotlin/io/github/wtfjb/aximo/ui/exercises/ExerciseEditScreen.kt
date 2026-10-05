@@ -119,6 +119,7 @@ private fun ExerciseForm(
             options = types.map { stringResource(it.label()) },
             selectedIndex = types.indexOf(draft.type),
             onSelect = { index -> onChange { it.copy(type = types[index]) } },
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
     }
 
