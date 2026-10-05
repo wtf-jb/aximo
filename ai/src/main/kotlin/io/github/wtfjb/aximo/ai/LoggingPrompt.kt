@@ -22,6 +22,7 @@ object LoggingPrompt {
     fun request(input: LoggingInput, language: String): AiRequest = AiRequest(
         system = system(language),
         messages = listOf(AiMessage(AiMessage.Role.USER, inputJson(input).toString())),
+        jsonOutput = true,
     )
 
     fun system(language: String): String {

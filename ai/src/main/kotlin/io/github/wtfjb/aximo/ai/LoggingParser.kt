@@ -4,7 +4,6 @@ import io.github.wtfjb.aximo.ai.JsonRead.int
 import io.github.wtfjb.aximo.ai.JsonRead.nullableDouble
 import io.github.wtfjb.aximo.ai.JsonRead.nullableInt
 import io.github.wtfjb.aximo.ai.JsonRead.string
-import io.github.wtfjb.aximo.domain.ai.AiException
 import io.github.wtfjb.aximo.domain.logging.ParsedExercise
 import io.github.wtfjb.aximo.domain.logging.ParsedLog
 import io.github.wtfjb.aximo.domain.logging.ParsedSetGroup
@@ -26,8 +25,8 @@ import kotlinx.serialization.json.JsonObject
 object LoggingParser {
 
     fun parse(text: String): ParsedLog {
-        val root = JsonRead.extractObject(text) ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
-        val raw = root["exercises"] as? JsonArray ?: throw AiException(AiException.Reason.INVALID_RESPONSE)
+        val root = JsonRead.extractObject(text) ?: throw JsonRead.invalid(text)
+        val raw = root["exercises"] as? JsonArray ?: throw JsonRead.invalid(text)
 
         var dropped = 0
         val exercises = raw.mapNotNull { element ->

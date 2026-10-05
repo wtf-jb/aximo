@@ -23,6 +23,7 @@ object PlanPrompt {
     fun request(input: PlanInput, language: String): AiRequest = AiRequest(
         system = system(language),
         messages = listOf(AiMessage(AiMessage.Role.USER, inputJson(input).toString())),
+        jsonOutput = true,
     )
 
     fun system(language: String): String {

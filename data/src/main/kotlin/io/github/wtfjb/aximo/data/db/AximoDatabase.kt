@@ -55,9 +55,15 @@ import io.github.wtfjb.aximo.data.db.entity.WorkoutExerciseEntity
     ],
     // 2: ai_profiles (B-01); 3: ai_reviews, ai_suggestions (B-02);
     // 4: ai_chat_messages, ai_suggestions.reviewId nullable + chatMessageId (B-05).
+    // 5: ai_suggestions.reason (coach signals).
     // Room migrates automatically (for 4 it rebuilds ai_suggestions and copies the rows).
-    version = 4,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4)],
+    version = 5,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
+    ],
     exportSchema = true,
 )
 @TypeConverters(Converters::class)

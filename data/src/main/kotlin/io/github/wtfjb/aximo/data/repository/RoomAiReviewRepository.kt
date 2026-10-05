@@ -7,6 +7,7 @@ import io.github.wtfjb.aximo.data.db.entity.AiSuggestionEntity
 import io.github.wtfjb.aximo.domain.review.AiReview
 import io.github.wtfjb.aximo.domain.review.AiReviewRepository
 import io.github.wtfjb.aximo.domain.review.AiSuggestion
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -36,6 +37,7 @@ class RoomAiReviewRepository(private val dao: AiReviewDao) : AiReviewRepository 
                 payloadJson = SuggestionCodec.encode(s.change),
                 rationale = s.rationale,
                 status = s.status.name,
+                reason = s.reason?.name,
             )
         },
     )
@@ -50,5 +52,15 @@ class RoomAiReviewRepository(private val dao: AiReviewDao) : AiReviewRepository 
 internal fun AiSuggestionEntity.toDomain(): AiSuggestion? {
     val change = SuggestionCodec.decode(type, payloadJson) ?: return null
     val status = SuggestionStatus.entries.firstOrNull { it.name == status } ?: return null
-    return AiSuggestion(id = id, reviewId = reviewId, chatMessageId = chatMessageId, change = change, rationale = rationale, status = status)
+    // An unknown reason (e.g. from a newer app version) is no reason to lose the suggestion.
+    val reason = SuggestionReason.entries.firstOrNull { it.name == reason }
+    return AiSuggestion(
+        id = id,
+        reviewId = reviewId,
+        chatMessageId = chatMessageId,
+        change = change,
+        rationale = rationale,
+        status = status,
+        reason = reason,
+    )
 }

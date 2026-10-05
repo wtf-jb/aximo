@@ -87,6 +87,14 @@ sealed interface PlanExerciseRef {
 enum class SuggestionStatus { OPEN, APPLIED, DISCARDED }
 
 /**
+ * Why the AI proposes a change; the coach card shows it as a chip. Optional:
+ * chat answers and stored suggestions from before may have none.
+ */
+enum class SuggestionReason {
+    PROGRESS, STAGNATION, REGRESSION, RETURNING, VOLUME_LOW, VOLUME_HIGH, EFFORT_HIGH, EFFORT_LOW, REP_CEILING, OTHER
+}
+
+/**
  * A stored suggestion from a review or the coach chat (B-05). The AI never
  * changes data itself; only [SuggestionApplier] does, after the user confirms.
  */
@@ -100,6 +108,7 @@ data class AiSuggestion(
     /** Why, in the app language, naming the numbers ("9 Sätze, Ziel 10–20"). */
     val rationale: String,
     val status: SuggestionStatus = SuggestionStatus.OPEN,
+    val reason: SuggestionReason? = null,
 )
 
 /** One weekly review: summary text plus its suggestions. */

@@ -29,6 +29,7 @@ import io.github.wtfjb.aximo.domain.model.WorkoutExercise
 import io.github.wtfjb.aximo.domain.review.GeneratedSuggestion
 import io.github.wtfjb.aximo.domain.review.ReviewService
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import io.github.wtfjb.aximo.domain.workout.WorkoutDetail
@@ -201,6 +202,29 @@ class ChatServiceTest {
 
         assertEquals(4, routines.getRoutine(1)!!.exercises.single().targetSets)
         assertEquals(SuggestionStatus.APPLIED, chats.messages.value.last().suggestions.single().status)
+    }
+
+    @Test
+    fun implausibleSuggestionsAreDroppedAndTheReasonIsKept() = runTest {
+        withProfile()
+        // One session with one set: chest is far below 10–20 sets per week.
+        exercises.saveExercise(bench.copy(primaryMuscles = setOf(MuscleGroup.CHEST)))
+        answer = {
+            GeneratedReply(
+                "Mehr Volumen.",
+                listOf(
+                    GeneratedSuggestion(SuggestionChange.SetCount(1, bench.id, 3, 2), "weniger", SuggestionReason.STAGNATION),
+                    GeneratedSuggestion(SuggestionChange.SetCount(1, bench.id, 3, 4), "mehr", SuggestionReason.VOLUME_LOW),
+                ),
+            )
+        }
+
+        service.send("Weniger Sätze?", "de")
+
+        val answerMessage = chats.messages.value.last()
+        assertEquals(listOf("mehr"), answerMessage.suggestions.map { it.rationale })
+        assertEquals(listOf(SuggestionReason.VOLUME_LOW), answerMessage.suggestions.map { it.reason })
+        assertEquals(1, answerMessage.droppedSuggestions)
     }
 
     @Test

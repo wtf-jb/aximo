@@ -597,6 +597,8 @@
     <string name="coach_routine">Routine %1$s</string>
     <string name="coach_category_volume">VOLUMEN</string>
     <string name="coach_category_exercise">ÜBUNG</string>
+    <string name="coach_category_performance">LEISTUNG</string>
+    <string name="coach_category_effort">BELASTUNG</string>
     <string name="coach_title_more_sets">Mehr Sätze</string>
     <string name="coach_title_fewer_sets">Weniger Sätze</string>
     <string name="coach_title_reps">Wdh.-Bereich anpassen</string>

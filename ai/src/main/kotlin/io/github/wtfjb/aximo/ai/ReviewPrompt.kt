@@ -18,7 +18,7 @@ import kotlinx.serialization.json.putJsonObject
  * schema raises [VERSION]. The answer is parsed by [ReviewParser].
  */
 object ReviewPrompt {
-    const val VERSION = "review-v1"
+    const val VERSION = "review-v2"
 
     /** Most suggestions per review; more is noise. */
     const val MAX_SUGGESTIONS = 5
@@ -26,6 +26,7 @@ object ReviewPrompt {
     fun request(context: ReviewContext, language: String): AiRequest = AiRequest(
         system = system(language),
         messages = listOf(AiMessage(AiMessage.Role.USER, contextJson(context).toString())),
+        jsonOutput = true,
     )
 
     fun system(language: String): String {
@@ -38,11 +39,11 @@ object ReviewPrompt {
             {
               "summary": string,
               "suggestions": [
-                {"type": "set_count", "routine_id": int, "exercise_id": int, "from": int, "to": int, "rationale": string},
-                {"type": "rep_range", "routine_id": int, "exercise_id": int, "from_min": int, "from_max": int, "to_min": int, "to_max": int, "rationale": string},
-                {"type": "target_rir", "routine_id": int, "exercise_id": int, "from": int|null, "to": int|null, "rationale": string},
-                {"type": "add_exercise", "routine_id": int, "exercise_id": int, "sets": int, "rep_min": int, "rep_max": int, "target_rir": int|null, "rationale": string},
-                {"type": "remove_exercise", "routine_id": int, "exercise_id": int, "rationale": string}
+                {"type": "set_count", "routine_id": int, "exercise_id": int, "from": int, "to": int, "rationale": string, "reason": string},
+                {"type": "rep_range", "routine_id": int, "exercise_id": int, "from_min": int, "from_max": int, "to_min": int, "to_max": int, "rationale": string, "reason": string},
+                {"type": "target_rir", "routine_id": int, "exercise_id": int, "from": int|null, "to": int|null, "rationale": string, "reason": string},
+                {"type": "add_exercise", "routine_id": int, "exercise_id": int, "sets": int, "rep_min": int, "rep_max": int, "target_rir": int|null, "rationale": string, "reason": string},
+                {"type": "remove_exercise", "routine_id": int, "exercise_id": int, "rationale": string, "reason": string}
               ]
             }
 
@@ -53,7 +54,23 @@ object ReviewPrompt {
             - "from" values must equal the current values in the routine.
             - Sets 1–10, reps 1–50, RIR 0–5.
             - Volume target: 10–20 working sets per body region and week (see "volume").
-            - Look for stagnation (sessions_since_best ≥ 3), volume outside the target, rising effort (falling RIR) and missed sessions.
+            - The app has already classified every exercise and region. Take these labels over, do not judge them again:
+              "status" of an exercise: too_few_data, returning, regressing, stagnating, progressing, stable.
+              "effort" of an exercise: too_hard, on_target, too_easy (average RIR of the last sessions against target_rir).
+              Volume "status" per region: below, in_range, above (10–20 working sets per week).
+            - Choose the words by status. regressing means the values fell (use "drop", give change_pct or drop_from_best_pct),
+              stagnating means no new best without a real drop. Never call a regression stagnation.
+              returning means the user came back after a break (days_since_last, longest_break_days): do not read a drop
+              after a break as lost strength or as a reason to reduce.
+            - If sessions_at_rep_ceiling ≥ 2 (all sets at rep_max, enough RIR left), say in summary or rationale that the weight
+              can go up. There is no suggestion type for weight; do not invent one.
+            - Do not lower set_count for an exercise whose primary region has volume status below, unless its status is
+              regressing or its effort is too_hard. Do not raise set_count if a primary region is above. Do not add an exercise
+              if all its regions are above. The app drops such suggestions.
+            - Every suggestion has a "reason": progress, stagnation, regression, returning, volume_low, volume_high,
+              effort_high, effort_low, rep_ceiling or other. Pick the one that caused the suggestion.
+            - If an exercise has status progressing or new_best is true, the first sentence of the summary says so, naming the exercise.
+            - Also weigh missed sessions (sessions_per_week against weekly_goal, days_since_last_session).
             - summary: 2–4 sentences in $lang. rationale: 1–2 sentences in $lang that name the numbers they rely on,
               e.g. "9 sets per week, target 10–20". Plain tone, no exclamation marks. Weights are in kg.
         """.trimIndent()
@@ -68,6 +85,8 @@ object ReviewPrompt {
         put("sessions_per_week", context.sessionsPerWeek)
         put("weekly_goal", context.weeklyGoal)
         put("unit", "kg")
+        put("days_since_last_session", context.daysSinceLastSession)
+        put("longest_break_days", context.longestBreakDays)
         putJsonArray("routines") {
             context.routines.forEach { r ->
                 addJsonObject {
@@ -102,6 +121,18 @@ object ReviewPrompt {
                     put("sessions_since_best", t.sessionsSinceBest)
                     put("last_top_set", "${formatKg(t.lastTopWeightKg)} kg x ${t.lastTopReps}")
                     put("avg_rir", t.avgRir)
+                    putJsonArray("recent") { t.recent.forEach { add(JsonPrimitive(it)) } }
+                    put("change_pct", t.changePct)
+                    put("drop_from_best_pct", t.dropFromBestPct)
+                    put("days_since_last", t.daysSinceLast)
+                    put("status", t.status.name.lowercase())
+                    put("new_best", t.newBest)
+                    put("rep_max", t.repMax)
+                    put("target_rir", t.targetRir)
+                    put("sessions_at_rep_ceiling", t.sessionsAtRepCeiling)
+                    put("recent_avg_rir", t.recentAvgRir)
+                    put("rir_vs_target", t.rirVsTarget)
+                    put("effort", t.effort?.name?.lowercase())
                 }
             }
         }
@@ -109,7 +140,12 @@ object ReviewPrompt {
             put("target_min", context.volume.firstOrNull()?.targetMin ?: 10.0)
             put("target_max", context.volume.firstOrNull()?.targetMax ?: 20.0)
             putJsonObject("sets_per_week") {
-                context.volume.forEach { put(it.region.name.lowercase(), it.setsPerWeek) }
+                context.volume.forEach { v ->
+                    putJsonObject(v.region.name.lowercase()) {
+                        put("sets", v.setsPerWeek)
+                        put("status", v.status.name.lowercase())
+                    }
+                }
             }
         }
         putJsonObject("effort") {

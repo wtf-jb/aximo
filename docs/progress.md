@@ -160,8 +160,18 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
   - Workout: (i) in der Übungskarte öffnet das Übungsdetail im Tab „Info“
   - App-Icon #25 „Weich mit Abstand“ (Adaptive Icon + Monochrome, Quelle `docs/design/app-icon.svg`)
 
+- README mit Screenshots (`docs/screenshots`, erzeugt per `ReadmeScreenshots`-Test mit `-Pscreenshots`) und drei UI-Fixes aus den Screenshots (PR #31, gemergt)
+
+- Coach-Signale (Branch `claude/untitled-session-70idaq`, PR folgt), Auftrag `docs/prompts/02-coach-signals.md`:
+  - Domain: `ExerciseSignals` (Status TOO_FEW_DATA/RETURNING/REGRESSING/STAGNATING/PROGRESSING/STABLE, `newBest`, Rep-Decke, RIR gegen Ziel, Volumenstatus; Schwellen als `const val`), `ReviewContext` um Verlauf, Status, Ziel aus der Routine der letzten Einheit, Pausen und Volumenstatus erweitert; `SuggestionChecks` (3 Plausibilitätsregeln, in Review und Chat nach `applicable`, Verworfene zählen zu `dropped`); `SuggestionReason` an `GeneratedSuggestion`/`AiSuggestion`
+  - `:ai`: `review-v2` und `chat-v3` (Status/Effort/Volumen übernehmen, Wortwahl nach Status, `reason` je Vorschlag, Positives im ersten Satz); `SuggestionJson` liest/schreibt `reason` (unbekannt oder fehlend = null)
+  - Data: `ai_suggestions.reason` (DB v5, Auto-Migration, `5.json`, Migrationstest 4 → 5)
+  - UI: Chip nach Grund (LEISTUNG/VOLUMEN/BELASTUNG), ohne Grund wie bisher
+  - Tests: `ExerciseSignalsTest` (Grenzwerte, Bankdrücken-Screenshot = REGRESSING), `SuggestionChecksTest` (Screenshot-Fall verworfen), Builder, Prompts, Parser, Repositories, Services, Chip-Mapping
+  - Keine Abweichung von `decisions.md`
+
 ## In Arbeit
-- README mit Screenshots (`docs/screenshots`, erzeugt per `ReadmeScreenshots`-Test mit `-Pscreenshots`) und drei UI-Fixes aus den Screenshots, PR #31
+- Nichts
 
 ## Nächster Schritt
 - B-07 Auto-Backup (Periodischer JSON-Export in frei wählbaren Ordner, Intervall konfigurierbar, Rotation der letzten N Backups; Anforderung siehe `docs/requirements.md`)
@@ -172,6 +182,8 @@ Plan: B-01 → B-02 → … → B-07 in kleinen PRs. Coach-Tab kommt zurück in 
 - Stand eines PRs N: https://github.com/wtf-jb/aximo/releases/download/pr-N/aximo-debug.apk
 
 ## Offen für Jonas
+- Wochen-Review mit Mistral erneut testen (APK `pr-32`): KI-Antworten werden jetzt im JSON-Modus angefordert. Kommt trotzdem „Unerwartete Antwort“, steht darunter der Anfang der Modellantwort → Screenshot schicken
+- Coach-Signale auf dem Pixel testen (APK vom PR): Testdaten laden (Einstellungen → Entwickler), Coach → Wochen-Review neu erstellen. Chips auf den Karten: LEISTUNG, VOLUMEN, BELASTUNG je nach Anlass. Text: bei fallenden Werten „Rückgang“, nicht „stagniert“; nach einer Pause (≥ 14 Tage) kein Abbau unterstellt; kein „weniger Sätze“ bei Muskelgruppe unter 10 Sätzen. „Gesendete Daten ansehen“ zeigt je Übung `status`, `recent`, `effort`, je Region `sets` + `status` und `prompt_version` `review-v2`. Auch im Chat prüfen („Warum stagniert mein Bankdrücken?“)
 - UI-Fixes testen (APK von main nach PR #31): „Heute“ → „Freies Training“ hat im hellen Theme eine weiße Fläche; dunkles Theme → leere Tage in „Diese Woche“ als dunkelgraue Kreise sichtbar; Statistik → „Sätze pro Muskelgruppe“: Werte wie „11,7“ einzeilig; außerdem sichtbar im hellen Theme: im Workout „Übung hinzufügen“ unter den Karten, Pläne ohne Routinen → „Routine anlegen“, KI-Profile → „Profil hinzufügen“/„Verbindung testen“; im dunklen Theme die Umschalter in Einstellungen (kg/lbs, Darstellung, RIR/RPE) mit sichtbarer Spur
 - App-Icon testen (APK von main): neues Icon „Scheiben laden“ auf dem Homescreen (dunkel, Koralle-Scheibe mit Lücke), in der App-Übersicht und beim Start (Splash). Themed Icons an (Hintergrund & Stil → Designsymbole) → einfarbig, Lücke sichtbar. Ggf. alte Debug-App neu installieren, falls der Launcher das alte Icon cached
 - Info-Icon im Workout testen (APK von main): Workout starten, in einer Übungskarte das (i) neben „⋯“ antippen → Übungsdetail öffnet direkt im Tab „Info“ (Fotos, Anleitung); Zurück → wieder im Workout, nichts verloren
