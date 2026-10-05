@@ -38,6 +38,7 @@ class RoomAiChatRepository(private val dao: AiChatDao) : AiChatRepository {
                 payloadJson = SuggestionCodec.encode(s.change),
                 rationale = s.rationale,
                 status = s.status.name,
+                reason = s.reason?.name,
             )
         },
     )

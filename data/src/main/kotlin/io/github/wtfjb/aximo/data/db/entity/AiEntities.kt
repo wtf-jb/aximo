@@ -67,6 +67,8 @@ data class AiSuggestionEntity(
     /** [io.github.wtfjb.aximo.domain.review.SuggestionStatus] name. */
     val status: String,
     val chatMessageId: Long? = null,
+    /** [io.github.wtfjb.aximo.domain.review.SuggestionReason] name, null if the AI gave none. */
+    val reason: String? = null,
 )
 
 data class AiReviewWithSuggestions(

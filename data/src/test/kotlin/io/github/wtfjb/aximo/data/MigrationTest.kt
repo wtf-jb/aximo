@@ -44,6 +44,30 @@ class MigrationTest {
         db.close()
     }
 
+    @Test
+    fun from4To5AddsAnEmptyReason() {
+        helper.createDatabase(DB, 4).apply {
+            execSQL("INSERT INTO ai_reviews (id, createdAt, weeks, summary, droppedSuggestions) VALUES (1, 1000, 6, 'Gut', 0)")
+            execSQL(
+                "INSERT INTO ai_suggestions (id, reviewId, position, type, payloadJson, rationale, status) " +
+                    "VALUES (5, 1, 0, 'SET_COUNT', '{\"routineId\":1,\"exerciseId\":2,\"from\":3,\"to\":4}', 'weil', 'OPEN')",
+            )
+            close()
+        }
+
+        val db = helper.runMigrationsAndValidate(DB, 5, true)
+
+        db.query("SELECT id, reviewId, rationale, reason FROM ai_suggestions").use { c ->
+            assertTrue(c.moveToFirst())
+            assertEquals(5L, c.getLong(0))
+            assertEquals(1L, c.getLong(1))
+            assertEquals("weil", c.getString(2))
+            assertTrue(c.isNull(3))
+        }
+        db.execSQL("UPDATE ai_suggestions SET reason = 'volume_low' WHERE id = 5")
+        db.close()
+    }
+
     private companion object {
         const val DB = "migration-test"
     }

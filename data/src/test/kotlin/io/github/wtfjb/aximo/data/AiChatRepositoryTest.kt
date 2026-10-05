@@ -12,6 +12,7 @@ import io.github.wtfjb.aximo.domain.review.PlanEntry
 import io.github.wtfjb.aximo.domain.review.PlanExerciseRef
 import io.github.wtfjb.aximo.domain.review.PlanRoutine
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -62,6 +63,15 @@ class AiChatRepositoryTest : DatabaseTest() {
         assertEquals(messages[1].id, suggestion.chatMessageId)
         assertNull(suggestion.reviewId)
         assertEquals(1, messages[1].droppedSuggestions)
+    }
+
+    @Test
+    fun reasonOfChatSuggestionsIsStored() = runTest {
+        val withReason = answer(2, "A", SuggestionChange.SetCount(1, 2, 3, 4))
+            .let { it.copy(suggestions = it.suggestions.map { s -> s.copy(reason = SuggestionReason.EFFORT_LOW) }) }
+        chats.saveExchange(question(1, "Q"), withReason)
+
+        assertEquals(SuggestionReason.EFFORT_LOW, chats.observeMessages().first()[1].suggestions.single().reason)
     }
 
     @Test

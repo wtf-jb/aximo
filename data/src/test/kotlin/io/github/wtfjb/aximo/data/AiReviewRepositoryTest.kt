@@ -4,6 +4,7 @@ import io.github.wtfjb.aximo.data.repository.RoomAiReviewRepository
 import io.github.wtfjb.aximo.domain.review.AiReview
 import io.github.wtfjb.aximo.domain.review.AiSuggestion
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import io.github.wtfjb.aximo.domain.review.SuggestionStatus
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -40,6 +41,25 @@ class AiReviewRepositoryTest : DatabaseTest() {
         suggestions = changes.map { AiSuggestion(change = it, rationale = "r ${it::class.simpleName}") },
         droppedSuggestions = 1,
     )
+
+    @Test
+    fun reasonIsStoredAndOptional() = runTest {
+        repo.saveReview(
+            AiReview(
+                createdAt = Instant.fromEpochSeconds(1),
+                weeks = 6,
+                summary = "s",
+                suggestions = listOf(
+                    AiSuggestion(change = changes[0], rationale = "a", reason = SuggestionReason.VOLUME_LOW),
+                    AiSuggestion(change = changes[1], rationale = "b"),
+                ),
+            ),
+        )
+
+        val stored = repo.observeLatest().first()!!.suggestions
+        assertEquals(listOf(SuggestionReason.VOLUME_LOW, null), stored.map { it.reason })
+        assertEquals(SuggestionReason.VOLUME_LOW, repo.getSuggestion(stored[0].id)!!.reason)
+    }
 
     @Test
     fun roundTripAndLatest() = runTest {
