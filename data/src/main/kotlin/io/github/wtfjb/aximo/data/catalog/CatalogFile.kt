@@ -21,6 +21,14 @@ private data class CatalogRow(
     val instructions: List<String> = emptyList(),
 )
 
+/** One entry of `exercise_catalog_de.json`: the German name and steps of a library entry. */
+@Serializable
+private data class TranslationRow(
+    val id: String,
+    val name: String,
+    val instructions: List<String> = emptyList(),
+)
+
 /** Reads the bundled library. */
 object CatalogFile {
     private val json = Json { ignoreUnknownKeys = true }
@@ -44,4 +52,20 @@ object CatalogFile {
                 null
             }
         }
+
+    /**
+     * Shows [entries] in another language: name and steps from [text] where a row
+     * with the same id exists, the original name stays searchable as `englishName`.
+     * Entries without a translation keep their English texts.
+     */
+    fun translate(entries: List<CatalogEntry>, text: String): List<CatalogEntry> {
+        val rows = json.decodeFromString<List<TranslationRow>>(text).associateBy { it.id }
+        return entries.map { entry ->
+            val row = rows[entry.id]?.takeIf { it.name.isNotBlank() } ?: return@map entry
+            entry.copy(
+                name = row.name,
+                instructions = row.instructions.ifEmpty { entry.instructions },
+            )
+        }
+    }
 }

@@ -129,6 +129,22 @@ class SettingsViewModel(
         return true
     }
 
+    /**
+     * Body weight as typed in the display unit ("82,5"); blank clears it. Returns
+     * false and changes nothing if it is not a plausible weight (30–300 kg).
+     */
+    fun setBodyWeight(text: String): Boolean {
+        if (text.isBlank()) {
+            updateTraining { it.copy(bodyWeightKg = null) }
+            return true
+        }
+        val unit = uiState.value.training.unit
+        val kg = ExerciseDraft.parseNumber(text)?.let(unit::toKg)
+            ?.takeIf { it in TrainingSettings.BODY_WEIGHT_RANGE_KG } ?: return false
+        updateTraining { it.copy(bodyWeightKg = kg) }
+        return true
+    }
+
     /** Switch "Wöchentlicher Review". Turning it on the first time shows the data notice. */
     fun setWeeklyReviewEnabled(enabled: Boolean) {
         viewModelScope.launch {

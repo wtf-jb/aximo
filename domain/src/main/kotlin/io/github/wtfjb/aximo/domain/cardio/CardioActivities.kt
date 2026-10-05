@@ -19,7 +19,8 @@ enum class DefaultActivity(val catalogId: String, val paceStyle: PaceStyle) {
 /** Cardio activities are exercises of type CARDIO. */
 object CardioActivities {
 
-    private fun defaultOf(exercise: Exercise): DefaultActivity? =
+    /** The default activity [exercise] was created from, or null for the user's own. */
+    fun defaultOf(exercise: Exercise): DefaultActivity? =
         DefaultActivity.entries.firstOrNull { it.catalogId == exercise.catalogId }
 
     /** Pace style of the activity; own activities show speed. */

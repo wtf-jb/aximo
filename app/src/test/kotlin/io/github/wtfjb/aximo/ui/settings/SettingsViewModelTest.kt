@@ -28,6 +28,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -136,6 +137,22 @@ class SettingsViewModelTest {
         assertEquals(4, settings.training.value.weeklyGoal)
         assertEquals(180, settings.training.value.restSeconds)
         assertEquals(ThemeMode.DARK, vm.uiState.value.themeMode)
+    }
+
+    @Test
+    fun bodyWeightIsEnteredInTheDisplayUnitAndCanBeCleared() = runTest(UnconfinedTestDispatcher()) {
+        settings.setTraining(TrainingSettings().withUnit(WeightUnit.LBS))
+        vm.uiState.launchIn(backgroundScope)
+
+        assertTrue(vm.setBodyWeight("176,4"))
+        assertEquals(WeightUnit.LBS.toKg(176.4), settings.training.value.bodyWeightKg!!, 0.001)
+
+        assertFalse(vm.setBodyWeight("20"))
+        assertFalse(vm.setBodyWeight("abc"))
+        assertEquals(WeightUnit.LBS.toKg(176.4), settings.training.value.bodyWeightKg!!, 0.001)
+
+        assertTrue(vm.setBodyWeight(" "))
+        assertNull(settings.training.value.bodyWeightKg)
     }
 
     @Test

@@ -7,7 +7,9 @@ import io.github.wtfjb.aximo.domain.model.CardioEntry
 import io.github.wtfjb.aximo.domain.model.Equipment
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.model.ExerciseType
+import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.domain.time.TimeSource
+import io.github.wtfjb.aximo.ui.settings.FakeSettingsRepository
 import io.github.wtfjb.aximo.ui.exercises.FakeExerciseRepository
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
 import kotlin.time.Instant
@@ -29,8 +31,27 @@ class CardioViewModelTest {
     private val names: (DefaultActivity) -> String = { it.name.lowercase() }
     private val bench = Exercise(id = 1, name = "Bankdrücken", type = ExerciseType.STRENGTH, equipment = Equipment.BARBELL)
 
-    private fun vm(exercises: FakeExerciseRepository, cardio: FakeCardioRepository, entryId: Long = 0) =
-        CardioViewModel(cardio, exercises, time, names, entryId)
+    private fun vm(
+        exercises: FakeExerciseRepository,
+        cardio: FakeCardioRepository,
+        entryId: Long = 0,
+        settings: FakeSettingsRepository = FakeSettingsRepository(),
+    ) = CardioViewModel(cardio, exercises, time, settings, names, entryId)
+
+    @Test
+    fun estimatesCaloriesOnlyWithBodyWeightAndDuration() = runTest {
+        val without = vm(FakeExerciseRepository(), FakeCardioRepository())
+        without.onDurationChange("", "50", "")
+        without.onDistanceChange("10")
+        assertNull(without.uiState.value.kcal)
+
+        val with = vm(FakeExerciseRepository(), FakeCardioRepository(), settings = FakeSettingsRepository(TrainingSettings(bodyWeightKg = 80.0)))
+        assertNull(with.uiState.value.kcal)
+        with.onDurationChange("", "50", "")
+        with.onDistanceChange("10")
+        // Running preselected, 12 km/h: MET ≈ 11.44 × 3.5 × 80 / 200 × 50 min
+        assertEquals(800, with.uiState.value.kcal)
+    }
 
     @Test
     fun firstUseCreatesDefaultActivitiesAndPreselectsRunning() = runTest {

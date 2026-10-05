@@ -2,6 +2,7 @@ package io.github.wtfjb.aximo.ui.exercisedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.catalog.CatalogEntry
 import io.github.wtfjb.aximo.domain.catalog.CatalogRepository
 import io.github.wtfjb.aximo.domain.catalog.CatalogSearch
 import io.github.wtfjb.aximo.domain.model.Exercise
@@ -47,6 +48,8 @@ data class ExerciseDetailUiState(
     val lastWorkingSets: Int = 0,
     /** Steps from the exercise library, if the exercise has an entry there (B-06). */
     val instructions: List<String> = emptyList(),
+    /** Id of that library entry, for its photos; null for own exercises. */
+    val libraryId: String? = null,
     val tab: DetailTab = DetailTab.HISTORY,
 )
 
@@ -58,17 +61,18 @@ class ExerciseDetailViewModel(
     private val progression: ProgressionRepository,
     catalog: CatalogRepository,
     private val exerciseId: Long,
+    initialTab: DetailTab = DetailTab.HISTORY,
 ) : ViewModel() {
 
-    private val tab = MutableStateFlow(DetailTab.HISTORY)
+    private val tab = MutableStateFlow(initialTab)
     private val suggestion = MutableStateFlow<ProgressionState?>(null)
-    private val instructions = MutableStateFlow<List<String>>(emptyList())
+    private val libraryEntry = MutableStateFlow<CatalogEntry?>(null)
 
     init {
         viewModelScope.launch { suggestion.value = progression.get(exerciseId) }
         viewModelScope.launch {
             val catalogId = exercises.observeExercises(includeArchived = true).first().firstOrNull { it.id == exerciseId }?.catalogId
-            instructions.value = CatalogSearch.entryFor(catalog.entries(), catalogId)?.instructions.orEmpty()
+            libraryEntry.value = CatalogSearch.entryFor(catalog.entries(), catalogId)
         }
     }
 
@@ -77,8 +81,8 @@ class ExerciseDetailViewModel(
         workouts.observeFinished(),
         routines.observeRoutines(),
         tab,
-        combine(suggestion, instructions) { s, steps -> s to steps },
-    ) { allExercises, finished, routineList, tab, (suggestion, steps) ->
+        combine(suggestion, libraryEntry) { s, entry -> s to entry },
+    ) { allExercises, finished, routineList, tab, (suggestion, entry) ->
         val exercise = allExercises.firstOrNull { it.id == exerciseId }
         val metric = exercise?.let { ExerciseStats.metricFor(it.type) } ?: ProgressMetric.E1RM
         val sessions = ExerciseStats.sessions(finished, exerciseId)
@@ -95,7 +99,8 @@ class ExerciseDetailViewModel(
             repRecords = ExerciseStats.repRecords(sessions),
             suggestion = suggestion,
             lastWorkingSets = sessions.lastOrNull()?.let { ProgressionRules.workingSets(it.sets).size } ?: 0,
-            instructions = steps,
+            instructions = entry?.instructions.orEmpty(),
+            libraryId = entry?.id,
             tab = tab,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ExerciseDetailUiState())

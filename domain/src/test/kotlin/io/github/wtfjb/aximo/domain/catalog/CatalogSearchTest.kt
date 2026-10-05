@@ -48,6 +48,15 @@ class CatalogSearchTest {
     }
 
     @Test
+    fun translatedEntriesAreFoundByGermanAndEnglishName() {
+        val translated = listOf(entry("Bench", "Bankdrücken").copy(englishName = "Barbell Bench Press"))
+        assertEquals(listOf("Bankdrücken"), CatalogSearch.filter(translated, "bankdrucken", null).map { it.name })
+        assertEquals(listOf("Bankdrücken"), CatalogSearch.filter(translated, "bench press", null).map { it.name })
+        // words from both names together don't count as a match
+        assertTrue(CatalogSearch.filter(translated, "bankdrücken press", null).isEmpty())
+    }
+
+    @Test
     fun namesStartingWithTheQueryComeFirst() {
         assertEquals(
             listOf("Bench Dips", "Barbell Bench Press"),

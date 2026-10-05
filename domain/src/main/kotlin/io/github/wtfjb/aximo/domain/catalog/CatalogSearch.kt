@@ -10,8 +10,8 @@ import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 object CatalogSearch {
 
     /**
-     * Entries whose name contains all words of [query] (case and umlauts ignored)
-     * and, with a [region], whose primary muscles lie in it. Names that start with
+     * Entries whose name or English name contains all words of [query] (case and
+     * umlauts ignored) and, with a [region], whose primary muscles lie in it. Names that start with
      * the query come first, the rest is sorted by name.
      */
     fun filter(entries: List<CatalogEntry>, query: String, region: BodyRegion?): List<CatalogEntry> {
@@ -20,7 +20,9 @@ object CatalogSearch {
         return entries
             .filter { entry ->
                 val name = normalizeSearch(entry.name)
-                words.all { it in name } && (region == null || entry.primary.any { it.region == region })
+                val englishName = normalizeSearch(entry.englishName)
+                val matches = words.all { it in name } || words.all { it in englishName }
+                matches && (region == null || entry.primary.any { it.region == region })
             }
             .sortedWith(compareBy({ normalized.isEmpty() || !normalizeSearch(it.name).startsWith(normalized) }, { it.name.lowercase() }))
     }

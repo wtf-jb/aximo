@@ -135,4 +135,5 @@ data class SettingsRow(
     // Added after the first release of schema 1; older files default to RIR.
     val setRating: String = "RIR",
     val weeklyGoal: Int? = null,
+    val bodyWeightKg: Double? = null,
 )

@@ -71,6 +71,7 @@ import io.github.wtfjb.aximo.domain.workout.WorkoutStarter
 import io.github.wtfjb.aximo.rest.AndroidRestTimerEffects
 import io.github.wtfjb.aximo.R
 import io.github.wtfjb.aximo.ui.cardio.CardioViewModel
+import io.github.wtfjb.aximo.ui.exercisedetail.DetailTab
 import io.github.wtfjb.aximo.ui.exercisedetail.ExerciseDetailViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseEditViewModel
 import io.github.wtfjb.aximo.ui.exercises.ExerciseListViewModel
@@ -167,13 +168,13 @@ val appModule = module {
     }
     viewModel { (selectionMode: Boolean) -> ExerciseListViewModel(get(), selectionMode) }
     viewModel { (exerciseId: Long) -> ExerciseEditViewModel(get(), get(), exerciseId) }
-    viewModel { (exerciseId: Long) -> ExerciseDetailViewModel(get(), get(), get(), get(), get(), exerciseId) }
+    viewModel { (exerciseId: Long, initialTab: DetailTab) -> ExerciseDetailViewModel(get(), get(), get(), get(), get(), exerciseId, initialTab) }
     viewModel { CatalogViewModel(get(), get(), get()) }
     viewModel { CalendarViewModel(get(), get(), get(), get(), get()) }
     viewModel { TodayViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (entryId: Long) ->
         val context = androidContext()
-        CardioViewModel(get(), get(), get(), { activity -> context.getString(activity.nameRes()) }, entryId)
+        CardioViewModel(get(), get(), get(), get(), { activity -> context.getString(activity.nameRes()) }, entryId)
     }
     viewModel { PlansViewModel(get(), get(), get(), get(), get()) }
     viewModel {
@@ -197,7 +198,7 @@ val appModule = module {
     }
     viewModel { (routineId: Long) -> RoutineEditViewModel(get(), get(), routineId) }
     viewModel { WorkoutViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), workoutId) }
+    viewModel { (workoutId: Long) -> SummaryViewModel(get(), get(), get(), get(), workoutId) }
     viewModel { StatsViewModel(get(), get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) { ReviewPrompt.prettyContext(it) } }
     viewModel { AiProfilesViewModel(get()) }

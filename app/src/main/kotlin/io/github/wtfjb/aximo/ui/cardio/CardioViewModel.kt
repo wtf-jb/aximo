@@ -2,6 +2,7 @@ package io.github.wtfjb.aximo.ui.cardio
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.wtfjb.aximo.domain.calories.CalorieEstimate
 import io.github.wtfjb.aximo.domain.cardio.CardioActivities
 import io.github.wtfjb.aximo.domain.cardio.CardioDraft
 import io.github.wtfjb.aximo.domain.cardio.CardioFieldError
@@ -12,6 +13,7 @@ import io.github.wtfjb.aximo.domain.model.CardioEntry
 import io.github.wtfjb.aximo.domain.model.Exercise
 import io.github.wtfjb.aximo.domain.repository.CardioRepository
 import io.github.wtfjb.aximo.domain.repository.ExerciseRepository
+import io.github.wtfjb.aximo.domain.settings.SettingsRepository
 import io.github.wtfjb.aximo.domain.time.TimeSource
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +33,8 @@ data class CardioUiState(
     val showErrors: Boolean = false,
     /** True once saved or deleted: the screen closes. */
     val done: Boolean = false,
+    /** From the settings; null = no calorie estimate. */
+    val bodyWeightKg: Double? = null,
 ) {
     val errors: Set<CardioFieldError> get() = if (showErrors) draft.validate() else emptySet()
 
@@ -49,6 +53,15 @@ data class CardioUiState(
         }
 
     val speedKmh: Double? get() = draft.durationSec?.let { CardioMath.speedKmh(it, draft.distanceM) }
+
+    /** Estimated kcal; null without body weight or duration. */
+    val kcal: Int?
+        get() {
+            val weight = bodyWeightKg ?: return null
+            val duration = draft.durationSec ?: return null
+            val activity = activities.firstOrNull { it.id == draft.exerciseId }?.let(CardioActivities::defaultOf)
+            return CalorieEstimate.cardio(activity, duration, draft.distanceM, weight)
+        }
 }
 
 /**
@@ -59,6 +72,7 @@ class CardioViewModel(
     private val cardio: CardioRepository,
     private val exercises: ExerciseRepository,
     private val time: TimeSource,
+    private val settings: SettingsRepository,
     private val defaultName: (DefaultActivity) -> String,
     entryId: Long,
 ) : ViewModel() {
@@ -71,6 +85,8 @@ class CardioViewModel(
 
     init {
         viewModelScope.launch {
+            val bodyWeightKg = settings.training.first().bodyWeightKg
+            _uiState.update { it.copy(bodyWeightKg = bodyWeightKg) }
             var all = exercises.observeExercises(includeArchived = true).first()
             if (CardioActivities.needsDefaults(all)) {
                 CardioActivities.defaults(defaultName).forEach { exercises.saveExercise(it) }

@@ -118,6 +118,7 @@
     <string name="workout_meta">%1$s · %2$s</string>
     <string name="workout_superset">SUPERSET %1$s</string>
     <string name="workout_exercise_options">Options for %1$s</string>
+    <string name="workout_exercise_info">Info about %1$s</string>
     <string name="workout_exercise_note">Note</string>
     <string name="workout_exercise_remove">Remove</string>
     <string name="workout_last">Last %1$s</string>
@@ -239,6 +240,9 @@
     <string name="summary_volume">Volume (%1$s)</string>
     <string name="summary_working_sets">Working sets</string>
     <string name="summary_records">Records</string>
+    <string name="calories_value">≈ %1$s kcal</string>
+    <string name="calories_estimated">Calories (estimated)</string>
+    <string name="calories_no_body_weight">Calories: set body weight in settings</string>
     <string name="summary_new_records">New records</string>
     <string name="summary_record_e1rm">%1$s · e1RM</string>
     <string name="summary_record_weight">%1$s · weight</string>
@@ -419,6 +423,10 @@
     <string name="settings_language_german" translatable="false">Deutsch</string>
     <string name="settings_language_english" translatable="false">English</string>
     <string name="settings_unit">Weight unit</string>
+    <string name="settings_body_weight">Body weight</string>
+    <string name="settings_body_weight_none">Not set</string>
+    <string name="settings_body_weight_field">Body weight (%1$s)</string>
+    <string name="settings_body_weight_hint">Body weight is only used for the calorie estimate after workouts and cardio. Leave the field empty to remove it.</string>
     <string name="settings_theme">Appearance</string>
     <string name="settings_rest">Default rest</string>
     <string name="settings_steps">Weight steps</string>
@@ -732,7 +740,9 @@
     <string name="catalog_title">Exercise library</string>
     <string name="catalog_open">Add from library</string>
     <string name="catalog_search">Search library</string>
-    <string name="catalog_english_note">Names and instructions in the library are in English. After adding you can rename an exercise.</string>
+    <string name="catalog_source_note">Photos and instructions: free-exercise-db (public domain). After adding you can rename an exercise.</string>
+    <string name="catalog_image_start">Start position</string>
+    <string name="catalog_image_end">End position</string>
     <string name="catalog_in_list">Already in your list</string>
     <string name="catalog_add">Add to my exercises</string>
     <string name="catalog_close">Close</string>

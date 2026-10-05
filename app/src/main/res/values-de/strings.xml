@@ -105,6 +105,7 @@
     <string name="workout_meta">%1$s · %2$s</string>
     <string name="workout_superset">SUPERSATZ %1$s</string>
     <string name="workout_exercise_options">Optionen %1$s</string>
+    <string name="workout_exercise_info">Info zu %1$s</string>
     <string name="workout_exercise_note">Notiz</string>
     <string name="workout_exercise_remove">Entfernen</string>
     <string name="workout_last">Zuletzt %1$s</string>
@@ -224,6 +225,9 @@
     <string name="summary_volume">Volumen (%1$s)</string>
     <string name="summary_working_sets">Arbeitssätze</string>
     <string name="summary_records">Bestwerte</string>
+    <string name="calories_value">≈ %1$s kcal</string>
+    <string name="calories_estimated">Kalorien (geschätzt)</string>
+    <string name="calories_no_body_weight">Kalorien: Körpergewicht in den Einstellungen eintragen</string>
     <string name="summary_new_records">Neue Bestwerte</string>
     <string name="summary_record_e1rm">%1$s · e1RM</string>
     <string name="summary_record_weight">%1$s · Gewicht</string>
@@ -407,6 +411,10 @@
     <string name="settings_language">Sprache</string>
     <string name="settings_language_system">Systemsprache</string>
     <string name="settings_unit">Gewichtseinheit</string>
+    <string name="settings_body_weight">Körpergewicht</string>
+    <string name="settings_body_weight_none">Nicht gesetzt</string>
+    <string name="settings_body_weight_field">Körpergewicht (%1$s)</string>
+    <string name="settings_body_weight_hint">Das Körpergewicht wird nur für die Kalorienschätzung nach Workouts und Cardio verwendet. Feld leeren, um es zu entfernen.</string>
     <string name="settings_theme">Darstellung</string>
     <string name="settings_rest">Standard-Pause</string>
     <string name="settings_steps">Gewichtsschritte</string>
@@ -712,7 +720,9 @@
     <string name="catalog_title">Übungskatalog</string>
     <string name="catalog_open">Aus Katalog hinzufügen</string>
     <string name="catalog_search">Katalog durchsuchen</string>
-    <string name="catalog_english_note">Namen und Anleitungen im Katalog sind englisch. Nach dem Hinzufügen kannst du eine Übung umbenennen.</string>
+    <string name="catalog_source_note">Fotos und Anleitungen: free-exercise-db (gemeinfrei, Texte übersetzt). Nach dem Hinzufügen kannst du eine Übung umbenennen.</string>
+    <string name="catalog_image_start">Ausgangsposition</string>
+    <string name="catalog_image_end">Endposition</string>
     <string name="catalog_in_list">Schon in deiner Liste</string>
     <string name="catalog_add">Zu meinen Übungen</string>
     <string name="catalog_close">Schließen</string>

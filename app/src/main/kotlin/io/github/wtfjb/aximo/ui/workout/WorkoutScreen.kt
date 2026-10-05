@@ -63,6 +63,7 @@ fun WorkoutScreen(
     onLogText: () -> Unit,
     onClose: () -> Unit,
     onFinished: (workoutId: Long) -> Unit,
+    onExerciseInfo: (exerciseId: Long) -> Unit,
     viewModel: WorkoutViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -112,6 +113,7 @@ fun WorkoutScreen(
         onAddSet = viewModel::addSet,
         onNote = { noteFor = it },
         onRemove = { viewModel.removeExercise(it.entry) },
+        onInfo = { onExerciseInfo(it.exercise.id) },
     )
 
     // Height of the floating timer bar, so the list can scroll its last item above it.

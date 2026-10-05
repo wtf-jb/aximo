@@ -9,13 +9,16 @@ import io.github.wtfjb.aximo.domain.model.SetEntry
 import io.github.wtfjb.aximo.domain.stats.RecordType
 import io.github.wtfjb.aximo.domain.workout.PlannedSet
 import io.github.wtfjb.aximo.ui.exercises.MainDispatcherRule
+import io.github.wtfjb.aximo.domain.settings.TrainingSettings
 import io.github.wtfjb.aximo.ui.routine.FakeRoutineRepository
+import io.github.wtfjb.aximo.ui.settings.FakeSettingsRepository
 import io.github.wtfjb.aximo.ui.workout.FakeProgressionRepository
 import io.github.wtfjb.aximo.ui.workout.FakeWorkoutRepository
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -42,7 +45,7 @@ class SummaryViewModelTest {
     @Test
     fun showsStatsRecordsAndNextTime() = runTest {
         val id = finishedWorkout()
-        val vm = SummaryViewModel(workouts, FakeRoutineRepository(), progression, id)
+        val vm = SummaryViewModel(workouts, FakeRoutineRepository(), progression, FakeSettingsRepository(), id)
         val state = vm.uiState.value
 
         assertEquals(54 * 60L, state.durationSeconds)
@@ -54,9 +57,20 @@ class SummaryViewModelTest {
     }
 
     @Test
+    fun estimatesCaloriesOnlyWithBodyWeight() = runTest {
+        val id = finishedWorkout()
+        val without = SummaryViewModel(workouts, FakeRoutineRepository(), progression, FakeSettingsRepository(), id)
+        val with = SummaryViewModel(workouts, FakeRoutineRepository(), progression, FakeSettingsRepository(TrainingSettings(bodyWeightKg = 80.0)), id)
+
+        assertNull(without.uiState.value.kcal)
+        // Barbell bench: MET 5 × 3.5 × 80 / 200 × 54 min = 378
+        assertEquals(380, with.uiState.value.kcal)
+    }
+
+    @Test
     fun savingStoresRatingAndNote() = runTest {
         val id = finishedWorkout()
-        val vm = SummaryViewModel(workouts, FakeRoutineRepository(), progression, id)
+        val vm = SummaryViewModel(workouts, FakeRoutineRepository(), progression, FakeSettingsRepository(), id)
 
         vm.onRatingChange(4)
         vm.onNoteChange("stark")
@@ -77,7 +91,7 @@ class SummaryViewModelTest {
         workouts.current!!.exercises.single().sets.forEach { workouts.updateSet(it.copy(completedAt = start)) }
         workouts.finishWorkout(id, start + 50.minutes, "")
 
-        val vm = SummaryViewModel(workouts, routines, progression, id)
+        val vm = SummaryViewModel(workouts, routines, progression, FakeSettingsRepository(), id)
 
         assertEquals(0.1, vm.uiState.value.volumeChange!!, 1e-9)
         assertEquals("Push A", vm.uiState.value.routineName)

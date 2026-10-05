@@ -60,6 +60,8 @@ class TrainingSettingsTest {
         assertThrows(IllegalArgumentException::class.java) { TrainingSettings(restSeconds = -1) }
         assertThrows(IllegalArgumentException::class.java) { TrainingSettings(weeklyGoal = 0) }
         assertThrows(IllegalArgumentException::class.java) { TrainingSettings(weeklyGoal = 8) }
+        assertThrows(IllegalArgumentException::class.java) { TrainingSettings(bodyWeightKg = 20.0) }
+        assertThrows(IllegalArgumentException::class.java) { TrainingSettings(bodyWeightKg = 400.0) }
     }
 
     @Test

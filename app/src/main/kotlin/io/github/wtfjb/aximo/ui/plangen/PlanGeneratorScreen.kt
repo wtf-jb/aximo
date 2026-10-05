@@ -170,6 +170,7 @@ private fun ColumnScope.Form(state: PlanGeneratorUiState, viewModel: PlanGenerat
         label = stringResource(R.string.plangen_restrictions),
         value = request.restrictions,
         onValueChange = viewModel::setRestrictions,
+        containerColor = MaterialTheme.colorScheme.surface,
         singleLine = false,
         placeholder = stringResource(R.string.plangen_restrictions_placeholder),
         modifier = Modifier.fillMaxWidth(),

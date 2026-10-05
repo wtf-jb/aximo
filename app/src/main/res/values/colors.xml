@@ -3,5 +3,7 @@
     <!-- Mirrors tokens "ground" and "accent" for the window and launcher icon only. -->
     <color name="ground">#F3F3F1</color>
     <color name="accent">#F0643F</color>
-    <color name="ink">#17181C</color>
+    <!-- Launcher icon: tokens "inverse-surface" / "on-inverse" (light theme), fixed in both themes. -->
+    <color name="launcher_background">#17181C</color>
+    <color name="launcher_foreground">#FFFFFF</color>
 </resources>

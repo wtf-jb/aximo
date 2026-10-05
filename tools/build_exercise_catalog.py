@@ -7,7 +7,7 @@ Without an argument the combined file is downloaded from GitHub.
 Kept: strength, powerlifting, olympic weightlifting and strongman exercises
 (stretching, cardio and plyometrics are left out). Muscles and equipment are
 mapped to the app's enums; entries without a mappable primary muscle or without instructions are dropped.
-Images are not bundled (see docs/decisions.md).
+Images are built separately by tools/build_exercise_images.py.
 """
 import json
 import sys

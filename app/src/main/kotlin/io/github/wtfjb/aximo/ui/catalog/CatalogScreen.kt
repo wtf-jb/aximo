@@ -85,7 +85,7 @@ fun CatalogScreen(
             if (state.entries.isNotEmpty()) {
                 item {
                     Text(
-                        text = stringResource(R.string.catalog_english_note),
+                        text = stringResource(R.string.catalog_source_note),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(bottom = Spacing.s4),
@@ -106,6 +106,7 @@ fun CatalogScreen(
             title = { Text(text = entry.name, style = MaterialTheme.typography.titleMedium) },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(Spacing.s12)) {
+                    ExerciseImages(entry.id)
                     Text(
                         text = entryMeta(entry),
                         style = MaterialTheme.typography.bodySmall,

@@ -19,6 +19,8 @@ data class CatalogEntry(
     val repMin: Int,
     val repMax: Int,
     val instructions: List<String>,
+    /** The original English name; differs from [name] when the library is shown translated. */
+    val englishName: String = name,
 ) {
     init {
         require(id.isNotBlank()) { "id must not be blank" }

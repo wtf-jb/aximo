@@ -41,4 +41,29 @@ class CatalogFileTest {
 
         assertEquals(listOf("ok"), entries.map { it.id })
     }
+
+    @Test
+    fun translateReplacesNameAndStepsAndKeepsEnglishName() {
+        val entries = CatalogFile.parse(
+            """
+            [{"id":"curl","name":"Barbell Curl","type":"STRENGTH","equipment":"BARBELL","primary":["BICEPS"],"repMin":8,"repMax":12,
+              "instructions":["Stand up.","Curl."]},
+             {"id":"press","name":"Bench Press","type":"STRENGTH","equipment":"BARBELL","primary":["CHEST"],"repMin":6,"repMax":10,
+              "instructions":["Lie down."]}]
+            """.trimIndent(),
+        )
+        val translated = CatalogFile.translate(
+            entries,
+            """[{"id":"curl","name":"Langhantel-Curls","instructions":["Steh auf.","Curle."]},{"id":"unknown","name":"X"}]""",
+        )
+
+        val curl = translated.first { it.id == "curl" }
+        assertEquals("Langhantel-Curls", curl.name)
+        assertEquals("Barbell Curl", curl.englishName)
+        assertEquals(listOf("Steh auf.", "Curle."), curl.instructions)
+        val press = translated.first { it.id == "press" }
+        assertEquals("Bench Press", press.name)
+        assertEquals(listOf("Lie down."), press.instructions)
+        assertEquals(2, translated.size)
+    }
 }

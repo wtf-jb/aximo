@@ -63,6 +63,20 @@ class ExerciseDetailViewModelTest {
         vm.uiState.launchIn(backgroundScope)
 
         assertEquals(listOf("Lie down.", "Press."), vm.uiState.value.instructions)
+        assertEquals("Barbell_Bench_Press_-_Medium_Grip", vm.uiState.value.libraryId)
+    }
+
+    @Test
+    fun opensOnTheRequestedTab() = runTest(UnconfinedTestDispatcher()) {
+        val fromWorkout = ExerciseDetailViewModel(
+            FakeExerciseRepository(listOf(exercise)), workouts, FakeRoutineRepository(), progression, { library },
+            exerciseId = 1, initialTab = DetailTab.INFO,
+        )
+        fromWorkout.uiState.launchIn(backgroundScope)
+        vm.uiState.launchIn(backgroundScope)
+
+        assertEquals(DetailTab.INFO, fromWorkout.uiState.value.tab)
+        assertEquals(DetailTab.HISTORY, vm.uiState.value.tab)
     }
 
     @Test
@@ -70,6 +84,7 @@ class ExerciseDetailViewModelTest {
         vm.uiState.launchIn(backgroundScope)
 
         assertEquals(emptyList<String>(), vm.uiState.value.instructions)
+        assertEquals(null, vm.uiState.value.libraryId)
     }
 
     @Test

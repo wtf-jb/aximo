@@ -65,7 +65,7 @@ class BackupRepositoryTest : DatabaseTest() {
         workouts.finishWorkout(workoutId, t0 + 1.hours, "gut")
         cardio.saveEntry(CardioEntry(exerciseId = runId, startedAt = t0 + 2.hours, durationSec = 1800, distanceM = 5000.0, note = "locker"))
         progression.save(ProgressionState(benchId, 85.0, 6, ProgressionReason.INCREASE_WEIGHT))
-        settings.setTraining(TrainingSettings(restSeconds = 150, rating = SetRating.RPE, weeklyGoal = 4).withUnit(WeightUnit.LBS))
+        settings.setTraining(TrainingSettings(restSeconds = 150, rating = SetRating.RPE, weeklyGoal = 4, bodyWeightKg = 78.0).withUnit(WeightUnit.LBS))
     }
 
     @Test
@@ -79,7 +79,7 @@ class BackupRepositoryTest : DatabaseTest() {
         backup.restoreJson(json)
 
         assertEquals(before, snapshot())
-        assertEquals(TrainingSettings(restSeconds = 150, rating = SetRating.RPE, weeklyGoal = 4).withUnit(WeightUnit.LBS), settings.training.first())
+        assertEquals(TrainingSettings(restSeconds = 150, rating = SetRating.RPE, weeklyGoal = 4, bodyWeightKg = 78.0).withUnit(WeightUnit.LBS), settings.training.first())
         // Exporting again gives the same file: nothing got lost on the way.
         assertEquals(json, backup.exportJson())
     }
