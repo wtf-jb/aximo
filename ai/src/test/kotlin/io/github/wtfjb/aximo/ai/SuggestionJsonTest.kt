@@ -6,6 +6,7 @@ import io.github.wtfjb.aximo.domain.review.PlanEntry
 import io.github.wtfjb.aximo.domain.review.PlanExerciseRef
 import io.github.wtfjb.aximo.domain.review.PlanRoutine
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
@@ -38,6 +39,31 @@ class SuggestionJsonTest {
         )
         assertNull(parse("""{"type":"rename_routine","routine_id":7,"from":"Push A","rationale":"r"}"""))
         assertNull(parse("""{"type":"replace_exercise","routine_id":7,"exercise_id":1,"rationale":"r"}"""))
+    }
+
+    @Test
+    fun readsTheReason() {
+        fun reason(field: String) =
+            parse("""{"type":"remove_exercise","routine_id":7,"exercise_id":1,"rationale":"r"$field}""")!!.reason
+
+        assertEquals(SuggestionReason.VOLUME_LOW, reason(""","reason":"volume_low""""))
+        assertEquals(SuggestionReason.REP_CEILING, reason(""","reason":"REP_CEILING""""))
+        assertEquals(SuggestionReason.OTHER, reason(""","reason":"other""""))
+        assertNull("unknown value", reason(""","reason":"tired""""))
+        assertNull("wrong type", reason(""","reason":5"""))
+        assertNull("missing", reason(""))
+        // The suggestion stays valid without a usable reason.
+        assertEquals(SuggestionChange.RemoveExercise(7, 1), parse("""{"type":"remove_exercise","routine_id":7,"exercise_id":1,"rationale":"r","reason":"x"}""")!!.change)
+        // Plans carry it too.
+        val plan = parse("""{"type":"create_plan","rationale":"r","reason":"other","routines":[{"name":"A","exercises":[{"exercise_id":1,"sets":3,"rep_min":8,"rep_max":12}]}]}""")!!
+        assertEquals(SuggestionReason.OTHER, plan.reason)
+    }
+
+    @Test
+    fun encodeWritesTheReason() {
+        val change = SuggestionChange.RemoveExercise(7, 1)
+        assertEquals("effort_high", SuggestionJson.encode(change, "r", SuggestionReason.EFFORT_HIGH)["reason"]!!.toString().trim('"'))
+        assertNull(SuggestionJson.encode(change, "r")["reason"])
     }
 
     @Test

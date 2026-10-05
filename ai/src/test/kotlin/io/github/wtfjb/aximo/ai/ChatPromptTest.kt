@@ -15,6 +15,7 @@ import io.github.wtfjb.aximo.domain.review.ReviewContext
 import io.github.wtfjb.aximo.domain.review.RoutineExerciseInfo
 import io.github.wtfjb.aximo.domain.review.RoutineInfo
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import io.github.wtfjb.aximo.domain.stats.ProgressMetric
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
@@ -60,7 +61,9 @@ class ChatPromptTest {
                 role = ChatRole.COACH,
                 text = "Seit 3 Einheiten kein Bestwert.",
                 createdAt = at,
-                suggestions = listOf(AiSuggestion(change = SuggestionChange.RepRange(7, 1, 6, 8, 8, 10), rationale = "mehr Wdh.")),
+                suggestions = listOf(
+                    AiSuggestion(change = SuggestionChange.RepRange(7, 1, 6, 8, 8, 10), rationale = "mehr Wdh.", reason = SuggestionReason.STAGNATION),
+                ),
             ),
             ChatMessage(role = ChatRole.USER, text = "Und jetzt?", createdAt = at),
         ),
@@ -85,8 +88,17 @@ class ChatPromptTest {
         assertEquals("Seit 3 Einheiten kein Bestwert.", answer["reply"]!!.jsonPrimitive.content)
         val suggestion = answer["suggestions"]!!.jsonArray.single().jsonObject
         assertEquals("rep_range", suggestion["type"]!!.jsonPrimitive.content)
+        assertEquals("stagnation", suggestion["reason"]!!.jsonPrimitive.content)
+        assertEquals(SuggestionReason.STAGNATION, ChatParser.parse(answer.toString()).suggestions.single().reason)
         // Round trip through the parser gives the same change.
         assertEquals(SuggestionChange.RepRange(7, 1, 6, 8, 8, 10), ChatParser.parse(answer.toString()).suggestions.single().change)
+    }
+
+    @Test
+    fun versionAndStatusRules() {
+        assertEquals("chat-v3", ChatPrompt.VERSION)
+        val system = ChatPrompt.system("en")
+        listOf("regressing", "returning", "sessions_at_rep_ceiling", "\"reason\"", "\"reason\": string").forEach { assertTrue(it, system.contains(it)) }
     }
 
     @Test

@@ -21,7 +21,7 @@ import kotlinx.serialization.json.putJsonArray
  * conversation follows as messages. The answer is parsed by [ChatParser].
  */
 object ChatPrompt {
-    const val VERSION = "chat-v2"
+    const val VERSION = "chat-v3"
 
     /** Most suggestions per answer; a chat answer proposes little at once. */
     const val MAX_SUGGESTIONS = 3
@@ -65,6 +65,14 @@ object ChatPrompt {
               must equal the current values. For add_exercise and replace_exercise pick the exercise from
               "available_exercises", not already in that routine. move_exercise positions are 1-based in the order of the
               routine's "exercises". Routine names at most 40 characters.
+            - The app has already classified the exercises in "exercise_trends": "status" (too_few_data, returning, regressing,
+              stagnating, progressing, stable), "effort" (too_hard, on_target, too_easy) and "new_best", and the volume "status"
+              per region (below, in_range, above). Take them over, do not judge them again. regressing is a drop, not
+              stagnation; after returning (a break) a drop is no loss of strength. Do not lower set_count if a primary region is
+              below (unless regressing or too_hard), do not raise it if above, do not add an exercise if all its regions are above.
+              With sessions_at_rep_ceiling ≥ 2 the weight can go up (say it in the reply; there is no suggestion for it).
+            - Each suggestion has a "reason": progress, stagnation, regression, returning, volume_low, volume_high, effort_high,
+              effort_low, rep_ceiling or other.
             - Sets 1–10, reps 1–50, RIR 0–5. rationale: 1–2 sentences in $lang.
             - Earlier answers in the conversation may refer to routine values that have changed since; the training data
               below is the current state.
@@ -81,7 +89,7 @@ object ChatPrompt {
 
     private fun answerJson(message: ChatMessage): JsonObject = buildJsonObject {
         put("reply", message.text)
-        put("suggestions", buildJsonArray { message.suggestions.forEach { add(SuggestionJson.encode(it.change, it.rationale)) } })
+        put("suggestions", buildJsonArray { message.suggestions.forEach { add(SuggestionJson.encode(it.change, it.rationale, it.reason)) } })
     }
 
     /** The review context (same keys as [ReviewPrompt]) plus the long-term history. */

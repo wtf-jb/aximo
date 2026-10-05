@@ -2,6 +2,7 @@ package io.github.wtfjb.aximo.ai
 
 import io.github.wtfjb.aximo.domain.ai.AiException
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -35,6 +36,22 @@ class ReviewParserTest {
             review.suggestions.map { it.change },
         )
         assertEquals("9 Sätze, Ziel 10–20.", review.suggestions[0].rationale)
+    }
+
+    @Test
+    fun readsTheReasonAndIgnoresUnknownOnes() {
+        val review = ReviewParser.parse(
+            """
+            {"summary": "s", "suggestions": [
+              {"type":"set_count","routine_id":7,"exercise_id":1,"from":3,"to":4,"rationale":"r","reason":"volume_low"},
+              {"type":"remove_exercise","routine_id":8,"exercise_id":6,"rationale":"r","reason":"boredom"},
+              {"type":"remove_exercise","routine_id":8,"exercise_id":7,"rationale":"r"}
+            ]}
+            """.trimIndent(),
+        )
+
+        assertEquals(listOf(SuggestionReason.VOLUME_LOW, null, null), review.suggestions.map { it.reason })
+        assertEquals(0, review.dropped)
     }
 
     @Test

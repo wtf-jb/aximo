@@ -11,6 +11,7 @@ import io.github.wtfjb.aximo.domain.review.PlanEntry
 import io.github.wtfjb.aximo.domain.review.PlanExerciseRef
 import io.github.wtfjb.aximo.domain.review.PlanRoutine
 import io.github.wtfjb.aximo.domain.review.SuggestionChange
+import io.github.wtfjb.aximo.domain.review.SuggestionReason
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -27,16 +28,16 @@ internal object SuggestionJson {
 
     /** Schema lines for the system prompt of the chat; the review prompt keeps its own text. */
     val CHAT_SCHEMA = """
-        {"type": "set_count", "routine_id": int, "exercise_id": int, "from": int, "to": int, "rationale": string},
-        {"type": "rep_range", "routine_id": int, "exercise_id": int, "from_min": int, "from_max": int, "to_min": int, "to_max": int, "rationale": string},
-        {"type": "target_rir", "routine_id": int, "exercise_id": int, "from": int|null, "to": int|null, "rationale": string},
-        {"type": "add_exercise", "routine_id": int, "exercise_id": int, "sets": int, "rep_min": int, "rep_max": int, "target_rir": int|null, "rationale": string},
-        {"type": "remove_exercise", "routine_id": int, "exercise_id": int, "rationale": string},
-        {"type": "replace_exercise", "routine_id": int, "exercise_id": int, "new_exercise_id": int, "rationale": string},
-        {"type": "move_exercise", "routine_id": int, "exercise_id": int, "from": int, "to": int, "rationale": string},
-        {"type": "rename_routine", "routine_id": int, "from": string, "to": string, "rationale": string},
-        {"type": "delete_routine", "routine_id": int, "name": string, "rationale": string},
-        {"type": "create_plan", "rationale": string, "routines": [
+        {"type": "set_count", "routine_id": int, "exercise_id": int, "from": int, "to": int, "rationale": string, "reason": string},
+        {"type": "rep_range", "routine_id": int, "exercise_id": int, "from_min": int, "from_max": int, "to_min": int, "to_max": int, "rationale": string, "reason": string},
+        {"type": "target_rir", "routine_id": int, "exercise_id": int, "from": int|null, "to": int|null, "rationale": string, "reason": string},
+        {"type": "add_exercise", "routine_id": int, "exercise_id": int, "sets": int, "rep_min": int, "rep_max": int, "target_rir": int|null, "rationale": string, "reason": string},
+        {"type": "remove_exercise", "routine_id": int, "exercise_id": int, "rationale": string, "reason": string},
+        {"type": "replace_exercise", "routine_id": int, "exercise_id": int, "new_exercise_id": int, "rationale": string, "reason": string},
+        {"type": "move_exercise", "routine_id": int, "exercise_id": int, "from": int, "to": int, "rationale": string, "reason": string},
+        {"type": "rename_routine", "routine_id": int, "from": string, "to": string, "rationale": string, "reason": string},
+        {"type": "delete_routine", "routine_id": int, "name": string, "rationale": string, "reason": string},
+        {"type": "create_plan", "rationale": string, "reason": string, "routines": [
           {"name": string, "exercises": [
             {"exercise_id": int, "sets": int, "rep_min": int, "rep_max": int, "target_rir": int|null},
             {"new_exercise": {"name": string, "catalog_name": string, "type": "strength"|"bodyweight",
@@ -50,14 +51,21 @@ internal object SuggestionJson {
     fun parse(o: JsonObject): GeneratedSuggestion? {
         val rationale = o.string("rationale")?.trim()?.takeIf { it.isNotEmpty() } ?: return null
         val type = o.string("type") ?: return null
-        if (type == "create_plan") return plan(o)?.let { GeneratedSuggestion(it, rationale) }
+        val reason = reason(o)
+        if (type == "create_plan") return plan(o)?.let { GeneratedSuggestion(it, rationale, reason) }
         val routineId = o.long("routine_id") ?: return null
         val change = when (type) {
             "rename_routine" -> SuggestionChange.RenameRoutine(routineId, o.string("from") ?: return null, o.string("to") ?: return null)
             "delete_routine" -> SuggestionChange.DeleteRoutine(routineId, o.string("name") ?: return null)
             else -> exerciseChange(type, routineId, o.long("exercise_id") ?: return null, o) ?: return null
         }
-        return GeneratedSuggestion(change, rationale)
+        return GeneratedSuggestion(change, rationale, reason)
+    }
+
+    /** `reason` is optional; a missing, wrong-typed or unknown value is null and never drops the suggestion. */
+    private fun reason(o: JsonObject): SuggestionReason? {
+        val value = o.string("reason")?.trim() ?: return null
+        return SuggestionReason.entries.firstOrNull { it.name.equals(value, ignoreCase = true) }
     }
 
     private fun exerciseChange(type: String, routineId: Long, exerciseId: Long, o: JsonObject): SuggestionChange.ExerciseChange? = when (type) {
@@ -131,7 +139,7 @@ internal object SuggestionJson {
     }
 
     /** The reverse of [parse]: how an earlier chat answer is sent back as history. */
-    fun encode(change: SuggestionChange, rationale: String): JsonObject = buildJsonObject {
+    fun encode(change: SuggestionChange, rationale: String, reason: SuggestionReason? = null): JsonObject = buildJsonObject {
         put("type", type(change))
         when (change) {
             is SuggestionChange.RoutineChange -> {
@@ -186,6 +194,7 @@ internal object SuggestionJson {
             }
         }
         put("rationale", rationale)
+        reason?.let { put("reason", it.name.lowercase()) }
     }
 
     private fun encode(entry: PlanEntry): JsonObject = buildJsonObject {
